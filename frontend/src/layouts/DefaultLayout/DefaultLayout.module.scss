@@ -1,0 +1,17 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // padding: 0 var(--default-layout-horizontal-spacer, 24px);
+}
+
+.container {
+    width: var(--default-layout-width, 1320px);
+    display: flex;
+    margin-top: 120px;
+}
+
+.content {
+    flex: 1;
+    min-height: 1000px;
+}

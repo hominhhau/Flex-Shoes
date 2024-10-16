@@ -1,0 +1,9 @@
+Vite + React + Tailwindjs
+
+Postman
+
+react-router-dom
+
+axios
+
+useNavigate
