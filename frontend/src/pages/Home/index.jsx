@@ -7,6 +7,7 @@ import Button from '../../components/Button';
 import Image from '../../components/Image';
 import ProductList from '../../components/ProductList';
 import SlideShow from '../../components/SlideShow';
+import Reviews from '../../components/Reviews';
 
 import styles from './Home.module.scss';
 
@@ -41,6 +42,9 @@ function Home() {
                         </div>
                     </div>
                     <ProductList />
+                </div>
+                <div className={cx('content-reviews')}>
+                    <Reviews />
                 </div>
             </div>
         </div>
