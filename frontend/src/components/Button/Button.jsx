@@ -15,6 +15,7 @@ function Button({
     text = false,
     disabled = false,
     rounded = false,
+    viewProduct = false,
     children,
     leftIcon,
     rightIcon,
@@ -54,6 +55,7 @@ function Button({
         text,
         disabled,
         rounded,
+        viewProduct,
         [className]: className, // Add custom class name
     });
 

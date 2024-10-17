@@ -76,6 +76,18 @@
     }
 }
 
+.viewProduct {
+    width: 318px;
+    height: 48px;
+    border-radius: 10px;
+    background-color: #000;
+    color: #fff;
+
+    &:hover {
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.12)), #000;
+    }
+}
+
 // Icon
 
 .icon + .title,
