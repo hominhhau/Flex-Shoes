@@ -8,6 +8,7 @@ import Image from '../../components/Image';
 import ProductList from '../../components/ProductList';
 import SlideShow from '../../components/SlideShow';
 import Reviews from '../../components/Reviews';
+import CategoriesShow from '../../layouts/components/CategoriesShow';
 
 import styles from './Home.module.scss';
 
@@ -35,13 +36,16 @@ function Home() {
                         <h1 className={cx('product-header-title', 'w-[700px]')}>DON'T MISS OUT NEW DROPS</h1>
                         <div>
                             <Link to={config.routes.search}>
-                                <Button primary className="w-[200px] rounded-xl">
+                                <Button primary className="w-[200px]">
                                     <span>SHOP NEW DROPS</span>
                                 </Button>
                             </Link>
                         </div>
                     </div>
                     <ProductList />
+                </div>
+                <div className={cx('content-categories')}>
+                    <CategoriesShow />
                 </div>
                 <div className={cx('content-reviews')}>
                     <Reviews />
