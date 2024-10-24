@@ -31,12 +31,72 @@ const products = [
         price: 125,
         imageSrc: './src/assets/productItems/product4.png',
     },
+    {
+        id: '5',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product1.png',
+    },
+    {
+        id: '6',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product2.png',
+    },
+    {
+        id: '7',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product3.png',
+    },
+    {
+        id: '8',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '9',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '10',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '11',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '12',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '13',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '14',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
 ];
 
-function ProductList() {
+function ProductList({ columns }) {
     return (
         <div className="container mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${columns} gap-6`}>
                 {products.map((product) => (
                     <div key={product.id} className={cx('product-item')}>
                         <div className={cx('inner')}>
@@ -59,5 +119,9 @@ function ProductList() {
         </div>
     );
 }
+
+ProductList.defaultProps = {
+    columns: 4, // Default to 4 columns
+};
 
 export default ProductList;
