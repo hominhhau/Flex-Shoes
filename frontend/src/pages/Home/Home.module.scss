@@ -1,3 +1,40 @@
 .wrapper {
     width: 100%;
 }
+.content {
+}
+
+// Content Product Component
+.content-product {
+    height: 658px;
+}
+
+.product-header-title {
+    font-size: 74px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 32px;
+    line-height: 95%;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+}
+
+.btn-new {
+    width: 100px;
+}
+
+// Content Header Component
+.content-header {
+}
+
+.header-title {
+    font-size: 217px;
+    font-weight: 700;
+    line-height: 95%;
+    margin: auto;
+}

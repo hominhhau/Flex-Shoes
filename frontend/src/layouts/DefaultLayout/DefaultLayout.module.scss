@@ -8,10 +8,11 @@
 .container {
     width: var(--default-layout-width, 1320px);
     display: flex;
-    margin-top: 120px;
+    margin-top: 150px;
 }
 
 .content {
     flex: 1;
-    min-height: 1000px;
+    height: auto;
+    // min-height: 3800px;
 }
