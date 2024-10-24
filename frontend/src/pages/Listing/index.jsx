@@ -8,7 +8,10 @@ const cx = classNames.bind(styles);
 function Listing() {
     return (
         <div className={cx('wrapper')}>
-            <Filter />
+            <div className={cx('container-filter')}>
+                <Filter />
+            </div>
+            <div className={cs('container-listproduct')}></div>
         </div>
     );
 }
