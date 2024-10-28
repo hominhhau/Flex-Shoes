@@ -4,7 +4,7 @@ import classNames from 'classnames/bind';
 import Filter from '../../components/Filter';
 import styles from './Listing.module.scss';
 import ProductList from '../../components/ProductList';
-
+import SlideShow from '../../components/SlideShow';
 const cx = classNames.bind(styles);
 
 const products = [
@@ -103,6 +103,7 @@ function Listing() {
 
     return (
         <div className={cx('wrapper')}>
+            <SlideShow />
             <div className={cx('container-filter')}>
                 <Filter />
             </div>
