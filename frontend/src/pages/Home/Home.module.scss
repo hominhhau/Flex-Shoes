@@ -1,12 +1,12 @@
 .wrapper {
-    width: 100%;
+    width: var(--default-layout-width, 1320px);
 }
-.content {
-}
+// .content {
+// }
 
 // Content Product Component
 .content-product {
-    height: 658px;
+    height: 700px;
 }
 
 .product-header-title {
@@ -29,8 +29,8 @@
 }
 
 // Content Header Component
-.content-header {
-}
+// .content-header {
+// }
 
 .header-title {
     font-size: 217px;
