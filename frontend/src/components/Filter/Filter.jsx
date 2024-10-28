@@ -202,22 +202,7 @@ const Filter = () => {
                                     alignItems: 'center',
                                     boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
                                 }}
-                            >
-                                {/* <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: '-28px',
-                                        color: '#fff',
-                                        fontWeight: 'bold',
-                                        fontSize: '12px',
-                                        backgroundColor: '#4A69E2',
-                                        padding: '2px 4px',
-                                        borderRadius: '4px',
-                                    }}
-                                >
-                                    {selectedFilters.price[index]}
-                                </div> */}
-                            </div>
+                            ></div>
                         )}
                     />
                     <div className={cx('price-values')}>

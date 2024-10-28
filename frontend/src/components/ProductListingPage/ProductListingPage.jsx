@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Button from '../Button';
+import ProductItem from '../ProductItem';
 import classNames from 'classnames/bind';
+import styles from './ProductListingPage.module.scss';
 
-import Filter from '../../components/Filter';
-import styles from './Listing.module.scss';
-import ProductListPage from '../../components/ProductListingPage';
-import SlideShow from '../../components/SlideShow';
 const cx = classNames.bind(styles);
 
 const products = [
@@ -36,19 +35,19 @@ const products = [
         id: '5',
         name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
         price: 125,
-        imageSrc: './src/assets/productItems/product1.png',
+        imageSrc: './src/assets/productItems/product4.png',
     },
     {
         id: '6',
         name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
         price: 125,
-        imageSrc: './src/assets/productItems/product2.png',
+        imageSrc: './src/assets/productItems/product4.png',
     },
     {
         id: '7',
         name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
         price: 125,
-        imageSrc: './src/assets/productItems/product3.png',
+        imageSrc: './src/assets/productItems/product4.png',
     },
     {
         id: '8',
@@ -92,26 +91,67 @@ const products = [
         price: 125,
         imageSrc: './src/assets/productItems/product4.png',
     },
+    {
+        id: '15',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '16',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '17',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '18',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '19',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
+    {
+        id: '20',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product4.png',
+    },
 ];
 
-function Listing() {
-    const [visibleCount, setVisibleCount] = useState(3);
+function ProductListPage() {
+    const [visibleCount, setVisibleCount] = useState(12); // Hiển thị 4 dòng * 3 cột ngay từ đầu
 
-    const handleLoadMore = () => {
-        setVisibleCount((prevCount) => prevCount + 3);
+    const handleShowMore = () => {
+        setVisibleCount((prevCount) => Math.min(prevCount + 4, products.length));
     };
 
     return (
-        <div className={cx('wrapper')}>
-            <SlideShow />
-            <div className={cx('container-filter')}>
-                <Filter />
+        <div className={cx('product-list')}>
+            <div className={cx('grid-container')}>
+                {products.slice(0, visibleCount).map((product) => (
+                    <div key={product.id} className={cx('product-item')}>
+                        <ProductItem src={product.imageSrc} name={product.name} price={product.price} />
+                    </div>
+                ))}
             </div>
-            <div className={cx('container-listproduct')}>
-                <ProductListPage />
-            </div>
+            {visibleCount < products.length && (
+                <div className="text-center mt-4">
+                    <Button onClick={handleShowMore}>See More...</Button>
+                </div>
+            )}
         </div>
     );
 }
 
-export default Listing;
+export default ProductListPage;
