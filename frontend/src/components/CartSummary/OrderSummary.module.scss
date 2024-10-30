@@ -1,0 +1,54 @@
+.orderSummary {
+  max-width: 418px;
+  color: var(--Dark-Gray, #232321);
+  font-weight: 600;
+}
+
+.title {
+  font: 32px Rubik, sans-serif;
+}
+
+.summaryList {
+  margin-top: 24px;
+  font: 20px Open Sans, sans-serif;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.summaryItem:first-child {
+  margin-top: 0;
+}
+
+.summaryValue {
+  opacity: 0.8;
+}
+
+.totalItem {
+  font: 24px Rubik, sans-serif;
+  white-space: nowrap;
+}
+
+.checkoutButton {
+  width: 100%;
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--Dark-Gray, #232321);
+  color: var(--Pure-White, #fff);
+  font: 500 14px Rubik, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+  border: none;
+  cursor: pointer;
+}
+
+.promoCode {
+  margin-top: 24px;
+  font: 20px Open Sans, sans-serif;
+  text-decoration: underline;
+  cursor: pointer;
+}
