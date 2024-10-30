@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import productImage from '../../assets/images/Product01.png';
 import ShoppingBag from '../../components/Cart/CartComponent';
-
+import { useNavigate } from 'react-router-dom';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import styles from './Cart.module.scss';
 const cx = classNames.bind(styles);
@@ -74,9 +74,16 @@ function Cart() {
 
   ])
   
-    
-    const handleRemove = () => {
-        console.log("xóa");
+    const navigate = useNavigate();
+
+    const handleCheckout = () =>{
+        navigate('/checkout', { state: { cartData: data } });
+    }
+    const handleRemove = (id) => {
+        console.log("Array trước khi xóa: ", data);
+        const updateData = data.filter(product => product.id !== id);
+        setData(updateData);
+        console.log("Array sau khi xóa: ", updateData);
     };
 
     const handleQuantityChange = (id, newQuantity) => {
@@ -131,7 +138,7 @@ function Cart() {
                       sizeOptions={product.sizeOptions}
                       price={product.price}
                       quantity={product.quantity} 
-                      onRemove={handleRemove}
+                      onRemove={() => handleRemove(product.id)}
                       onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
                       removeIcon={faTrashCan}
                       allowQuantityChange={true}
@@ -147,6 +154,7 @@ function Cart() {
                     cartData={data}
                     isCheckoutVisible={isCheckoutVisible} 
                     toggleCheckoutVisibility={toggleCheckoutVisibility} 
+                    handleCheckout={handleCheckout}
                     />
                 </div>
             </div>

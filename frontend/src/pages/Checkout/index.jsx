@@ -14,13 +14,11 @@ const CheckoutForm = () => {
     const [isOver13, setIsOver13] = useState(false);
     const [newsletterSubscription, setNewsletterSubscription] = useState(false);
 
-    // Lấy data từ state khi chuyển trang
     const location = useLocation();
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
 
-    // Button Review and Pay
     const handlePlaceOrder = () => {
-        alert("Order placed successfully!");
+        alert('Order placed successfully!');
     };
 
     return (
@@ -122,15 +120,35 @@ const CheckoutForm = () => {
             </div>
             <div className={cx('rightContainer')}>
                 <div className={cx('orderSummary')}>
-                    <OrderSummary 
-                        itemCount={itemCount} 
-                        totalAmount={totalAmount} 
-                        deliveryFee={deliveryFee} 
+                    <OrderSummary
+                        itemCount={itemCount}
+                        totalAmount={totalAmount}
+                        deliveryFee={deliveryFee}
                         cartData={cartData}
                     />
                 </div>
+                <div className={cx('shoppingBag')}>
+                    {cartData && cartData.length > 0 ? (
+                        cartData.map((product) => (
+                            <div className={cx('shoppingBagItem')} key={product.id}>
+                                <ShoppingBag
+                                    image={product.image}
+                                    name={product.name}
+                                    category={product.category}
+                                    color={product.color}
+                                    sizeOptions={product.sizeOptions}
+                                    price={product.price}
+                                    quantity={product.quantity}
+                                    allowQuantityChange={false}
+                                    allowSizeChange={false}
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        <p>No items in the cart.</p>
+                    )}
                 </div>
-    
+            </div>
         </main>
     );
 };

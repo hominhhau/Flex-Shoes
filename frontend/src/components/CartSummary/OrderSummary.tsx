@@ -69,7 +69,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                     <div className={cx('summaryValue')}>{formattedTotalWithDelivery}</div>
                 </div>
             </div>
-            {isCheckoutVisible && (  // Conditional rendering based on passed state
+            {isCheckoutVisible && ( 
                 <button 
                     className={cx('checkoutButton')}
                     onClick={handleCheckout}
