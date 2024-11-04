@@ -114,4 +114,8 @@ function ProductList() {
     );
 }
 
+ProductList.defaultProps = {
+    columns: 4, // Default to 4 columns
+};
+
 export default ProductList;

@@ -42,7 +42,7 @@ function Home() {
                             </Link>
                         </div>
                     </div>
-                    <ProductList />
+                    <ProductList columns={4} />
                 </div>
                 <div className={cx('content-categories')}>
                     <CategoriesShow />
