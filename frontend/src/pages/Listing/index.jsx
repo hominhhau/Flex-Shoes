@@ -5,6 +5,9 @@ import Filter from '../../components/Filter';
 import styles from './Listing.module.scss';
 import ProductListPage from '../../components/ProductListingPage';
 import SlideShow from '../../components/SlideShow';
+import { Api_Product } from '../../../apis/Api_Product';
+import Button from '../../components/Button';
+import routes from '../../config/routes';
 const cx = classNames.bind(styles);
 
 const products = [
@@ -100,6 +103,16 @@ function Listing() {
     const handleLoadMore = () => {
         setVisibleCount((prevCount) => prevCount + 3);
     };
+    const getAllProducts = async () => {
+        try {
+            const response = await Api_Product.getProducts();
+            
+            console.log(response.data); // Kiểm tra dữ liệu trả về
+            setProducts(response.data); // Lưu dữ liệu vào state
+        } catch (error) {
+            console.error('Failed to fetch product list: ', error);
+        }
+    };
 
     return (
         <div className={cx('wrapper')}>
@@ -110,6 +123,7 @@ function Listing() {
             <div className={cx('container-listproduct')}>
                 <ProductListPage />
             </div>
+            <Button onClick={getAllProducts}>Get all products</Button>
         </div>
     );
 }

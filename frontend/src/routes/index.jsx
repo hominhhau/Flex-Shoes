@@ -8,6 +8,7 @@ const publicRoutes = [
     { path: config.routes.listing, component: Listing },
     { path: config.routes.search, component: Search, layout: null },
     { path: config.routes.search, component: Search },
+
 ];
 const privateRoutes = [];
 export { publicRoutes, privateRoutes };
