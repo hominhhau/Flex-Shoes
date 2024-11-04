@@ -1,0 +1,166 @@
+.container {
+  max-width: none !important;
+}
+
+.bagContainer {
+  border-radius: 16px;
+  background: #fafafa;
+  display: flex;
+  max-width: 782px;
+  flex-direction: column;
+  padding: 16px;
+}
+
+@media (max-width: 991px) {
+  .bagContainer {
+    padding: 0 20px;
+  }
+}
+
+.headerContainer {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  color: #232321;
+}
+
+.bagTitle {
+  font: 600 32px Rubik, sans-serif;
+}
+
+.bagDescription {
+  opacity: 0.8;
+  margin-top: 8px;
+  font: 400 16px "Open Sans", sans-serif;
+}
+
+.productContainer {
+  display: flex;
+  margin-top: 24px;
+  align-items: start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.productImage {
+  aspect-ratio: 0.92;
+  object-fit: contain;
+  width: 208px;
+  border-radius: 24px;
+}
+
+.productDetailsContainer {
+  display: flex;
+  min-width: 240px;
+  flex-direction: column;
+}
+
+.productInfoWrapper {
+  display: flex;
+  align-items: start;
+  gap: 40px 80px;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.productInfo {
+  display: flex;
+  min-width: 240px;
+  flex-direction: column;
+  color: #232321;
+  width: 325px;
+}
+
+.productName {
+  font: 24px Rubik, sans-serif;
+}
+
+.productMetaContainer {
+  display: flex;
+  margin-top: 8px;
+  width: 100%;
+  flex-direction: column;
+  font: 20px "Open Sans", sans-serif;
+}
+
+.productCategory,
+.productColor {
+  opacity: 0.8;
+  margin-top: 8px;
+}
+
+.productOptionsContainer {
+  display: flex;
+  margin-top: 20px;
+  align-items: center;
+  gap: 40px;
+  font: 20px "Open Sans", sans-serif;
+}
+
+.sizeContainer,
+.quantityContainer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.sizeText,
+.quantityText {
+  opacity: 0.8;
+}
+
+.sizeDropdown {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  min-width: 80px;
+}
+
+.quantityControl {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.quantityButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%; 
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.quantityButton:hover {
+  background-color: #e0e0e0;
+}
+
+.price {
+  color: #ff5757;
+  font: 24px Rubik, sans-serif;
+}
+
+.actionButtonsContainer {
+  display: flex;
+  margin-top: 48px;
+  align-items: center;
+  gap: 24px;
+}
+
+.actionButton {
+  aspect-ratio: 1;
+  object-fit: contain;
+  width: 32px;
+  cursor: pointer;
+}
