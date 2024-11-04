@@ -1,12 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '../Button';
-import Image from '../Image';
-import classNames from 'classnames/bind';
-
-import styles from './ProductList.module.scss';
 import ProductItem from '../ProductItem';
-
-const cx = classNames.bind(styles);
 
 const products = [
     {
@@ -37,6 +31,18 @@ const products = [
         id: '5',
         name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
         price: 125,
+        imageSrc: './src/assets/productItems/product2.png',
+    },
+    {
+        id: '6',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
+        imageSrc: './src/assets/productItems/product3.png',
+    },
+    {
+        id: '7',
+        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
+        price: 125,
         imageSrc: './src/assets/productItems/product4.png',
     },
 ];
@@ -65,46 +71,45 @@ function ProductList() {
     }, []);
 
     return (
-        <div className={cx('product-list')}>
-            <div className="flex justify-end mb-4">
+        <div className="product-list relative">
+            <div className="flex justify-end mb-4 space-x-2">
                 <Button
-                    className="mr-2 bg-white shadow-md rounded-full p-2"
+                    className="bg-white shadow-md rounded-full p-2"
                     onClick={() => handleScroll('left')}
-                    disabled={scrollPosition <= 0}
+                    aria-label="Scroll left"
                 >
                     &lsaquo;
                 </Button>
                 <Button
                     className="bg-white shadow-md rounded-full p-2"
                     onClick={() => handleScroll('right')}
-                    disabled={
-                        scrollPosition >=
-                        (containerRef.current?.scrollWidth || 0) - (containerRef.current?.clientWidth || 0)
-                    }
+                    aria-label="Scroll right"
                 >
                     &rsaquo;
                 </Button>
             </div>
             <div
                 ref={containerRef}
-                className="flex overflow-x-auto snap-x snap-mandatory"
+                className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
                 style={{
                     scrollSnapType: 'x mandatory',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none',
                 }}
             >
-                <style jsx>{`
-                    div::-webkit-scrollbar {
-                        display: none;
-                    }
-                `}</style>
                 {products.map((product) => (
                     <div key={product.id} className="flex-none w-full sm:w-1/2 lg:w-1/4 p-2 snap-start">
                         <ProductItem src={product.imageSrc} name={product.name} price={product.price} />
                     </div>
                 ))}
             </div>
+            <style jsx="true">{`
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
         </div>
     );
 }

@@ -13,28 +13,37 @@ import Image from '../../../components/Image';
 const cx = classNames.bind(styles);
 
 function Header() {
-    const currentUser = true;
+    const currentUser = false;
 
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
                 <nav className={cx('nav-right')}>
-                    <button className={cx('nav-item')}>
-                        New Drops
-                        <FontAwesomeIcon icon={faFire} className="text-orange-500 ml-2" />
-                    </button>
-                    <button className={cx('nav-item')}>
-                        Men
-                        <span className="ml-1">▼</span>
-                    </button>
-                    <button className={cx('nav-item')}>
-                        Women
-                        <span className="ml-1">▼</span>
-                    </button>
+                    <Link to={config.routes.home}>
+                        <button className={cx('nav-item')}>
+                            New Drops
+                            <FontAwesomeIcon icon={faFire} className="text-orange-500 ml-2" />
+                        </button>
+                    </Link>
+
+                    <Link to={config.routes.home}>
+                        <button className={cx('nav-item')}>
+                            Men
+                            <span className="ml-1">▼</span>
+                        </button>
+                    </Link>
+                    <Link to={config.routes.home}>
+                        <button className={cx('nav-item')}>
+                            Women
+                            <span className="ml-1">▼</span>
+                        </button>
+                    </Link>
                 </nav>
-                <div className={cx('logo')}>
-                    <LogoIcon />
-                </div>
+                <Link to={config.routes.home}>
+                    <div className={cx('logo')}>
+                        <LogoIcon />
+                    </div>
+                </Link>
                 <div className={cx('actions')}>
                     {currentUser ? (
                         <>
@@ -53,8 +62,13 @@ function Header() {
                         </>
                     ) : (
                         <>
-                            <Button text>Register</Button>
-                            <Button primary>Login</Button>
+                            <Link to={config.routes.register}>
+                                <Button text>Register</Button>
+                            </Link>
+
+                            <Link to={config.routes.login}>
+                                <Button primary>Login</Button>
+                            </Link>
                         </>
                     )}
                 </div>
