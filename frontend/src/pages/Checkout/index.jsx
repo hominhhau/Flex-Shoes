@@ -6,6 +6,7 @@ import InputField from './InputField';
 import DeliveryOptionsButton from './DelivelyOptions';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
+import { Api_Payment } from '../../../apis/Api_Payment';
 
 const cx = classNames.bind(styles);
 
@@ -16,9 +17,34 @@ const CheckoutForm = () => {
 
     const location = useLocation();
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
+    console.log('Checkout data:', cartData);
 
-    const handlePlaceOrder = () => {
-        alert('Order placed successfully!');
+    // const handlePlaceOrder = () => {
+    //     alert('Order placed successfully!');
+    // };
+    // Example for creating a payment and redirecting to VNPay
+    const handlePlaceOrder = async () => {
+        try {
+            // Calculate total in VND (multiply by 100 if working with cents)
+            const total = Math.round(totalAmount * 23000); // Convert to VND (assuming original price is in USD)
+
+            const invoiceDto = {
+                invoiceId: '26', // Generate a unique invoice ID
+                total: 90000,
+            };
+
+            console.log('Sending payment request:', invoiceDto);
+            const paymentResponse = await Api_Payment.createPayment(invoiceDto);
+
+            if (paymentResponse?.URL) {
+                window.location.href = paymentResponse.URL;
+            } else {
+                throw new Error('No payment URL received');
+            }
+        } catch (error) {
+            console.error('Error during order placement:', error);
+            alert('There was an error processing your payment. Please try again.');
+        }
     };
 
     return (
