@@ -1,6 +1,7 @@
 const routes = {
     home: '/',
-    productdetail: '/productdetail',
+    // productdetail: '/productdetail',
+    productdetail: '/productdetail/:id',
     listing: '/listing',
     search: '/search',
     cart: '/cart',
