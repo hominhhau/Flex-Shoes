@@ -15,6 +15,7 @@ const CheckoutForm = () => {
     const [newsletterSubscription, setNewsletterSubscription] = useState(false);
 
     const location = useLocation();
+    console.log(location.state);
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
 
     const handlePlaceOrder = () => {
