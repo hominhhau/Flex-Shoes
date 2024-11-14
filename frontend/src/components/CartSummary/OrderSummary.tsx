@@ -46,7 +46,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     console.log(totalWithDelivery);
     const formattedTotalWithDelivery = `${totalWithDelivery}`;
     const summaryItems = [
-        { label: `${itemCount} ITEM${itemCount !== 1 ? 'S' : ''}`, value: `${totalAmount}` },
+        { label: `${itemCount} ITEM${itemCount !== 1 ? 'S' : ''}`, value: `${totalAmount.toFixed(2)}` },
         { label: 'Delivery', value: `${deliveryFee.toFixed(2)}` },
         { label: 'Sales Tax', value: '-' },
     ];

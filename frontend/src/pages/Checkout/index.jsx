@@ -7,6 +7,9 @@ import DeliveryOptionsButton from './DelivelyOptions';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
 
+import axios from 'axios'; 
+
+
 const cx = classNames.bind(styles);
 
 const CheckoutForm = () => {
@@ -14,14 +17,61 @@ const CheckoutForm = () => {
     const [isOver13, setIsOver13] = useState(false);
     const [newsletterSubscription, setNewsletterSubscription] = useState(false);
 
+
+    //State user enter
+    const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
+
     const location = useLocation();
     console.log(location.state);
+    
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
 
-    const handlePlaceOrder = () => {
-        alert('Order placed successfully!');
+    const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee);
+    
+    const handleDeliveryChange = (newDeliveryFee) => {
+        setSelectedDeliveryFee(newDeliveryFee);
     };
 
+    const handleQuantityChange = (productId, newQuantity) => {
+        const updatedCartData = cartData.map((product) =>
+            product.id === productId ? { ...product, quantity: newQuantity } : product
+        );
+        console.log("Updated cart data:", updatedCartData);
+        // Update state with the new cartData array
+        // setCartData(updatedCartData); // Uncomment if cartData is managed locally in state
+    };
+
+    // const handlePlaceOrder = () => {
+    //     alert('Order placed successfully!');
+    // };
+    
+    // Hàm xử lý khi bấm nút "REVIEW AND PAY"
+    const handlePlaceOrder = async () => {
+        const invoiceData = {
+            issueDate: new Date().toISOString().split('T')[0],
+            receiverNumber: phone,  // Giá trị số điện thoại
+            receiverName: `${firstName} ${lastName}`,  // Họ và tên
+            receiverAddress: address,  // Địa chỉ
+            paymentMethod: 'Credit Card',  // Phương thức thanh toán (giả sử)
+            deliveryMethod: 'Express',  // Phương thức giao hàng (giả sử)
+            orderStatus: 'Pending',  // Trạng thái đơn hàng
+            total: totalAmount,  // Tổng giá trị
+            cartData: cartData,  // Dữ liệu giỏ hàng
+        };
+
+        try {
+            const response = await axios.post('http://localhost:8080/api/invoices', invoiceData);
+            alert('Order placed successfully!');
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error placing order:', error.response || error.message || error);
+            alert('Failed to place order. Please try again.');
+        }
+    };
     return (
         <main className={cx('container')}>
             <div className={cx('leftcontainer')}>
@@ -38,7 +88,14 @@ const CheckoutForm = () => {
                     </header>
 
                     <form className={cx('inputGroup')}>
-                        <InputField label="Email" id="email" placeholder="Email" width={300} />
+                        <InputField 
+                        label="Email" 
+                        id="email" 
+                        placeholder="Email" 
+                        width={300} 
+                        value={email}//bind với giá trị state
+                        onChange={(e) => setEmail(e.target.value)}
+                        />
                     </form>
                 </section>
 
@@ -47,8 +104,22 @@ const CheckoutForm = () => {
 
                     <form className={cx('shippingForm')}>
                         <div className={cx('nameInputs')}>
-                            <InputField label="First Name" id="firstName" placeholder="First Name*" width={300} />
-                            <InputField label="Last Name" id="lastName" placeholder="Last Name*" width={300} />
+                            <InputField 
+                            label="First Name" 
+                            id="firstName" 
+                            placeholder="First Name*" 
+                            width={300} 
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            />
+                            <InputField 
+                            label="Last Name" 
+                            id="lastName" 
+                            placeholder="Last Name*" 
+                            width={300} 
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            />
                         </div>
 
                         <div className={cx('addressInput')}>
@@ -58,6 +129,8 @@ const CheckoutForm = () => {
                                 placeholder="Find Delivery Address*"
                                 helperText="Start typing your street address or zip code for suggestion"
                                 width={665}
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
                             />
                         </div>
 
@@ -69,13 +142,15 @@ const CheckoutForm = () => {
                                 placeholder="Phone Number*"
                                 helperText="E.g. (123) 456-7890"
                                 width={300}
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                             />
                         </div>
                     </form>
                 </section>
 
                 <br />
-                <DeliveryOptionsButton />
+                <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} />
 
                 {/* Checkbox */}
                 <section className={cx('checkoutOptions')}>
@@ -124,7 +199,7 @@ const CheckoutForm = () => {
                     <OrderSummary
                         itemCount={itemCount}
                         totalAmount={totalAmount}
-                        deliveryFee={deliveryFee}
+                        deliveryFee={selectedDeliveryFee}
                         cartData={cartData}
                     />
                 </div>
@@ -139,7 +214,9 @@ const CheckoutForm = () => {
                                     color={product.color}
                                     sizeOptions={product.sizeOptions}
                                     price={product.price}
-                                    quantity={product.quantity}
+                                    // quantity={product.quantity}
+                                    initialQuantity={product.quantity}
+                                    onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
                                     allowQuantityChange={false}
                                     allowSizeChange={false}
                                 />

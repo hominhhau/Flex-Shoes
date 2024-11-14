@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './productdetail.module.scss';
 
@@ -30,6 +31,8 @@ const productDetail = {
     ]
 };
 
+
+
 export default function ProductDetail() {
     // Chọn ảnh
     const [selectedImage, setSelectedImage] = useState(0);
@@ -37,6 +40,8 @@ export default function ProductDetail() {
     const [selectedColor, setSelectedColor] = useState(productDetail.colors[0]);
     // Chọn size
     const [selectedSize, setSelectedSize] = useState(productDetail.sizes[0]);
+
+    const navigate = useNavigate();
 
     return (
         <div className={cx('wrapper')}>
@@ -98,7 +103,20 @@ export default function ProductDetail() {
                         <button className={cx('add-to-wishlist')}>♡</button>
                     </div>
                     <div>
-                        <button className={cx('buy-now')}>BUY IT NOW</button>
+                        <button 
+                        className={cx('buy-now')}
+                        onClick={() => 
+                            navigate('/cart', {
+                                state: {
+                                    name: productDetail.name,
+                                    size: selectedSize,
+                                    color: selectedColor,
+                                    price: productDetail.price,
+                                    image: productDetail.imageSrc[0],
+                                }
+                            })
+                        }
+                        >BUY IT NOW</button>
                     </div>
                 </div>
 

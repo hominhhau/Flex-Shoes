@@ -15,8 +15,14 @@ const deliveryOptionsData = [
   }
 ];
 
-const DeliveryOptionsButton = () => {
-  const [selectedOption, setSelectedOption] = useState('Standard Delivery');
+const DeliveryOptionsButton = ({ onDeliveryChange }) => {
+  const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].title);
+
+  const handleSelectOption = (option) => {
+    setSelectedOption(option.title);
+    // Truyền giá trị phí giao hàng lên component cha (CheckoutForm)
+    onDeliveryChange(option.price);
+  };
 
   return (
     <section className={styles.container}>
@@ -29,7 +35,7 @@ const DeliveryOptionsButton = () => {
             description={option.description}
             price={option.price}
             isSelected={selectedOption === option.title}
-            onClick={() => setSelectedOption(option.title)}
+            onClick={() => handleSelectOption(option)}
           />
         ))}
       </div>
