@@ -25,6 +25,8 @@ const CheckoutForm = () => {
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
 
+    const [paymentStatus, setPaymentStatus] = useState('unpaid');
+
     const location = useLocation();
     console.log(location.state);
     
@@ -58,7 +60,7 @@ const CheckoutForm = () => {
             receiverAddress: address,  // Địa chỉ
             paymentMethod: 'Credit Card',  // Phương thức thanh toán (giả sử)
             deliveryMethod: 'Express',  // Phương thức giao hàng (giả sử)
-            orderStatus: 'Pending',  // Trạng thái đơn hàng
+            orderStatus: paymentStatus === 'paid' ?  'Paid' : 'Pending',  // Trạng thái đơn hàng
             total: totalAmount,  // Tổng giá trị
             cartData: cartData,  // Dữ liệu giỏ hàng
         };
@@ -72,6 +74,11 @@ const CheckoutForm = () => {
             alert('Failed to place order. Please try again.');
         }
     };
+
+    const handlePaymentStatusChange = (newStatus) => {
+        setPaymentStatus(newStatus);//paid or unpaid
+    };
+
     return (
         <main className={cx('container')}>
             <div className={cx('leftcontainer')}>
