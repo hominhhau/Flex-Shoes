@@ -106,7 +106,7 @@ function Listing() {
     const getAllProducts = async () => {
         try {
             const response = await Api_Product.getProducts();
-            
+
             console.log(response.data); // Kiểm tra dữ liệu trả về
             setProducts(response.data); // Lưu dữ liệu vào state
         } catch (error) {
@@ -123,7 +123,7 @@ function Listing() {
             <div className={cx('container-listproduct')}>
                 <ProductListPage />
             </div>
-            <Button onClick={getAllProducts}>Get all products</Button>
+            {/* <Button onClick={getAllProducts}>Get all products</Button> */}
         </div>
     );
 }

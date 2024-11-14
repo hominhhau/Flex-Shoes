@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames/bind';
@@ -45,21 +45,45 @@ const Filter = () => {
         category: [],
         gender: [],
         price: [0, 1000], // Initial price range
+        brand: [], // New brand filter
     });
 
+    // Log selected filters to console after 3 seconds
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            console.log('Selected Filters after 3 seconds:', selectedFilters);
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [selectedFilters]); // Run effect when selectedFilters change
+
     const colorMap = {
-        '#4A69E2': 'Blue',
-        '#FFA52F': 'Orange',
-        '#232321': 'Black',
-        '#234D41': 'Dark Green',
-        '#353336': 'Dark Grey',
-        '#F08155': 'Coral',
-        '#C9CCC6': 'Light Grey',
-        '#677282': 'Steel Blue',
-        '#925513': 'Brown',
-        '#BB8056': 'Tan',
+        '#FF0000': 'Red',
+        '#0000FF': 'Blue',
+        '#008000': 'Green',
+        '#000000': 'Black',
+        '#FFFFFF': 'White',
+        '#808080': 'Gray',
+        '#FFFF00': 'Yellow',
+        '#FFC0CB': 'Pink',
+        '#A52A2A': 'Brown',
+        '#800080': 'Purple',
     };
+
     const sizeMap = [38, 39, 40, 41, 42, 43, 44, 45, 46, 47];
+
+    const brandMap = {
+        Nike: 'BR001',
+        Adidas: 'BR002',
+        Puma: 'BR003',
+        NewBalance: 'BR004',
+        Reebok: 'BR005',
+        Converse: 'BR006',
+        Vans: 'BR007',
+        UnderArmour: 'BR008',
+        ASICS: 'BR009',
+        Fila: 'BR010',
+    };
 
     const handleFilterChange = (section, value) => {
         setSelectedFilters((prev) => {
@@ -69,36 +93,56 @@ const Filter = () => {
             } else {
                 updatedSection = prev[section].includes(value)
                     ? prev[section].filter((item) => item !== value)
-                    : [value]; // Only keep the new value
+                    : [...prev[section], value]; // Add value if not found
             }
 
-            const displayValue = section === 'color' ? value : value;
+            // Update refineBy to include all selected filters
+            let updatedRefineBy = [...prev.refineBy]; // Start with existing refineBy
 
-            let updatedRefineBy = prev.refineBy.filter((item) => item !== displayValue); // Remove old value
-            if (section !== 'refineBy' && section !== 'price') {
-                updatedRefineBy.push(displayValue); // Add new value
+            // Handle size selection
+            if (section === 'size') {
+                if (!updatedRefineBy.includes(`Size: ${value}`)) {
+                    updatedRefineBy.push(`${value}`); // Add the new size if not already included
+                }
+            }
+            // Handle removal from refineBy
+            else if (section === 'refineBy') {
+                updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+            }
+            // Handle other sections
+            else if (section !== 'price') {
+                if (!updatedRefineBy.includes(value)) {
+                    updatedRefineBy.push(value); // Add new value for other sections
+                }
             }
 
+            // Handle price selection
             if (section === 'price') {
                 const priceRange = `$${value[0]} - $${value[1]}`; // Display price range
-                updatedRefineBy = updatedRefineBy.filter((item) => !item.includes('$')); // Remove previous price ranges
+                updatedRefineBy = updatedRefineBy.filter((item) => typeof item === 'string' && !item.includes('$')); // Remove previous price ranges
                 updatedRefineBy.push(priceRange); // Add the new price range
             }
 
             return {
                 ...prev,
                 [section]: updatedSection,
-                refineBy: section === 'refineBy' ? updatedSection : updatedRefineBy,
+                refineBy: updatedRefineBy,
             };
         });
     };
 
     const handlePriceChange = (values) => {
-        setSelectedFilters((prev) => ({
-            ...prev,
-            price: values,
-            refineBy: prev.refineBy.filter((item) => !item.includes('$')).concat(`$${values[0]} - $${values[1]}`),
-        }));
+        setSelectedFilters((prev) => {
+            const priceRange = `$${values[0]} - $${values[1]}`; // Display price range
+            const updatedRefineBy = prev.refineBy.filter((item) => typeof item === 'string' && !item.includes('$')); // Remove previous price ranges
+            updatedRefineBy.push(priceRange); // Add the new price range
+
+            return {
+                ...prev,
+                price: values,
+                refineBy: updatedRefineBy,
+            };
+        });
     };
 
     return (
@@ -136,6 +180,19 @@ const Filter = () => {
                 <div className={cx('filter-colors')}>
                     {Object.keys(colorMap).map((color, index) => (
                         <FilterColorBox key={index} color={color} onClick={() => handleFilterChange('color', color)} />
+                    ))}
+                </div>
+            </FilterSection>
+
+            <FilterSection title="BRAND">
+                <div className={cx('filter-buttons')}>
+                    {Object.keys(brandMap).map((brand) => (
+                        <FilterButton
+                            key={brand}
+                            label={brand}
+                            active={selectedFilters.brand.includes(brand)}
+                            onClick={() => handleFilterChange('brand', brand)}
+                        />
                     ))}
                 </div>
             </FilterSection>
