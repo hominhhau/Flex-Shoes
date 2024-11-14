@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames/bind';
-import { Range } from 'react-range'; // Import Range from react-range
+import { Range } from 'react-range';
 import styles from './Filter.module.scss';
+import { Api_Listing } from '../../../apis/Api_Listing';
 
 const cx = classNames.bind(styles);
 
@@ -44,18 +45,38 @@ const Filter = () => {
         color: [],
         category: [],
         gender: [],
-        price: [0, 1000], // Initial price range
-        brand: [], // New brand filter
+        price: [0, 1000],
+        brand: [],
     });
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
-    // Log selected filters to console after 3 seconds
     useEffect(() => {
         const timer = setTimeout(() => {
-            console.log('Selected Filters after 3 seconds:', selectedFilters);
-        }, 3000);
+            const getData = async () => {
+                try {
+                    console.log('Selected filters:', selectedFilters.refineBy);
+                    const response = await Api_Listing.filterProductsByCriteria({
+                        colors: selectedFilters.color,
+                        sizes: selectedFilters.size,
+                        brands: selectedFilters.brand,
+                        category: selectedFilters.category,
+                        genders: selectedFilters.gender,
+                        minPrice: selectedFilters.price[0],
+                        maxPrice: selectedFilters.price[1],
+                    });
+                    console.log('Filtered products:', response);
+                    // luu vao state
+                    setFilteredProducts(response);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+            getData(); // Gọi hàm getData sau khi định nghĩa
+        }, 1000);
 
         return () => clearTimeout(timer);
-    }, [selectedFilters]); // Run effect when selectedFilters change
+    }, [selectedFilters]);
 
     const colorMap = {
         '#FF0000': 'Red',
@@ -88,39 +109,52 @@ const Filter = () => {
     const handleFilterChange = (section, value) => {
         setSelectedFilters((prev) => {
             let updatedSection;
-            if (section === 'price') {
+            let updatedRefineBy = [...prev.refineBy];
+
+            if (section === 'color') {
+                const colorName = colorMap[value];
+                if (colorName) {
+                    value = colorName;
+                }
+            }
+
+            if (section === 'refineBy') {
+                updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+            } else if (section === 'price') {
                 updatedSection = value;
+                const priceRange = `$${value[0]} - $${value[1]}`;
+                updatedRefineBy = updatedRefineBy.filter((item) => !item.includes('$'));
+                updatedRefineBy.push(priceRange);
             } else {
                 updatedSection = prev[section].includes(value)
                     ? prev[section].filter((item) => item !== value)
-                    : [...prev[section], value]; // Add value if not found
-            }
+                    : [...prev[section], value];
 
-            // Update refineBy to include all selected filters
-            let updatedRefineBy = [...prev.refineBy]; // Start with existing refineBy
-
-            // Handle size selection
-            if (section === 'size') {
-                if (!updatedRefineBy.includes(`Size: ${value}`)) {
-                    updatedRefineBy.push(`${value}`); // Add the new size if not already included
+                if (section === 'size') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(`Size: ${value}`)) {
+                        updatedRefineBy.push(`Size: ${value}`);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== `Size: ${value}`);
+                    }
+                } else if (section === 'brand') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
+                } else if (section === 'gender') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
+                } else if (section === 'category') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
                 }
-            }
-            // Handle removal from refineBy
-            else if (section === 'refineBy') {
-                updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
-            }
-            // Handle other sections
-            else if (section !== 'price') {
-                if (!updatedRefineBy.includes(value)) {
-                    updatedRefineBy.push(value); // Add new value for other sections
-                }
-            }
-
-            // Handle price selection
-            if (section === 'price') {
-                const priceRange = `$${value[0]} - $${value[1]}`; // Display price range
-                updatedRefineBy = updatedRefineBy.filter((item) => typeof item === 'string' && !item.includes('$')); // Remove previous price ranges
-                updatedRefineBy.push(priceRange); // Add the new price range
             }
 
             return {
@@ -133,9 +167,9 @@ const Filter = () => {
 
     const handlePriceChange = (values) => {
         setSelectedFilters((prev) => {
-            const priceRange = `$${values[0]} - $${values[1]}`; // Display price range
-            const updatedRefineBy = prev.refineBy.filter((item) => typeof item === 'string' && !item.includes('$')); // Remove previous price ranges
-            updatedRefineBy.push(priceRange); // Add the new price range
+            const priceRange = `$${values[0]} - $${values[1]}`;
+            const updatedRefineBy = prev.refineBy.filter((item) => !item.includes('$'));
+            updatedRefineBy.push(priceRange);
 
             return {
                 ...prev,
@@ -211,7 +245,7 @@ const Filter = () => {
             </FilterSection>
 
             <FilterSection title="GENDER">
-                {['Men', 'Women'].map((gender) => (
+                {['Men', 'Women', 'Unisex'].map((gender) => (
                     <label key={gender} className={cx('checkbox-label')}>
                         <input
                             type="checkbox"
@@ -245,21 +279,17 @@ const Filter = () => {
                                 {children}
                             </div>
                         )}
-                        renderThumb={({ props, index }) => (
+                        renderThumb={({ props }) => (
                             <div
                                 {...props}
                                 style={{
                                     ...props.style,
                                     height: '20px',
                                     width: '20px',
-                                    backgroundColor: '#f00',
                                     borderRadius: '50%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'red',
                                 }}
-                            ></div>
+                            />
                         )}
                     />
                     <div className={cx('price-values')}>
