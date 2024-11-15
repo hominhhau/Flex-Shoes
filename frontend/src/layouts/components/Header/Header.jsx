@@ -13,13 +13,13 @@ import Image from '../../../components/Image';
 const cx = classNames.bind(styles);
 
 function Header() {
-    const currentUser = false;
+    const currentUser = true;
 
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
                 <nav className={cx('nav-right')}>
-                    <Link to={config.routes.home}>
+                    <Link to={config.routes.listing}>
                         <button className={cx('nav-item')}>
                             New Drops
                             <FontAwesomeIcon icon={faFire} className="text-orange-500 ml-2" />
@@ -47,18 +47,23 @@ function Header() {
                 <div className={cx('actions')}>
                     {currentUser ? (
                         <>
-                            <button className={cx('action-btn')}>
+                            {/* <button className={cx('action-btn')}>
                                 <FontAwesomeIcon icon={faSearch} />
-                            </button>
+                            </button> */}
                             <button className={cx('action-btn')}>
                                 <FontAwesomeIcon icon={faUser} />
                             </button>
-                            <Image
+                            <Link to={config.routes.cart}>
+                                <button className={cx('action-btn')}>
+                                    <FontAwesomeIcon icon={faShoppingCart} />
+                                </button>
+                            </Link>
+                            {/* <Image
                                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt1Sw-DyQXoPERYUk3wfWFmjZ6U9sCUNIFzA&s"
                                 className={cx('user-avatar')}
                                 alt="avatar"
                                 fallBack="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png"
-                            />
+                            /> */}
                         </>
                     ) : (
                         <>
