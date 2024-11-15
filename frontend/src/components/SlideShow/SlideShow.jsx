@@ -50,9 +50,11 @@ function SlideShow() {
                                 Nike introducing the new air max for everyone's comfort
                             </div>
                         </div>
-                        <Button primary className="absolute bottom-20 left-20">
-                            SHOP NOW
-                        </Button>
+                        <Link to={config.routes.listing}>
+                            <Button primary className="absolute bottom-20 left-20">
+                                SHOP NOW
+                            </Button>
+                        </Link>
                     </div>
                 </div>
                 <div
