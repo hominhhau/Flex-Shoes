@@ -1,6 +1,6 @@
 import { ApiManager } from './ApiManager';
 
-// register
+
 export const Api_Product = {
     // get all product
     getProducts: async () => ApiManager.get('api/product'),
