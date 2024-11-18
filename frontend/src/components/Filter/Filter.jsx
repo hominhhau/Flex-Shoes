@@ -38,7 +38,7 @@ const FilterColorBox = ({ color, onClick }) => (
     <div className={cx('filter-color-box')} style={{ backgroundColor: color }} onClick={onClick} />
 );
 
-const Filter = () => {
+const Filter = ({ onFilterChange }) => {
     const [selectedFilters, setSelectedFilters] = useState({
         refineBy: [],
         size: [],
@@ -67,7 +67,7 @@ const Filter = () => {
                     console.log('Filtered products:', response);
                     // luu vao state
                     setFilteredProducts(response);
-                    
+                    onFilterChange(response);
                 } catch (error) {
                     console.error('Error:', error);
                 }
