@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-
 import Button from '../Button';
-
 import ProductItem from '../ProductItem';
-
 import classNames from 'classnames/bind';
-
 import styles from './ProductListingPage.module.scss';
 
 const cx = classNames.bind(styles);
 
 function ProductListPage({ products }) {
-    const [visibleCount, setVisibleCount] = useState(12); // Hiển thị 4 dòng * 3 cột ngay từ đầu
+    const [visibleCount, setVisibleCount] = useState(12);
 
     const handleShowMore = () => {
         setVisibleCount((prevCount) => Math.min(prevCount + 4, products.length));
@@ -23,6 +19,8 @@ function ProductListPage({ products }) {
                 {products.slice(0, visibleCount).map((product, index) => (
                     <div key={`${product.productId}-${index}`} className={cx('product-item')}>
                         <ProductItem
+                            key={product.productId} // Ensure key is unique for each product
+                            productId={product.productId} // Pass productId here
                             src={product.images.length > 0 ? product.images[0] : 'path/to/placeholder/image.png'}
                             name={product.productName}
                             price={product.finalPrice}
