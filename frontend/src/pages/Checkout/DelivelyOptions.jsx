@@ -19,9 +19,13 @@ const DeliveryOptionsButton = ({ onDeliveryChange }) => {
   const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].title);
 
   const handleSelectOption = (option) => {
+    console.log('Selected option:', option);
     setSelectedOption(option.title);
     // Truyền giá trị phí giao hàng lên component cha (CheckoutForm)
-    onDeliveryChange(option.price);
+    //onDeliveryChange(option.price);
+    const price = option.price === 'Free' ? 0 : parseFloat(option.price);
+    console.log('Updated price:', price); // Kiểm tra giá trị giá giao hàng
+    onDeliveryChange(price);
   };
 
   return (

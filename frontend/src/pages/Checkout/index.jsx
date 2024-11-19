@@ -38,6 +38,7 @@ const CheckoutForm = () => {
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee);
     
     const handleDeliveryChange = (newDeliveryFee) => {
+        console.log('New delivery fee:', newDeliveryFee);
         setSelectedDeliveryFee(newDeliveryFee);
     };
 
@@ -235,6 +236,7 @@ const CheckoutForm = () => {
                 </section>
 
                 <br />
+                {/* Delivery */}
                 <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} />
 
                 {/* Checkbox */}
