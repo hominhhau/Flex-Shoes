@@ -10,7 +10,9 @@ const InputField = ({
     id, 
     placeholder, 
     helperText,
-    width
+    width,
+    value,
+    onChange,
 }) => {
   return (
     <div className={cx('inputField')}>
@@ -23,6 +25,8 @@ const InputField = ({
           placeholder={placeholder}
           aria-label={label}
           style={{ width }}
+          value={value}
+          onChange={onChange}
         />
         {helperText && <div className={cx('helperText')}>{helperText}</div>}
       </div>

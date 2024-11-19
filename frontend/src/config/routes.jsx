@@ -4,12 +4,12 @@ const routes = {
     productdetail: '/productdetail/:id',
     listing: '/listing',
     search: '/search',
-    cart: '/cart',
-    checkout: '/checkout',
     product: '/product',
     login: '/login',
     register: '/register',
     purchasedProductsList: '/purchasedProductsList',
+    cart: '/cart',
+    checkout: '/checkout',
 };
 
 export default routes;
