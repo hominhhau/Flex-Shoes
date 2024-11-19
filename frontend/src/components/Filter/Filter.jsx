@@ -28,14 +28,18 @@ const FilterButton = ({ label, active, onClick, isColor }) => (
     <button
         className={cx('filter-button', { active })}
         onClick={onClick}
-        style={isColor ? { backgroundColor: label } : {}}
+        style={isColor ? { backgroundColor: label, border: active ? '3px solid #4A69E2' : '1px solid #e0e0e0' } : {}}
     >
         {!isColor && label}
     </button>
 );
 
-const FilterColorBox = ({ color, onClick }) => (
-    <div className={cx('filter-color-box')} style={{ backgroundColor: color }} onClick={onClick} />
+const FilterColorBox = ({ color, onClick, isActive = false }) => (
+    <div className={cx('filter-color-box', { active: isActive })} style={{ backgroundColor: color }} onClick={onClick}>
+        {isActive && (
+            <span className={cx('checkmark')}>✔</span> // Hiển thị dấu tích khi active
+        )}
+    </div>
 );
 
 const Filter = ({ onFilterChange }) => {
@@ -154,6 +158,12 @@ const Filter = ({ onFilterChange }) => {
                     } else {
                         updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
                     }
+                } else if (section === 'color') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
                 }
             }
 
@@ -183,7 +193,7 @@ const Filter = ({ onFilterChange }) => {
         <div className={cx('filters')}>
             <h2>Filters</h2>
 
-            <FilterSection title="REFINE BY">
+            {/* <FilterSection title="REFINE BY">
                 <div className={cx('filter-buttons')}>
                     {selectedFilters.refineBy.map((item, index) => (
                         <FilterButton
@@ -191,11 +201,11 @@ const Filter = ({ onFilterChange }) => {
                             label={item}
                             active={true}
                             onClick={() => handleFilterChange('refineBy', item)}
-                            isColor={Object.keys(colorMap).includes(item)}
+                            // isColor={Object.keys(colorMap).includes(item)}
                         />
                     ))}
                 </div>
-            </FilterSection>
+            </FilterSection> */}
 
             <FilterSection title="SIZE">
                 <div className={cx('filter-buttons')}>
@@ -213,7 +223,12 @@ const Filter = ({ onFilterChange }) => {
             <FilterSection title="COLOR">
                 <div className={cx('filter-colors')}>
                     {Object.keys(colorMap).map((color, index) => (
-                        <FilterColorBox key={index} color={color} onClick={() => handleFilterChange('color', color)} />
+                        <FilterColorBox
+                            key={index}
+                            color={color}
+                            isActive={selectedFilters.color.includes(colorMap[color])} // Kiểm tra trạng thái
+                            onClick={() => handleFilterChange('color', color)} // Thay đổi trạng thái khi click
+                        />
                     ))}
                 </div>
             </FilterSection>
