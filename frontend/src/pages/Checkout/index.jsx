@@ -101,6 +101,8 @@ const CheckoutForm = () => {
     //     // }
     // };
 
+    const isAllChecked = billingSameAsDelivery && isOver13;
+
     const handlePlaceOrder = async () => {
         try {
             // Chuyển đổi tổng tiền sang VND
@@ -277,7 +279,11 @@ const CheckoutForm = () => {
                     </div>
                 </section>
 
-                <button onClick={handlePlaceOrder} className={cx('placeOrderButton')}>
+                <button 
+                onClick={handlePlaceOrder} 
+                className={cx('placeOrderButton')}
+                disabled={!isAllChecked}
+                >
                     REVIEW AND PAY
                 </button>
             </div>
