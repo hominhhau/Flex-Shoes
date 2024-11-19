@@ -2,25 +2,30 @@ import axios from 'axios';
 
 
 // http://192.168.1.100:6002
-const BASE_URL = 'http://172.16.0.87:8080';
+const BASE_URL = 'http://172.16.0.134:8080';
 
-// Tạo một instance Axios với cấu hình mặc định
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
-    withCredentials: true, // Bật cookie để gửi với mỗi yêu cầu
+    withCredentials: true,
     headers: {
-        'Content-Type': 'application/json', // Tiêu đề mặc định
+        'Content-Type': 'application/json',
     },
-    responseType: 'json', // Kiểu dữ liệu trả về mặc định
-
-
+    responseType: 'json',
 });
 
-// Hàm request để thực hiện các yêu cầu
-const request = async (method, url, data) => {
+const request = async (method, url, data = null, params = null) => {
     try {
-        console.log(`Making ${method.toUpperCase()} request to ${url} with data:`, data);
-        const response = await axiosInstance({ method, url, data });
+        console.log(`Making ${method.toUpperCase()} request to ${url}`);
+        if (data) console.log('Request data:', data);
+        if (params) console.log('Request params:', params);
+
+        const response = await axiosInstance({
+            method,
+            url,
+            data,
+            params,
+        });
+
         console.log('Response:', response.data);
         return response.data;
     } catch (error) {
@@ -29,14 +34,9 @@ const request = async (method, url, data) => {
     }
 };
 
-// API Manager với các phương thức HTTP
 export const ApiManager = {
-    get: async (url) => request('get', url),
+    get: async (url, { params } = {}) => request('get', url, null, params),
     post: async (url, data) => request('post', url, data),
     put: async (url, data) => request('put', url, data),
     delete: async (url) => request('delete', url),
 };
-
-
-// test xem có connect được với server không
-

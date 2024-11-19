@@ -7,6 +7,8 @@ import DeliveryOptionsButton from './DelivelyOptions';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
 
+import { Api_Payment } from '../../../apis/Api_Payment';
+
 import axios from 'axios'; 
 
 
@@ -31,6 +33,7 @@ const CheckoutForm = () => {
     console.log(location.state);
     
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
+    console.log('Checkout data:', cartData);
 
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee);
     
@@ -52,26 +55,101 @@ const CheckoutForm = () => {
     // };
     
     // Hàm xử lý khi bấm nút "REVIEW AND PAY"
-    const handlePlaceOrder = async () => {
-        const invoiceData = {
-            issueDate: new Date().toISOString().split('T')[0],
-            receiverNumber: phone,  // Giá trị số điện thoại
-            receiverName: `${firstName} ${lastName}`,  // Họ và tên
-            receiverAddress: address,  // Địa chỉ
-            paymentMethod: 'Credit Card',  // Phương thức thanh toán (giả sử)
-            deliveryMethod: 'Express',  // Phương thức giao hàng (giả sử)
-            orderStatus: paymentStatus === 'paid' ?  'Paid' : 'Pending',  // Trạng thái đơn hàng
-            total: totalAmount,  // Tổng giá trị
-            cartData: cartData,  // Dữ liệu giỏ hàng
-        };
+    // const handlePlaceOrder = async () => {
+    //     try{
+    //         // Chuyển đổi tổng số tiền từ USD sang VND
+    //         const totalInVND = Math.round(totalAmount * 23000);
+            
+    //         const invoiceData = {
+    //             invoiceId: '30',
+    //             // issueDate: new Date().toISOString().split('T')[0],
+    //             // receiverNumber: phone,  // Giá trị số điện thoại
+    //             // receiverName: `${firstName} ${lastName}`,  // Họ và tên
+    //             // receiverAddress: address,  // Địa chỉ
+    //             // paymentMethod: 'VNPay',  // Phương thức thanh toán (giả sử)
+    //             // deliveryMethod: 'Express',  // Phương thức giao hàng (giả sử)
+    //             // orderStatus: paymentStatus === 'paid' ?  'Paid' : 'Pending',  // Trạng thái đơn hàng
+    //             total: totalInVND,  // Tổng giá trị
+    //             //cartData: cartData,  // Dữ liệu giỏ hàng
+    //         };
+            
 
+    //         console.log('Đang gửi yêu cầu thanh toán:', invoiceData);
+    //         // Gọi API tạo thanh toán qua VNPay
+    //     const paymentResponse = await Api_Payment.createPayment(invoiceData);
+
+    //     if (paymentResponse?.URL) {
+    //         // Điều hướng đến VNPay
+    //         window.location.href = paymentResponse.URL;
+    //     } else {
+    //         throw new Error('Không nhận được URL thanh toán');
+    //     }
+    //     }catch (error) {
+    //         console.error('Lỗi trong quá trình thanh toán:', error);
+    //         alert('Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.');
+    //     }
+        
+
+    //     // try {
+    //     //     const response = await axios.post('http://localhost:8080/api/invoices', invoiceData);
+    //     //     alert('Order placed successfully!');
+    //     //     console.log(response.data);
+    //     // } catch (error) {
+    //     //     console.error('Error placing order:', error.response || error.message || error);
+    //     //     alert('Failed to place order. Please try again.');
+    //     // }
+    // };
+
+    const handlePlaceOrder = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/api/invoices', invoiceData);
-            alert('Order placed successfully!');
-            console.log(response.data);
+            // Chuyển đổi tổng tiền sang VND
+            const totalInVND = Math.round(totalAmount * 23000);
+    
+            const invoiceData = {
+                //invoiceId: Date.now().toString(), // Tạo ID tạm thời (hoặc lấy từ server)
+                issueDate: new Date().toISOString().split('T')[0],//YYYY-MM-DD lấy ptu đầu tiên của mảng [0]
+                receiverNumber: phone,
+                receiverName: `${firstName} ${lastName}`,
+                receiverAddress: address,
+                paymentMethod: 'VNPay',
+                deliveryMethod: 'Express',
+                //orderStatus: 'PENDING',
+                total: totalInVND,
+                cartData: cartData,
+            };
+    
+            console.log('Sending invoice data to server:', invoiceData);
+    
+            // Gửi dữ liệu đơn hàng lên server
+            const invoiceResponse = await axios.post('http://localhost:8080/api/invoices', invoiceData);
+    
+            // if (!invoiceResponse?.data?.id) {
+            //     throw new Error('Không thể lấy ID đơn hàng từ phản hồi server.');
+            // }
+            
+            // if (!invoiceResponse || !invoiceResponse.data) {
+            //     throw new Error('Không thể lưu thông tin đơn hàng.');
+            // }
+    
+            // Lấy `invoiceId` từ phản hồi server
+            const invoiceID = invoiceResponse.data.id;
+            console.log('Received Invoice ID:', invoiceID);
+
+
+            // Gọi API VNPay để lấy URL thanh toán
+            const paymentResponse = await Api_Payment.createPayment({
+                total: totalInVND,
+                invoiceId: invoiceID, // ID đơn hàng từ server
+            });
+    
+            if (paymentResponse?.URL) {
+                window.location.href = paymentResponse.URL;
+            } else {
+                throw new Error('Không nhận được URL thanh toán từ VNPay.');
+            }
         } catch (error) {
-            console.error('Error placing order:', error.response || error.message || error);
-            alert('Failed to place order. Please try again.');
+            console.error('Lỗi khi xử lý thanh toán:', error);
+            alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
         }
     };
 

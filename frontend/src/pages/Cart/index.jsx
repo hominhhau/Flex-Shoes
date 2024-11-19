@@ -77,7 +77,7 @@ function Cart() {
 
     //truyen du lieu tu card sang checkout
     const location = useLocation();
-    const productData = location.state;
+    const productData = location.state|| {};
 
     const [data, setData] = useState(
         [
@@ -94,6 +94,10 @@ function Cart() {
                 : null,
         ].filter(Boolean),
     );
+    //Check
+    console.log('Data: ', data);
+    console.log('Location State:', location.state);
+    
     const navigate = useNavigate();
 
     // const handleCheckout = () => {
