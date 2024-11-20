@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-
 // http://192.168.1.100:6002
-const BASE_URL = 'http://192.168.1.7:8080';
+// const BASE_URL = 'http://192.168.1.7:8080';
+const BASE_URL = 'http://localhost:8080';
 
 // Tạo một instance Axios với cấu hình mặc định
 const axiosInstance = axios.create({
@@ -12,8 +12,6 @@ const axiosInstance = axios.create({
         'Content-Type': 'application/json', // Tiêu đề mặc định
     },
     responseType: 'json', // Kiểu dữ liệu trả về mặc định
-
-
 });
 
 // Hàm request để thực hiện các yêu cầu
@@ -37,6 +35,4 @@ export const ApiManager = {
     delete: async (url) => request('delete', url),
 };
 
-
 // test xem có connect được với server không
-

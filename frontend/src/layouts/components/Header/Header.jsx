@@ -22,6 +22,7 @@ import Image from '../../../components/Image';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
 import Menu from '../Popper/Menu';
+import Search from '../Search';
 
 const cx = classNames.bind(styles);
 
@@ -74,9 +75,7 @@ function Header() {
                 <div className={cx('actions')}>
                     {currentUser ? (
                         <>
-                            {/* <button className={cx('action-btn')}>
-                                <FontAwesomeIcon icon={faSearch} />
-                            </button> */}
+                            <Search />
                             <Link to={config.routes.cart}>
                                 <button className={cx('action-btn')}>
                                     <FontAwesomeIcon icon={faShoppingCart} />
