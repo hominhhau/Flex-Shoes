@@ -1,10 +1,12 @@
 import { Fragment } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { publicRoutes } from './routes';
+import { publicRoutes, privateRoutes } from './routes';
 import DefaultLayout from './layouts/DefaultLayout';
+import AdminLayout from './layouts/AdminLayout';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
+    const role = true;
     return (
         <Router>
             <ScrollToTop />
@@ -14,6 +16,9 @@ function App() {
                         const Page = route.component;
 
                         let Layout = DefaultLayout;
+                        if (role) {
+                            Layout = AdminLayout;
+                        }
 
                         if (route.layout) {
                             Layout = route.layout;

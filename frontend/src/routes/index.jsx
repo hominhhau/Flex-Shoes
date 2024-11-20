@@ -7,6 +7,9 @@ import Listing from '../pages/Listing';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 
+// admin
+import Dashboard from '../pages/admin/Dashboard';
+
 import config from '../config';
 
 const publicRoutes = [
@@ -20,6 +23,7 @@ const publicRoutes = [
 
     { path: config.routes.login, component: Login },
     { path: config.routes.register, component: Register },
+    { path: config.routes.dashboard, component: Dashboard },
 ];
 const privateRoutes = [];
-export { publicRoutes, privateRoutes };
+export { privateRoutes, publicRoutes };
