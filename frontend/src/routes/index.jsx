@@ -13,6 +13,7 @@ import Dashboard from '../pages/admin/Dashboard';
 import config from '../config';
 
 const publicRoutes = [
+    { path: config.routes.main, component: Home },
     { path: config.routes.home, component: Home },
     { path: config.routes.productdetail, component: ProductDetail },
     { path: config.routes.listing, component: Listing },

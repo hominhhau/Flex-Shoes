@@ -10,6 +10,7 @@ function AdminLayout({ children }) {
     return (
         <div className={cx('wrapper')}>
             <Header />
+            <Sidebar />
             <div className={cx('container')}>
                 <div className={cx('content')}>{children}</div> {/* Phần động */}
             </div>

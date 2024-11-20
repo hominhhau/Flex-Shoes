@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { publicRoutes, privateRoutes } from './routes';
 import DefaultLayout from './layouts/DefaultLayout';
 import AdminLayout from './layouts/AdminLayout';
@@ -12,6 +12,9 @@ function App() {
             <ScrollToTop />
             <div className="App">
                 <Routes>
+                    {/* Redirect '/' to Dashboard */}
+                    {role && <Route path="/" element={<Navigate to="/dashboard" replace />} />}
+                    {!role && <Route path="/dashboard" element={<Navigate to="/" replace />} />}
                     {publicRoutes.map((route, index) => {
                         const Page = route.component;
 
