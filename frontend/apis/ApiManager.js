@@ -1,6 +1,10 @@
 import axios from 'axios';
 
 // http://192.168.1.100:6002
+<<<<<<< HEAD
+=======
+// const BASE_URL = 'http://192.168.1.7:8080';
+>>>>>>> feature/headernew
 const BASE_URL = 'http://localhost:8080';
 
 const axiosInstance = axios.create({
@@ -9,7 +13,11 @@ const axiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+<<<<<<< HEAD
     responseType: 'json',
+=======
+    responseType: 'json', // Kiểu dữ liệu trả về mặc định
+>>>>>>> feature/headernew
 });
 
 const request = async (method, url, data = null, params = null) => {
@@ -39,3 +47,8 @@ export const ApiManager = {
     put: async (url, data) => request('put', url, data),
     delete: async (url) => request('delete', url),
 };
+<<<<<<< HEAD
+=======
+
+// test xem có connect được với server không
+>>>>>>> feature/headernew

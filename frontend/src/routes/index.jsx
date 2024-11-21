@@ -6,6 +6,9 @@ import ProductDetail from '../pages/productdetail';
 import Listing from '../pages/Listing';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+
+// admin
+import Dashboard from '../pages/admin/Dashboard';
 import PaymentReturn from '../pages/PaymentReturn';
 import OrderConfirmation from '../pages/OrderConfirmation';
 import PurchasedProductsList from '../pages/PurchasedProductsList';
@@ -24,8 +27,9 @@ const publicRoutes = [
     { path: config.routes.purchasedProductsList, component: PurchasedProductsList },
     { path: config.routes.login, component: Login },
     { path: config.routes.register, component: Register },
+    { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
 ];
 const privateRoutes = [];
-export { publicRoutes, privateRoutes };
+export { privateRoutes, publicRoutes };
