@@ -17,7 +17,8 @@ import config from '../config';
 import CheckoutForm from '../pages/Checkout';
 
 const publicRoutes = [
-    { path: config.routes.home, component: Home },
+    { path: config.routes.main, component: Home },
+    // { path: config.routes.home, component: Home },
     { path: config.routes.productdetail, component: ProductDetail },
     { path: config.routes.listing, component: Listing },
     { path: config.routes.search, component: Search, layout: null },
