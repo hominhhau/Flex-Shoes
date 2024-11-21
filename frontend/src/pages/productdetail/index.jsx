@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './productdetail.module.scss';
 import { Api_Product } from '../../../apis/Api_Product'; // Assuming you have this API manager
-
+import { useNavigate } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 export default function ProductDetail() {
+    const navigate = useNavigate();
     const { id } = useParams(); // Get id from URL
     console.log('Product ID:', id); // Ensure `id` is correctly retrieved
 
@@ -72,7 +73,8 @@ export default function ProductDetail() {
 
     return (
         <div className={cx('wrapper')}>
-            <div className={cx('content-header')}><div className={cx('product-images')}>
+            <div className={cx('content-header')}>
+                <div className={cx('product-images')}>
                     <img
                         src={productDetail.images[selectedImage]}
                         alt={productDetail.productName}
@@ -121,7 +123,8 @@ export default function ProductDetail() {
                                         key={size.sizeId}
                                         className={cx('size-option', { active: selectedSize === size })}
                                         onClick={() => setSelectedSize(size)}
-                                    >{size.sizeName}
+                                    >
+                                        {size.sizeName}
                                     </button>
                                 ))}
                         </div>
@@ -130,7 +133,28 @@ export default function ProductDetail() {
                     <div className={cx('product-actions')}>
                         <button className={cx('add-to-cart')}>ADD TO CART</button>
                         <button className={cx('add-to-wishlist')}>♡</button>
-                        <button className={cx('buy-now')}>BUY IT NOW</button>
+                        <button
+                            className={cx('buy-now')}
+                            onClick={() => {
+                                if (!selectedSize || !selectedColor) {
+                                    alert('Please select both size and color before proceeding.');
+                                    return;
+                                }
+
+                                navigate('/cart', {
+                                    state: {
+                                        productId: productDetail.id, // ID của sản phẩm
+                                        name: productDetail.productName, // Tên sản phẩm
+                                        size: selectedSize.sizeName, // Tên size
+                                        color: selectedColor.colorName, // Tên màu
+                                        price: productDetail.salePrice, // Giá giảm
+                                        image: productDetail.images[0], // Ảnh chính
+                                    },
+                                });
+                            }}
+                        >
+                            BUY IT NOW
+                        </button>
                     </div>
 
                     <div className={cx('product-description')}>

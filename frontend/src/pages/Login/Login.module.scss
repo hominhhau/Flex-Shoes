@@ -1,0 +1,125 @@
+.container-login {
+    margin: 0 auto;
+    width: var(--default-layout-width, 1320px);
+    display: flex;
+    flex-direction: row;
+    background-color: #e7e7e3;
+}
+.form-login {
+    padding: 50px;
+    width: 45%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+.form-login .content-header {
+    margin-bottom: 20px;
+}
+.form-login .form {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+}
+.content-header a {
+    color: black;
+    text-decoration: underline;
+    &:hover {
+        color: red;
+    }
+}
+
+.form input[type='email'],
+.form input[type='password'] {
+    width: calc(100% - 20px);
+    margin-bottom: 20px;
+    background-color: #e7e7e3;
+    height: 50px;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding-left: 20px;
+    outline: none;
+}
+.form input[type='submit'] {
+    width: 100%;
+    margin-bottom: 20px;
+    height: 50px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    background-color: black;
+    color: white;
+    padding-left: 20px;
+    text-align: left;
+    &:hover {
+        background-color: #4a69e2;
+    }
+}
+
+input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #000;
+    cursor: pointer;
+}
+
+input[type='checkbox']:checked {
+    background-color: black;
+    position: relative;
+}
+
+input[type='checkbox']:checked::after {
+    content: '✔';
+    color: white;
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.option {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.option button {
+    margin-right: 30px;
+    height: 50px;
+    width: 100px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+.content-bottom a {
+    color: black;
+    text-decoration: underline;
+    &:hover {
+        color: red;
+    }
+}
+
+.section2 {
+    border-radius: 10px;
+    width: 55%;
+    margin: 0 auto;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+.content-footer button {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    background-color: black;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    &:hover {
+        background-color: #4a69e2;
+    }
+}

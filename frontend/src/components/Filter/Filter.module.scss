@@ -1,0 +1,175 @@
+.filters {
+    width: 280px;
+    padding: 20px;
+    background: #fff;
+    margin-top: 20px;
+    border-radius: 24px;
+
+    h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+}
+
+.filter-section {
+    margin-bottom: 24px;
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        margin-bottom: 16px;
+
+        span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        .chevron {
+            font-size: 12px;
+            color: #666;
+        }
+    }
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.filter-button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative; // Ensure this line is added
+
+    &.active {
+        background: #4A69E2;
+        color: white;
+        border-color: #4A69E2;
+
+        &::after {
+            content: '✔'; // Ensure this block is added
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+        }
+    }
+
+    &:hover:not(.active) {
+        background: #f5f5f5;
+    }
+}
+
+.filter-colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.filter-color-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative; // Đảm bảo dấu tích được định vị chính xác
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    &.active {
+        border: 3px solid #4A69E2;
+        transform: scale(1.1);
+
+        .checkmark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    }
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #e0e0e0;
+        border-radius: 2px;
+        cursor: pointer;
+
+        &:checked {
+            background-color: #4A69E2;
+            border-color: #4A69E2;
+        }
+    }
+}
+
+.price-slider {
+    padding: 0 8px;
+
+    .react-slider {
+        position: relative;
+
+        .track {
+            background-color: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin: 0 10px;
+        }
+
+        .thumb {
+            height: 24px;
+            width: 24px;
+            background-color: #4A69E2;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+
+            &:hover {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+    }
+
+    .price-values {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+        font-size: 14px;
+        color: #333;
+        font-weight: 600;
+    }
+}
