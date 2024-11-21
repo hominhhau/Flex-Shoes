@@ -19,8 +19,6 @@ function ProductItem({ key, src, name, price, productId, ...props }) {
             <div className="pt-4">
                 <h3 className={cx('product-name')}>{name}</h3>
                 <Link to={`/productdetail/${productId}`}>
-                    {' '}
-                    {/* Use Link to navigate */}
                     <Button viewProduct className="w-full">
                         <span className={cx('product-view')}>
                             VIEW PRODUCT - <span className={cx('product-price')}>${price}</span>

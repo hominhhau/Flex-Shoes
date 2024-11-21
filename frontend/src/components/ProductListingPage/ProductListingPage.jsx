@@ -9,14 +9,17 @@ const cx = classNames.bind(styles);
 function ProductListPage({ products }) {
     const [visibleCount, setVisibleCount] = useState(12);
 
+    // Create a Set to track unique productIds
+    const uniqueProducts = Array.from(new Map(products.map(product => [product.productId, product])).values());
+
     const handleShowMore = () => {
-        setVisibleCount((prevCount) => Math.min(prevCount + 4, products.length));
+        setVisibleCount((prevCount) => Math.min(prevCount + 4, uniqueProducts.length));
     };
 
     return (
         <div className={cx('product-list')}>
             <div className={cx('grid-container')}>
-                {products.slice(0, visibleCount).map((product, index) => (
+                {uniqueProducts.slice(0, visibleCount).map((product, index) => (
                     <div key={`${product.productId}-${index}`} className={cx('product-item')}>
                         <ProductItem
                             key={product.productId} // Ensure key is unique for each product
@@ -29,7 +32,7 @@ function ProductListPage({ products }) {
                 ))}
             </div>
 
-            {visibleCount < products.length && (
+            {visibleCount < uniqueProducts.length && (
                 <div className="text-center mt-4">
                     <Button onClick={handleShowMore}>See More...</Button>
                 </div>

@@ -1,7 +1,9 @@
+import ProductDetail from '../pages/productdetail';
+
 const routes = {
     main: '/',
     home: '/home',
-    productdetail: '/productdetail',
+    // productdetail: '/productdetail',
     home: '/',
     // productdetail: '/productdetail',
     productdetail: '/productdetail/:id',
@@ -16,6 +18,7 @@ const routes = {
     purchasedProductsList: '/purchasedProductsList',
     cart: '/cart',
     checkout: '/checkout',
+    ProductDetails: '/ProductDetails',
 };
 
 export default routes;
