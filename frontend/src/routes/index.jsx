@@ -13,7 +13,8 @@ import PaymentReturn from '../pages/PaymentReturn';
 import OrderConfirmation from '../pages/OrderConfirmation';
 import PurchasedProductsList from '../pages/PurchasedProductsList';
 import ProductForm from '../pages/admin/ProductDetails/ProductForm';
-import ProductDetails from '../pages/admin/ProductDetails';
+
+import AddNewProduct from '../pages/admin/AddNewProduct';
 
 import config from '../config';
 import CheckoutForm from '../pages/Checkout';
@@ -34,6 +35,7 @@ const publicRoutes = [
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
     { path: config.routes.ProductDetails, component: ProductForm },
+    { path: config.routes.addNewProduct, component: AddNewProduct },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

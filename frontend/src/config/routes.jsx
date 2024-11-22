@@ -19,6 +19,7 @@ const routes = {
     cart: '/cart',
     checkout: '/checkout',
     ProductDetails: '/ProductDetails',
+    addNewProduct: '/addNewProduct',
 };
 
 export default routes;
