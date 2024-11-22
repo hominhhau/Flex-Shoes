@@ -91,6 +91,7 @@ export default function ProductDetail() {
 
         //tôi muốn in console để kiểm tra
         console.log('Product added to cart:', newProduct);
+        console.log('Trước khi truyền: ', newProduct.size);
 
         // // Lấy giỏ hàng hiện tại từ sessionStorage
         // const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
@@ -121,10 +122,10 @@ export default function ProductDetail() {
     sessionStorage.setItem('cart', JSON.stringify(updatedCart));
         alert('Product added to cart!');
 
-        // Điều hướng đến trang giỏ hàng
-        navigate('/cart', {
-            state: newProduct,
-        });
+        // // Điều hướng đến trang giỏ hàng
+        // navigate('/cart', {
+        //     state: newProduct,
+        // });
     };
 
     return (

@@ -117,10 +117,11 @@ function Cart() {
             : productData
             ? [{
                 id: productData.productId,
+                //category: productData.category,
                 image: productData.image,
                 name: productData.name,
                 color: productData.color,
-                sizeOptions: [productData.size],
+                sizeOptions: productData.size,
                 price: parseFloat(productData.price),
                 quantity: 1,
             }]
@@ -136,7 +137,7 @@ function Cart() {
     
     
     //Check
-    console.log('Data: ', data);
+    console.log('Data hiển thị ghhgccg:  ', data);
     console.log('Product Data:', productData);
     
     const navigate = useNavigate();
@@ -150,11 +151,22 @@ function Cart() {
         navigate('/checkout', { state: { cartData: data, itemCount: totalProducts, totalAmount } });
     };
     
-    const handleRemove = (id) => {
+    // const handleRemove = (id) => {
+    //     console.log('Array trước khi xóa: ', data);
+    //     const updateData = data.filter((product) => product.id !== id);
+    //     setData(updateData);
+    //     console.log('Array sau khi xóa: ', updateData);
+    //     sessionStorage.setItem('cart', JSON.stringify(updateData));
+    // };
+
+    const handleRemove = (id, color, size) => {
         console.log('Array trước khi xóa: ', data);
-        const updateData = data.filter((product) => product.id !== id);
+        const updateData = data.filter((product) => 
+            product.id !== id || product.color !== color || product.size !== size
+        );
         setData(updateData);
         console.log('Array sau khi xóa: ', updateData);
+        sessionStorage.setItem('cart', JSON.stringify(updateData));
     };
 
     // const handleQuantityChange = (id, newQuantity) => {
@@ -167,6 +179,7 @@ function Cart() {
                 ? { ...product, quantity: newQuantity } 
                 : product
         ));
+        sessionStorage.setItem('cart', JSON.stringify(data));
     };
 
     const totalProducts = data.length;
@@ -206,18 +219,18 @@ function Cart() {
                 <div className={cx('leftContainer')}>
                 {data.length > 0 ? (
     data.map((product) => {
-        console.log('Product being passed to ShoppingBag hgcfcgfcf:', product);
+        console.log('Product being passed to ShoppingBag sdsdsadad:', product);
         return (
             <ShoppingBag
                 key={product.id}
                 image={product.image || productImage}
-                name={product.name}
-                category={product.category || 'Category'}
-                color={product.color || 'Color'}
-                sizeOptions={product.sizeOptions || ['Size']}
-                price={product.price || 0}
-                quantity={product.quantity || 1}
-                onRemove={() => handleRemove(product.id)}
+                name={product.name || 'Null'}
+                //category={product.category || 'Null'}
+                color={product.color || 'Null'}
+                sizeOptions={product.size}
+                price={product.price}
+                quantity={product.quantity}
+                onRemove={() => handleRemove(product.id, product.color, product.size)}
                 onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
                 removeIcon={faTrashCan}
                 allowQuantityChange={true}
