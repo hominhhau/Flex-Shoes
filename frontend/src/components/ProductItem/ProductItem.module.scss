@@ -8,6 +8,10 @@
     font-size: 2.4rem;
     font-weight: 700;
     // margin-bottom: 10px;
+    white-space: nowrap; /* Không cho phép xuống dòng */
+    overflow: hidden; /* Ẩn phần tràn ra ngoài box */
+    text-overflow: ellipsis; /* Hiển thị dấu "..." nếu nội dung bị cắt */
+    display: block; /* Đảm bảo ellipsis hoạt động trên thẻ h3 */
 }
 
 .inner {
