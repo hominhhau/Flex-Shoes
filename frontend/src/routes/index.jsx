@@ -20,7 +20,7 @@ import CheckoutForm from '../pages/Checkout';
 
 
 // AllProduct
-import AllProduct from '../pages/admin/AllProduct/index';
+import AllProduct from '../pages/admin/Allproduct/Allproduct';
 
 const publicRoutes = [
     { path: config.routes.main, component: Home },
@@ -40,7 +40,7 @@ const publicRoutes = [
     { path: config.routes.ProductDetails, component: ProductDetails },
 
     // AllProduct
-    {path: config.routes.AllProduct, component: AllProduct},
+    {path: config.routes.AllProduct , component: AllProduct},
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

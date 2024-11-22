@@ -50,10 +50,11 @@
             }
 
             .product-image {
-                width: 100%;
-                height: auto;
+                height: 250px; /* Đặt chiều cao hình ảnh */
+                width: 250px; /* Đặt chiều rộng hình ảnh */
                 border-radius: 8px;
                 margin-bottom: 10px;
+                align-items: center;
             }
 
             h2 {

@@ -1,5 +1,3 @@
-import ProductDetail from '../pages/productdetail';
-
 const routes = {
     main: '/',
     home: '/home',
