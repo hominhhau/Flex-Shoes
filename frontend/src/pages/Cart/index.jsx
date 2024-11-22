@@ -226,7 +226,7 @@ function Cart() {
                 image={product.image || productImage}
                 name={product.name || 'Null'}
                 //category={product.category || 'Null'}
-                color={product.color || 'Null'}
+                color={product.color}
                 sizeOptions={product.size}
                 price={product.price}
                 quantity={product.quantity}
