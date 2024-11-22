@@ -11,7 +11,7 @@ type CartComponentProps = {
   name: string;
   category: string;
   color: string;
-  sizeOptions: string[];
+  sizeOptions: string;
   initialSize?: string;
   initialQuantity?: number;
   price: number;
@@ -28,7 +28,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   category,
   color,
   sizeOptions,
-  initialSize = sizeOptions[0],
+  initialSize ,
   initialQuantity = 1,
   price,
   removeIcon,
@@ -37,14 +37,14 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   allowQuantityChange = true,   
   allowSizeChange = true,       
 }) => {
-  const [size, setSize] = useState<string>(initialSize);
+  // const [size, setSize] = useState<string>(initialSize);
   const [quantity, setQuantity] = useState<number>(initialQuantity);
 
   const totalPrice = (price * quantity).toFixed(2);
 
-  const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSize(event.target.value);
-  };
+  // const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setSize(event.target.value);
+  // };
 
   const increaseQuantity = () => {
     setQuantity((prevQuantity) => {
@@ -80,7 +80,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
                 {/* size */}
                 <div className={cx('sizeContainer')}>
                   <label htmlFor="size" className={cx('sizeLabel')}>Size</label>
-                  <span className={cx('sizeText')}>{size}</span>
+                  <span className={cx('sizeText')}>{sizeOptions}</span>
                 </div>
 
                 {/* Quantity */}
