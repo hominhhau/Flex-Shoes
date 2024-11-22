@@ -1,8 +1,8 @@
-import ProductDetail from '../pages/productdetail';
+// import ProductDetail from '../pages/productdetail';
 
 const routes = {
     main: '/',
-    home: '/home',
+    home: '/',
     // productdetail: '/productdetail',
     home: '/',
     // productdetail: '/productdetail',

@@ -12,6 +12,7 @@ import Dashboard from '../pages/admin/Dashboard';
 import PaymentReturn from '../pages/PaymentReturn';
 import OrderConfirmation from '../pages/OrderConfirmation';
 import PurchasedProductsList from '../pages/PurchasedProductsList';
+import ProductForm from '../pages/admin/ProductDetails/ProductForm';
 import ProductDetails from '../pages/admin/ProductDetails';
 
 import config from '../config';
@@ -32,7 +33,7 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
-    { path: config.routes.ProductDetails, component: ProductDetails },
+    { path: config.routes.ProductDetails, component: ProductForm },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };
