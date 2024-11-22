@@ -111,7 +111,7 @@ export default function ProductDetail() {
           <span className={cx("status")}>{productDetail.status}</span>
           <h1 className={cx("product-name")}>{productDetail.productName}</h1>
           <p className={cx("product-price")}>
-            ${productDetail.salePrice.toFixed(2)}
+            ${productDetail.finalPrice.toFixed(2)}
           </p>
           <div className={cx("color-selection")}>
             <p>COLOR</p>
@@ -165,7 +165,7 @@ export default function ProductDetail() {
                     name: productDetail.productName,
                     size: selectedSize.sizeName,
                     color: selectedColor.colorName,
-                    price: productDetail.salePrice,
+                    price: productDetail.finalPrice,
                     image: productDetail.images[0],
                   },
                 });
