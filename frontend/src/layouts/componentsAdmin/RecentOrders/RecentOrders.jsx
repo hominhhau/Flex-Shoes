@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IoMdMore } from 'react-icons/io';
 import classNames from 'classnames/bind';
-import { Api_Product } from '../../../../apis/Api_invoiceAdmin';
+import { Api_InvoiceAdmin } from '../../../../apis/Api_InvoiceAdmin';
 
 import styles from './RecentOrders.module.scss';
 const cx = classNames.bind(styles);
@@ -13,7 +13,7 @@ function RecentOrders() {
     useEffect(() => {
         const fetchRecentOrders = async () => {
             try {
-                const recentOrders = await Api_Product.getRecentInvoices();
+                const recentOrders = await Api_InvoiceAdmin.getRecentInvoices();
                 setOrders(recentOrders); // Cập nhật dữ liệu vào state
             } catch (error) {
                 console.error('Lỗi khi tải hóa đơn gần đây:', error);

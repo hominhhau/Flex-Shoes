@@ -16,7 +16,7 @@ function OrderSummary({ name, price, rate }) {
                         <IoBagHandleOutline size={40} />
                     </div>
                     <div>
-                        <p className=" font-bold">${price}</p>
+                        <p className=" font-bold">{price}</p>
                     </div>
                 </div>
             </div>
