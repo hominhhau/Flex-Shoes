@@ -1,55 +1,48 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '../Button';
 import ProductItem from '../ProductItem';
+import { Api_Listing } from '../../../apis/Api_Listing';
+import { useLocation } from 'react-router-dom';
 
-const products = [
-    {
-        id: '1',
-        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
-        price: 125,
-        imageSrc: './src/assets/productItems/product1.png',
-    },
-    {
-        id: '2',
-        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
-        price: 125,
-        imageSrc: './src/assets/productItems/product2.png',
-    },
-    {
-        id: '3',
-        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
-        price: 125,
-        imageSrc: './src/assets/productItems/product3.png',
-    },
-    {
-        id: '4',
-        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
-        price: 125,
-        imageSrc: './src/assets/productItems/product4.png',
-    },
-    {
-        id: '5',
-        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
-        price: 125,
-        imageSrc: './src/assets/productItems/product2.png',
-    },
-    {
-        id: '6',
-        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
-        price: 125,
-        imageSrc: './src/assets/productItems/product3.png',
-    },
-    {
-        id: '7',
-        name: 'ADIDAS 4DFWD X PARLEY RUNNING SHOES',
-        price: 125,
-        imageSrc: './src/assets/productItems/product4.png',
-    },
-];
-
-function ProductList() {
+const ProductList = () => {
+    const [products, setProducts] = useState([]);
     const [scrollPosition, setScrollPosition] = useState(0);
     const containerRef = useRef(null);
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const genderFilter = query.get('gender');
+
+    const [selectedFilters, setSelectedFilters] = useState({
+        refineBy: [],
+        size: [],
+        color: [],
+        category: [],
+        gender: genderFilter ? [genderFilter] : [],
+        price: [0, 1000],
+        brand: [],
+    });
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await Api_Listing.filterProductsByCriteria({
+                    colors: selectedFilters.color,
+                    sizes: selectedFilters.size,
+                    brands: selectedFilters.brand,
+                    category: selectedFilters.category,
+                    genders: selectedFilters.gender,
+                    minPrice: selectedFilters.price[0],
+                    maxPrice: selectedFilters.price[1],
+                });
+                const uniqueProducts = Array.from(new Map(response.map(product => [product.productId, product])).values());
+                setProducts(uniqueProducts);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+
+        fetchProducts();
+    }, [selectedFilters]);
 
     const handleScroll = (direction) => {
         const container = containerRef.current;
@@ -96,8 +89,16 @@ function ProductList() {
                 }}
             >
                 {products.map((product) => (
-                    <div key={product.id} className="flex-none w-full sm:w-1/2 lg:w-1/4 p-2 snap-start">
-                        <ProductItem src={product.imageSrc} name={product.name} price={product.price} />
+                    <div key={product.productId} className="flex-none w-full sm:w-1/2 lg:w-1/4 p-2 snap-start">
+                        <ProductItem
+                            src={product.images[0]}
+                            name={product.productName}
+                            price={product.finalPrice}
+                            originalPrice={product.originalPrice}
+                            brand={product.brandName}
+                            size={product.sizeName}
+                            productId={product.productId}
+                        />
                     </div>
                 ))}
             </div>
@@ -112,10 +113,6 @@ function ProductList() {
             `}</style>
         </div>
     );
-}
-
-ProductList.defaultProps = {
-    columns: 4, // Default to 4 columns
 };
 
 export default ProductList;

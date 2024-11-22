@@ -5,6 +5,7 @@ import classNames from 'classnames/bind';
 import { Range } from 'react-range';
 import styles from './Filter.module.scss';
 import { Api_Listing } from '../../../apis/Api_Listing';
+import { useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -43,12 +44,16 @@ const FilterColorBox = ({ color, onClick, isActive = false }) => (
 );
 
 const Filter = ({ onFilterChange }) => {
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const genderFilter = query.get('gender');
+
     const [selectedFilters, setSelectedFilters] = useState({
         refineBy: [],
         size: [],
         color: [],
         category: [],
-        gender: [],
+        gender: genderFilter ? [genderFilter] : [],
         price: [0, 1000],
         brand: [],
     });
