@@ -1,5 +1,3 @@
-// import ProductDetail from '../pages/productdetail';
-
 const routes = {
     main: '/',
     home: '/',
@@ -19,6 +17,9 @@ const routes = {
     cart: '/cart',
     checkout: '/checkout',
     ProductDetails: '/ProductDetails',
+
+    // AllProduct
+    AllProduct: '/AllProduct',
 };
 
 export default routes;

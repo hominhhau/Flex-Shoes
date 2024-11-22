@@ -18,6 +18,9 @@ import ProductDetails from '../pages/admin/ProductDetails';
 import config from '../config';
 import CheckoutForm from '../pages/Checkout';
 
+// AllProduct
+import AllProduct from '../pages/admin/Allproduct/Allproduct';
+
 const publicRoutes = [
     { path: config.routes.main, component: Home },
     // { path: config.routes.home, component: Home },
@@ -33,6 +36,10 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
+    { path: config.routes.ProductDetails, component: ProductDetails },
+
+    // AllProduct
+    { path: config.routes.AllProduct, component: AllProduct },
     { path: config.routes.ProductDetails, component: ProductForm },
 ];
 const privateRoutes = [];
