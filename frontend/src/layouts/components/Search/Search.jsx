@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { faCircleXmark, faMagnifyingGlass, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import HeadlessTippy from '@tippyjs/react/headless';
@@ -25,6 +26,8 @@ function Search() {
     const debounced = useDebounce(searchValue, 500);
 
     const inputRef = useRef();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!debounced.trim()) {
@@ -65,6 +68,12 @@ function Search() {
             setSearchValue(e.target.value);
         }
     };
+
+    const handleProductClick = (productId) => {
+        // console.log('Navigating to product detail for ID:', productId);
+        navigate(`/productdetail/${productId}`);
+    };
+
     return (
         // Using a wrapper <div> or <span> tag around the reference element solves this by creating a new parentNode context.
         <div>
@@ -79,7 +88,9 @@ function Search() {
                             {
                                 // Search result
                                 searchResult.map((result) => (
-                                    <ProductSearch key={result.productId} data={result} />
+                                    <div key={result.productId} onClick={() => handleProductClick(result.productId)}>
+                                        <ProductSearch data={result} />
+                                    </div>
                                 ))
                             }
                         </PopperWrapper>

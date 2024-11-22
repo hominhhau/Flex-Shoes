@@ -80,20 +80,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
                 {/* size */}
                 <div className={cx('sizeContainer')}>
                   <label htmlFor="size" className={cx('sizeLabel')}>Size</label>
-                  {allowSizeChange ? (
-                    <select
-                      id="size"
-                      value={size}
-                      onChange={handleSizeChange}
-                      className={cx('sizeDropdown')}
-                    >
-                      {sizeOptions.map((option) => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <span className={cx('sizeText')}>{size}</span>  //size tinh
-                  )}
+                  <span className={cx('sizeText')}>{size}</span>
                 </div>
 
                 {/* Quantity */}

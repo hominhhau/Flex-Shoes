@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames/bind';
-import { Range } from 'react-range'; // Import Range from react-range
+import { Range } from 'react-range';
 import styles from './Filter.module.scss';
+import { Api_Listing } from '../../../apis/Api_Listing';
+import { useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -27,85 +29,176 @@ const FilterButton = ({ label, active, onClick, isColor }) => (
     <button
         className={cx('filter-button', { active })}
         onClick={onClick}
-        style={isColor ? { backgroundColor: label } : {}}
+        style={isColor ? { backgroundColor: label, border: active ? '3px solid #4A69E2' : '1px solid #e0e0e0' } : {}}
     >
         {!isColor && label}
     </button>
 );
 
-const FilterColorBox = ({ color, onClick }) => (
-    <div className={cx('filter-color-box')} style={{ backgroundColor: color }} onClick={onClick} />
+const FilterColorBox = ({ color, onClick, isActive = false }) => (
+    <div className={cx('filter-color-box', { active: isActive })} style={{ backgroundColor: color }} onClick={onClick}>
+        {isActive && (
+            <span className={cx('checkmark')}>✔</span> // Hiển thị dấu tích khi active
+        )}
+    </div>
 );
 
-const Filter = () => {
+const Filter = ({ onFilterChange }) => {
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const genderFilter = query.get('gender');
+
     const [selectedFilters, setSelectedFilters] = useState({
         refineBy: [],
         size: [],
         color: [],
         category: [],
-        gender: [],
-        price: [0, 1000], // Initial price range
+        gender: genderFilter ? [genderFilter] : [],
+        price: [0, 1000],
+        brand: [],
     });
+    const [filteredProducts, setFilteredProducts] = useState([]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const getData = async () => {
+                try {
+                    console.log('Selected filters:', selectedFilters.refineBy);
+                    const response = await Api_Listing.filterProductsByCriteria({
+                        colors: selectedFilters.color,
+                        sizes: selectedFilters.size,
+                        brands: selectedFilters.brand,
+                        category: selectedFilters.category,
+                        genders: selectedFilters.gender,
+                        minPrice: selectedFilters.price[0],
+                        maxPrice: selectedFilters.price[1],
+                    });
+                    console.log('Filtered products:', response);
+                    // luu vao state
+                    setFilteredProducts(response);
+                    onFilterChange(response);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+            getData(); // Gọi hàm getData sau khi định nghĩa
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [selectedFilters]);
 
     const colorMap = {
-        '#4A69E2': 'Blue',
-        '#FFA52F': 'Orange',
-        '#232321': 'Black',
-        '#234D41': 'Dark Green',
-        '#353336': 'Dark Grey',
-        '#F08155': 'Coral',
-        '#C9CCC6': 'Light Grey',
-        '#677282': 'Steel Blue',
-        '#925513': 'Brown',
-        '#BB8056': 'Tan',
+        '#FF0000': 'Red',
+        '#0000FF': 'Blue',
+        '#008000': 'Green',
+        '#000000': 'Black',
+        '#FFFFFF': 'White',
+        '#808080': 'Gray',
+        '#FFFF00': 'Yellow',
+        '#FFC0CB': 'Pink',
+        '#A52A2A': 'Brown',
+        '#800080': 'Purple',
     };
+
     const sizeMap = [38, 39, 40, 41, 42, 43, 44, 45, 46, 47];
+
+    const brandMap = {
+        Nike: 'BR001',
+        Adidas: 'BR002',
+        Puma: 'BR003',
+        NewBalance: 'BR004',
+        Reebok: 'BR005',
+        Converse: 'BR006',
+        Vans: 'BR007',
+        UnderArmour: 'BR008',
+        ASICS: 'BR009',
+        Fila: 'BR010',
+    };
 
     const handleFilterChange = (section, value) => {
         setSelectedFilters((prev) => {
             let updatedSection;
-            if (section === 'price') {
+            let updatedRefineBy = [...prev.refineBy];
+
+            if (section === 'color') {
+                const colorName = colorMap[value];
+                if (colorName) {
+                    value = colorName;
+                }
+            }
+
+            if (section === 'refineBy') {
+                updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+            } else if (section === 'price') {
                 updatedSection = value;
+                const priceRange = `$${value[0]} - $${value[1]}`;
+                updatedRefineBy = updatedRefineBy.filter((item) => !item.includes('$'));
+                updatedRefineBy.push(priceRange);
             } else {
                 updatedSection = prev[section].includes(value)
                     ? prev[section].filter((item) => item !== value)
-                    : [value]; // Only keep the new value
-            }
+                    : [...prev[section], value];
 
-            const displayValue = section === 'color' ? value : value;
-
-            let updatedRefineBy = prev.refineBy.filter((item) => item !== displayValue); // Remove old value
-            if (section !== 'refineBy' && section !== 'price') {
-                updatedRefineBy.push(displayValue); // Add new value
-            }
-
-            if (section === 'price') {
-                const priceRange = `$${value[0]} - $${value[1]}`; // Display price range
-                updatedRefineBy = updatedRefineBy.filter((item) => !item.includes('$')); // Remove previous price ranges
-                updatedRefineBy.push(priceRange); // Add the new price range
+                if (section === 'size') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(`Size: ${value}`)) {
+                        updatedRefineBy.push(`Size: ${value}`);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== `Size: ${value}`);
+                    }
+                } else if (section === 'brand') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
+                } else if (section === 'gender') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
+                } else if (section === 'category') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
+                } else if (section === 'color') {
+                    if (updatedSection.includes(value) && !updatedRefineBy.includes(value)) {
+                        updatedRefineBy.push(value);
+                    } else {
+                        updatedRefineBy = updatedRefineBy.filter((item) => item !== value);
+                    }
+                }
             }
 
             return {
                 ...prev,
                 [section]: updatedSection,
-                refineBy: section === 'refineBy' ? updatedSection : updatedRefineBy,
+                refineBy: updatedRefineBy,
             };
         });
     };
 
     const handlePriceChange = (values) => {
-        setSelectedFilters((prev) => ({
-            ...prev,
-            price: values,
-            refineBy: prev.refineBy.filter((item) => !item.includes('$')).concat(`$${values[0]} - $${values[1]}`),
-        }));
+        setSelectedFilters((prev) => {
+            const priceRange = `$${values[0]} - $${values[1]}`;
+            const updatedRefineBy = prev.refineBy.filter((item) => !item.includes('$'));
+            updatedRefineBy.push(priceRange);
+
+            return {
+                ...prev,
+                price: values,
+                refineBy: updatedRefineBy,
+            };
+        });
     };
 
     return (
         <div className={cx('filters')}>
             <h2>Filters</h2>
 
-            <FilterSection title="REFINE BY">
+            {/* <FilterSection title="REFINE BY">
                 <div className={cx('filter-buttons')}>
                     {selectedFilters.refineBy.map((item, index) => (
                         <FilterButton
@@ -113,11 +206,11 @@ const Filter = () => {
                             label={item}
                             active={true}
                             onClick={() => handleFilterChange('refineBy', item)}
-                            isColor={Object.keys(colorMap).includes(item)}
+                            // isColor={Object.keys(colorMap).includes(item)}
                         />
                     ))}
                 </div>
-            </FilterSection>
+            </FilterSection> */}
 
             <FilterSection title="SIZE">
                 <div className={cx('filter-buttons')}>
@@ -135,7 +228,25 @@ const Filter = () => {
             <FilterSection title="COLOR">
                 <div className={cx('filter-colors')}>
                     {Object.keys(colorMap).map((color, index) => (
-                        <FilterColorBox key={index} color={color} onClick={() => handleFilterChange('color', color)} />
+                        <FilterColorBox
+                            key={index}
+                            color={color}
+                            isActive={selectedFilters.color.includes(colorMap[color])} // Kiểm tra trạng thái
+                            onClick={() => handleFilterChange('color', color)} // Thay đổi trạng thái khi click
+                        />
+                    ))}
+                </div>
+            </FilterSection>
+
+            <FilterSection title="BRAND">
+                <div className={cx('filter-buttons')}>
+                    {Object.keys(brandMap).map((brand) => (
+                        <FilterButton
+                            key={brand}
+                            label={brand}
+                            active={selectedFilters.brand.includes(brand)}
+                            onClick={() => handleFilterChange('brand', brand)}
+                        />
                     ))}
                 </div>
             </FilterSection>
@@ -154,7 +265,7 @@ const Filter = () => {
             </FilterSection>
 
             <FilterSection title="GENDER">
-                {['Men', 'Women'].map((gender) => (
+                {['Men', 'Women', 'Unisex'].map((gender) => (
                     <label key={gender} className={cx('checkbox-label')}>
                         <input
                             type="checkbox"
@@ -188,21 +299,17 @@ const Filter = () => {
                                 {children}
                             </div>
                         )}
-                        renderThumb={({ props, index }) => (
+                        renderThumb={({ props }) => (
                             <div
                                 {...props}
                                 style={{
                                     ...props.style,
                                     height: '20px',
                                     width: '20px',
-                                    backgroundColor: '#f00',
                                     borderRadius: '50%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'red',
                                 }}
-                            ></div>
+                            />
                         )}
                     />
                     <div className={cx('price-values')}>

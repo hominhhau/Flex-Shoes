@@ -1,17 +1,24 @@
+// import ProductDetail from '../pages/productdetail';
+
 const routes = {
     main: '/',
-    home: '/home',
-    productdetail: '/productdetail',
+    home: '/',
+    // productdetail: '/productdetail',
+    home: '/',
+    // productdetail: '/productdetail',
+    productdetail: '/productdetail/:id',
     listing: '/listing',
     search: '/search',
-    cart: '/cart',
-    checkout: '/checkout',
     product: '/product',
     login: '/login',
     register: '/register',
 
     // admin
     dashboard: '/dashboard',
+    purchasedProductsList: '/purchasedProductsList',
+    cart: '/cart',
+    checkout: '/checkout',
+    ProductDetails: '/ProductDetails',
 };
 
 export default routes;

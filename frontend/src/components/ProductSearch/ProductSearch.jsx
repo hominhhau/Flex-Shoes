@@ -13,7 +13,7 @@ function ProductSearch({ data }) {
         <Link className={cx('wrapper')}>
             <Image
                 className={cx('avatar')}
-                src={data.images}
+                src={data.images[0]}
                 alt="logo"
                 fallBack="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png"
             />

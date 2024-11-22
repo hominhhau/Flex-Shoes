@@ -54,13 +54,13 @@ function Header() {
                         </button>
                     </Link>
 
-                    <Link to={config.routes.home}>
+                    <Link to={{ pathname: config.routes.listing, search: '?gender=Men' }}>
                         <button className={cx('nav-item')}>
                             Men
                             <span className="ml-1">▼</span>
                         </button>
                     </Link>
-                    <Link to={config.routes.home}>
+                    <Link to={{ pathname: config.routes.listing, search: '?gender=Women' }}>
                         <button className={cx('nav-item')}>
                             Women
                             <span className="ml-1">▼</span>

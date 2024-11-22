@@ -63,15 +63,26 @@
 }
 .leftContainer {
   // flex: 2;
-  // display: flex;
+   display: flex;
   // flex-direction: column;
   // gap: 24px; //kcach giua cac sp
-  height: 600px;//chieu cao co dinh
+  width: 850px;
+  height: 400px;//chieu cao co dinh
   overflow-y: auto;//cuon theo chieu doc
   padding: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
+  // background-color: pink;
+  //flex-grow: 1;//container giu nguyen vi tri
+  flex-direction: column;
+  justify-content: center;
+}
+
+.empty-message {
+  font-size: 16px;
+  color: #888; // Màu xám nhạt cho thông báo
+  text-align: center;
 }
 
 .rightContainer {
@@ -79,4 +90,5 @@
   background: #fafafa;
   padding: 24px;
   border-radius: 8px;
+  min-width: 300px;
 }

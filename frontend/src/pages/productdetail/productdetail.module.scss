@@ -1,8 +1,16 @@
 .wrapper {
     display: flex;
-    max-width: 1200px;
+    flex-direction: column; /* Đặt phần tử con theo chiều dọc */
+    width: var(--default-layout-width, 1320px);
     margin: 0 auto;
     padding: 2rem;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    /* Bạn có thể thêm padding, margin ở đây nếu muốn */
 }
 
 .product-images {
@@ -27,14 +35,12 @@
         border-color: #000;
     }
 }
+
 .thumbnail-container {
     display: flex;
-    overflow-x: auto; // Cho phép cuộn ngang
-    gap: 8px; // Khoảng cách giữa các hình ảnh thumbnail
+    overflow-x: auto;
+    gap: 8px;
 }
-// .thumbnail-container::-webkit-scrollbar {
-//     display: none; /* Ẩn trên Chrome, Safari và Opera */
-// }
 
 .product-info {
     flex: 1;
@@ -78,6 +84,7 @@
     margin-bottom: 1rem;
     height: 76px;
     width: 430px;
+
     p {
         margin-bottom: 0.5rem;
         font-weight: bold;
@@ -96,9 +103,11 @@
     border-radius: 50%;
     border: 5px solid transparent;
     cursor: pointer;
+    transition: all 0.3s;
 
     &.active {
-        border-color: #ffffff;
+        border-color: #ffffff; /* Viền trắng khi chọn */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Thêm bóng để làm nổi bật màu */
     }
 }
 
@@ -133,6 +142,7 @@
     border-radius: 5px;
     font-weight: bold;
 }
+
 .add-to-wishlist {
     height: 48px;
     width: 50px;
@@ -164,6 +174,7 @@
     font-size: 16px;
     width: 430px;
     margin-top: 20px;
+
     h2 {
         margin-bottom: 0.5rem;
         font-weight: bold;
@@ -179,3 +190,27 @@
         margin-top: 0.5rem;
     }
 }
+
+.content-product {
+    width: 100%; /* Đảm bảo phần này chiếm toàn bộ chiều rộng */
+    margin-top: 2rem; /* Thêm khoảng cách phía trên */
+    padding: 2rem;
+    background-color: #f9f9f9; /* Có thể thêm màu nền nếu muốn */
+}
+
+.product-header-title {
+    font-size: 74px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 32px;
+    line-height: 95%;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+}
+
+// ok
