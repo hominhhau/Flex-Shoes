@@ -7,6 +7,10 @@ const cx = classNames.bind(styles);
 export function ProductDetails() {
     return (
         <section className={cx('inputSection')}>
+            <nav className={cx('breadcrumb')}>
+                <span>Home</span> &gt; <span>All Products</span> &gt; <span>Product Details</span>
+            </nav>
+
             <div className={cx('fieldGroup')}>
                 <label htmlFor="productName" className={cx('fieldLabel')}>
                     Product Name
