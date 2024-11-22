@@ -75,12 +75,12 @@ const AllProduct = () => {
                         <div className={cx('stats')}>
                             <div>
                                 <p>Sales</p>
-                                {/* <p>${product.salePrice.toFixed(2)}</p> Show sale price */}
+                             
                                 <p>{product.quantity}</p> {/* Show quantity */}
                             </div>
                             <div>
                                 <p>Remaining Products</p>
-                                <p>{product.quantity}</p> {/* Show quantity */}
+                                <p>{product.quantity}</p> 
                             </div>
                         </div>
                     </div>
