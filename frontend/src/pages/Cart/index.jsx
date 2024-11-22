@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -75,28 +75,69 @@ function Cart() {
 
     // ])
 
+
+    
+
     //truyen du lieu tu card sang checkout
     const location = useLocation();
-    const productData = location.state|| {};
+    const productData = location.state;// Không có || {} để tránh giá trị rỗng không xác định.
 
-    const [data, setData] = useState(
-        [
-            productData
-                ? {
-                      id: Date.now(),
-                      image: productData.image,
-                      name: productData.name,
-                      color: productData.color,
-                      sizeOptions: [productData.size],
-                      price: parseFloat(productData.price),
-                      quantity: 1,
-                  }
-                : null,
-        ].filter(Boolean),
-    );
+    // const [data, setData] = useState(
+    //     [
+    //         productData
+    //             ? {
+    //                   id: productData.productId,
+    //                   image: productData.image,
+    //                   name: productData.name,
+    //                   color: productData.color,
+    //                   sizeOptions: [productData.size],
+    //                   price: parseFloat(productData.price),
+    //                   quantity: 1,
+    //               }
+    //             : null,
+    //     ].filter(Boolean),
+    // );
+
+    // const [data, setData] = useState(() => {
+    //     const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    //     return savedCart;
+    // });
+    
+    // useEffect(() => {
+    //     // Lấy giỏ hàng từ sessionStorage mỗi khi trang được load lại
+    //     const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    //     setData(savedCart);
+    // }, []);
+
+    const [data, setData] = useState(() => {
+        // Kiểm tra xem có dữ liệu giỏ hàng từ sessionStorage không
+        const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        return savedCart.length > 0
+            ? savedCart
+            : productData
+            ? [{
+                id: productData.productId,
+                image: productData.image,
+                name: productData.name,
+                color: productData.color,
+                sizeOptions: [productData.size],
+                price: parseFloat(productData.price),
+                quantity: 1,
+            }]
+            : [];
+    });
+
+    // Lưu giỏ hàng vào sessionStorage mỗi khi dữ liệu thay đổi
+    useEffect(() => {
+        sessionStorage.setItem('cart', JSON.stringify(data));
+    }, [data]);
+
+
+    
+    
     //Check
     console.log('Data: ', data);
-    console.log('Location State:', location.state);
+    console.log('Product Data:', productData);
     
     const navigate = useNavigate();
 
@@ -163,27 +204,30 @@ function Cart() {
 
             <div className={cx('container')}>
                 <div className={cx('leftContainer')}>
-                    {data.length > 0 ? (
-                        data.map((product) => (
-                            <ShoppingBag
-                                key={product.id}
-                                image={product.image}
-                                name={product.name}
-                                category={product.category}
-                                color={product.color}
-                                sizeOptions={product.sizeOptions}
-                                price={product.price}
-                                quantity={product.quantity}
-                                onRemove={() => handleRemove(product.id)}
-                                onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
-                                removeIcon={faTrashCan}
-                                allowQuantityChange={true}
-                                allowSizeChange={true}
-                            />
-                        ))
-                    ) : (
-                        <p className={cx('empty-message')}>No products</p>
-                    )}
+                {data.length > 0 ? (
+    data.map((product) => {
+        console.log('Product being passed to ShoppingBag hgcfcgfcf:', product);
+        return (
+            <ShoppingBag
+                key={product.id}
+                image={product.image || productImage}
+                name={product.name}
+                category={product.category || 'Category'}
+                color={product.color || 'Color'}
+                sizeOptions={product.sizeOptions || ['Size']}
+                price={product.price || 0}
+                quantity={product.quantity || 1}
+                onRemove={() => handleRemove(product.id)}
+                onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
+                removeIcon={faTrashCan}
+                allowQuantityChange={true}
+                allowSizeChange={true}
+            />
+        );
+    })
+) : (
+    <p className={cx('empty-message')}>No products</p>
+)}
                 </div>
                 <div className={cx('rightContainer')}>
                     <OrderSummary

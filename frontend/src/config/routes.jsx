@@ -3,7 +3,7 @@ const routes = {
     home: '/home',
     productdetail: '/productdetail',
     home: '/',
-    // productdetail: '/productdetail',
+    //productdetail: '/productdetail',
     productdetail: '/productdetail/:id',
     listing: '/listing',
     search: '/search',

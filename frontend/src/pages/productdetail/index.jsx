@@ -71,6 +71,62 @@ export default function ProductDetail() {
         return <div>No product details available.</div>;
     }
 
+    //
+
+    const handleAddToCart = () => {
+        if (!selectedSize || !selectedColor) {
+            alert('Please select both size and color before adding to the cart.');
+            return;
+        }
+
+        const newProduct = {
+            productId: productDetail.productId,
+            name: productDetail.productName,
+            size: selectedSize.sizeName,
+            color: selectedColor.colorName,
+            price: productDetail.salePrice,
+            image: productDetail.images[0],
+            quantity: 1,
+        };
+
+        //tôi muốn in console để kiểm tra
+        console.log('Product added to cart:', newProduct);
+
+        // // Lấy giỏ hàng hiện tại từ sessionStorage
+        // const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+
+        // // Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
+        // const existingProductIndex = currentCart.findIndex(
+        //     (item) =>
+        //         item.productId === newProduct.productId &&
+        //         item.size === newProduct.size &&
+        //         item.color === newProduct.color,
+        // );
+
+        // if (existingProductIndex !== -1) {
+        //     // Nếu sản phẩm đã tồn tại, tăng số lượng
+        //     currentCart[existingProductIndex].quantity += 1;
+        // } else {
+        //     // Nếu sản phẩm chưa tồn tại, thêm vào giỏ
+        //     currentCart.push(newProduct);
+        // }
+
+        // sessionStorage.setItem('cart', JSON.stringify(currentCart));
+
+           // Lấy giỏ hàng hiện tại từ sessionStorage
+    const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const updatedCart = [...existingCart, newProduct];
+
+    // Cập nhật giỏ hàng trong sessionStorage
+    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+        alert('Product added to cart!');
+
+        // Điều hướng đến trang giỏ hàng
+        navigate('/cart', {
+            state: newProduct,
+        });
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('content-header')}>
@@ -131,7 +187,9 @@ export default function ProductDetail() {
                     </div>
 
                     <div className={cx('product-actions')}>
-                        <button className={cx('add-to-cart')}>ADD TO CART</button>
+                        <button className={cx('add-to-cart')} onClick={handleAddToCart}>
+                            ADD TO CART
+                        </button>
                         <button className={cx('add-to-wishlist')}>♡</button>
                         <button
                             className={cx('buy-now')}
@@ -143,7 +201,7 @@ export default function ProductDetail() {
 
                                 navigate('/cart', {
                                     state: {
-                                        productId: productDetail.id, // ID của sản phẩm
+                                        productId: productDetail.productId, // ID của sản phẩm
                                         name: productDetail.productName, // Tên sản phẩm
                                         size: selectedSize.sizeName, // Tên size
                                         color: selectedColor.colorName, // Tên màu
