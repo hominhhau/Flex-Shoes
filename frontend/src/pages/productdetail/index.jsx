@@ -41,11 +41,13 @@ export default function ProductDetail() {
         const response = await Api_Product.getProductDetail(id);
         if (response) {
           setProductDetail(response);
+
+          // Set default color and size
           if (response.colors && response.colors.length > 0) {
-            setSelectedColor(response.colors[0]);
+            setSelectedColor(response.colors[0].colorId);
           }
           if (response.sizes && response.sizes.length > 0) {
-            setSelectedSize(response.sizes[0]);
+            setSelectedSize(response.sizes[0].sizeId);
           }
         } else {
           setError("Product data not found.");
@@ -71,6 +73,15 @@ export default function ProductDetail() {
   if (!productDetail) {
     return <div>No product details available.</div>;
   }
+
+  // Remove duplicate colors and sizes
+  const uniqueColors = Array.from(
+    new Set(productDetail.colors.map(color => color.colorId))
+  ).map(id => productDetail.colors.find(color => color.colorId === id));
+
+  const uniqueSizes = Array.from(
+    new Set(productDetail.sizes.map(size => size.sizeId))
+  ).map(id => productDetail.sizes.find(size => size.sizeId === id));
 
   return (
     <div className={cx("wrapper")}>
@@ -105,37 +116,35 @@ export default function ProductDetail() {
           <div className={cx("color-selection")}>
             <p>COLOR</p>
             <div className={cx("color-options")}>
-              {productDetail.colors &&
-                productDetail.colors.map((color, index) => (
-                  <button
-                    key={index}
-                    className={cx("color-option", {
-                      active: selectedColor === color.colorId,
-                    })}
-                    style={{
-                      backgroundColor: colors[color.colorName] || "#000",
-                    }}
-                    onClick={() => setSelectedColor(color.colorId)}
-                  ></button>
-                ))}
+              {uniqueColors.map((color, index) => (
+                <button
+                  key={index}
+                  className={cx("color-option", {
+                    active: selectedColor === color.colorId,
+                  })}
+                  style={{
+                    backgroundColor: colors[color.colorName] || "#000",
+                  }}
+                  onClick={() => setSelectedColor(color.colorId)}
+                ></button>
+              ))}
             </div>
           </div>
 
           <div className={cx("size-selection")}>
             <p>SIZE</p>
             <div className={cx("size-options")}>
-              {productDetail.sizes &&
-                productDetail.sizes.map((size) => (
-                  <button
-                    key={size.sizeId}
-                    className={cx("size-option", {
-                      active: selectedSize === size,
-                    })}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size.sizeName}
-                  </button>
-                ))}
+              {uniqueSizes.map((size) => (
+                <button
+                  key={size.sizeId}
+                  className={cx("size-option", {
+                    active: selectedSize === size.sizeId,
+                  })}
+                  onClick={() => setSelectedSize(size.sizeId)}
+                >
+                  {size.sizeName}
+                </button>
+              ))}
             </div>
           </div>
 
