@@ -1,3 +1,5 @@
+import OrderDetails from "../pages/admin/OrderDetails/OrderDetails";
+
 const routes = {
     main: '/',
     home: '/',
@@ -17,6 +19,7 @@ const routes = {
     cart: '/cart',
     checkout: '/checkout',
     ProductDetails: '/ProductDetails',
+    OrderDetails: '/OrderDetails',
 
     // AllProduct
     AllProduct: '/AllProduct',

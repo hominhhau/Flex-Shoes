@@ -14,12 +14,14 @@ import OrderConfirmation from '../pages/OrderConfirmation';
 import PurchasedProductsList from '../pages/PurchasedProductsList';
 import ProductForm from '../pages/admin/ProductDetails/ProductForm';
 import ProductDetails from '../pages/admin/ProductDetails';
+import OrderDetails from '../pages/admin/OrderDetails';
 
 import config from '../config';
 import CheckoutForm from '../pages/Checkout';
 
 // AllProduct
 import AllProduct from '../pages/admin/Allproduct/Allproduct';
+
 
 const publicRoutes = [
     { path: config.routes.main, component: Home },
@@ -41,6 +43,8 @@ const publicRoutes = [
     // AllProduct
     { path: config.routes.AllProduct, component: AllProduct },
     { path: config.routes.ProductDetails, component: ProductForm },
+    //admin
+    {path: config.routes.OrderDetails, component: OrderDetails},
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

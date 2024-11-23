@@ -6,7 +6,7 @@ import AdminLayout from './layouts/AdminLayout';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
-    const role = false;
+    const role = true;
     return (
         <Router>
             <ScrollToTop />
