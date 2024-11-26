@@ -1,0 +1,70 @@
+.table-container {
+    max-width: 100%;
+    overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+}
+
+.table_fixed {
+    width: 100%;
+    table-layout: auto; /* Để tự động tính toán chiều rộng các cột */
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: 12px;
+        text-align: left;
+        white-space: nowrap; /* Ngừng dòng tự động trong các ô */
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+    td {
+        word-wrap: break-word;
+    }
+
+    /* Chia đều chiều rộng các cột theo phần trăm */
+    th {
+        &:first-child {
+            width: 10%; /* Cột ID đơn hàng */
+        }
+
+        &:nth-child(2) {
+            width: 20%; /* Cột Ngày */
+        }
+
+        &:nth-child(3) {
+            width: 30%; /* Cột Tên khách hàng */
+        }
+
+        &:nth-child(4) {
+            width: 20%; /* Cột Trạng thái */
+        }
+
+        &:last-child {
+            width: 20%; /* Cột Số tiền */
+        }
+    }
+
+    td {
+        &:first-child {
+            width: 10%; /* Cột ID đơn hàng */
+        }
+
+        &:nth-child(2) {
+            width: 20%; /* Cột Ngày */
+        }
+
+        &:nth-child(3) {
+            width: 30%; /* Cột Tên khách hàng */
+        }
+
+        &:nth-child(4) {
+            width: 20%; /* Cột Trạng thái */
+        }
+
+        &:last-child {
+            width: 20%; /* Cột Số tiền */
+        }
+    }
+}

@@ -122,7 +122,7 @@ const OrderDetails = () => {
 
             </div>
             <div className={cx('contentProduct')}>
-                <b>Product</b>
+                <h2>Product</h2>
                 <div className={cx('totalProduct')}>
 
                     <table>

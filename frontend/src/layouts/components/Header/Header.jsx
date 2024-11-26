@@ -26,7 +26,7 @@ import Search from '../Search';
 
 const cx = classNames.bind(styles);
 
-function Header() {
+function Header({user}) {
     const currentUser = true;
 
     const userMenu = [
