@@ -23,12 +23,12 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
 import Menu from '../Popper/Menu';
 import Search from '../Search';
+import { useAuth } from '../../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
 function Header({user}) {
-    const currentUser = true;
-
+    const { isLoggedIn, setIsLoggedIn } = useAuth();
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
@@ -38,11 +38,21 @@ function Header({user}) {
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
-            to: '/logout',
-            separate: true,
+            to: '/',
+            separate: true
         },
     ];
-
+    const handleLogout = () => {
+      
+            const token =  localStorage.getItem('token');
+            console.log('token : ', token);
+            
+       
+       
+            setIsLoggedIn(false);
+        
+        
+    }
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -73,7 +83,7 @@ function Header({user}) {
                     </div>
                 </Link>
                 <div className={cx('actions')}>
-                    {currentUser ? (
+                    {isLoggedIn ? (
                         <>
                             <Search />
                             <Link to={config.routes.cart}>

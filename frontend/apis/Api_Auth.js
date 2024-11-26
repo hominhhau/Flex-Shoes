@@ -14,6 +14,9 @@ export const Api_Auth = {
     registerAccount: async (loginDetails) => {
         return ApiManager.post('api/account/register', loginDetails);
     },
+    logout: async (token) => {
+        return ApiManager.post('api/auth/logout', token);
+    },
 
    
 };

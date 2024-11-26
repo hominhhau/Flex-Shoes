@@ -1,15 +1,16 @@
 import classNames from 'classnames/bind';
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { WiDirectionRight } from "react-icons/wi";
 import { FcGoogle } from "react-icons/fc";
-import { FaApple, FaFacebook  } from "react-icons/fa";
+import { FaApple, FaFacebook } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import styles from './Login.module.scss';
 import config from '../../config';
 
-import {Api_Auth} from '../../../apis/Api_Auth';
+import { Api_Auth } from '../../../apis/Api_Auth';
+import { useAuth } from '../../hooks/useAuth';
 
 
 const cx = classNames.bind(styles);
@@ -17,23 +18,29 @@ const cx = classNames.bind(styles);
 
 function Login() {
     // State để lưu email và password
+    const { role, setRole, isLoggedIn, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const [error, setError] = useState(null);
 
+    const onChangeUserName = (e) => {
+        setUsername(e.target.value);
+    };
     const handleLogin = async () => {
         try {
-            const response = await Api_Auth.login(email, password); // Gọi API login
-
+            const response = await Api_Auth.login(username, password); // Gọi API login
             // Lưu token vào localStorage
-            localStorage.setItem('token',  response.result.token);
-            
+            localStorage.setItem('token', response.result.token);
+            setIsLoggedIn(true); // Cập nhật trạng thái đăng nhập
+            console.log('isLoggedIn : ', isLoggedIn);
             // Chuyển hướng sang trang chủ
+            console.log('response : ', response.result.nameAccess);
+            if (response.result.nameAccess == 'admin') {
+                setRole(true);
+            }
             navigate(config.routes.home);
-
-
         } catch (err) {
             console.error('Login failed:', err.message);
             setError('Invalid username or password');
@@ -61,8 +68,8 @@ function Login() {
                                 name="username"
                                 id="username"
                                 placeholder="Username"
-                                value={email} // Giá trị được lấy từ state
-                                onChange={(e) => setEmail(e.target.value)} // Cập nhật state khi người dùng nhập
+                                value={username} // Giá trị được lấy từ state
+                                onChange={(e) => setUsername(e.target.value)} // Cập nhật state khi người dùng nhập
                             />
                         </div>
                         <div className={cx('form-group')}>
@@ -84,8 +91,8 @@ function Login() {
                         </div>
                         <div className={cx('form-group')}>
                             <button type="submit" className={cx('custom-button')}>
-                            <span class="text">LOGIN</span>
-                            <span class="icon"><WiDirectionRight size={50} /></span>
+                                <span class="text">LOGIN</span>
+                                <span class="icon"><WiDirectionRight size={50} /></span>
                             </button>
                         </div>
                     </form>
@@ -97,9 +104,9 @@ function Login() {
                 </div>
                 <div className={cx('content-bottom')}>
                     <p>
-                        Don't have an account? 
-                        <Link to={config.routes.register}>    
-                                    <span>Sign up</span>
+                        Don't have an account?
+                        <Link to={config.routes.register}>
+                            <span>Sign up</span>
                         </Link>
                     </p>
                 </div>
