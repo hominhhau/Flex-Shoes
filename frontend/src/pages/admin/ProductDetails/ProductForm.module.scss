@@ -5,10 +5,9 @@
     display: flex;
     flex-direction: column;
     justify-content: start;
-    padding-top: 100px;
-    padding-left: 270px;
-    height: 100%;
-    // background-color: red;
+    padding-top: 120px;
+    padding-left: 300px;
+
 }
 
 .formContent {
@@ -53,6 +52,14 @@
 }
 
 .textInput {
+    border-radius: 8px;
+    border: 1px solid #232321;
+    min-height: 48px;
+    width: 100%;
+    padding: 15px 16px;
+}
+
+.selectInput {
     border-radius: 8px;
     border: 1px solid #232321;
     min-height: 48px;
@@ -108,7 +115,6 @@
     min-width: 240px;
     flex-direction: column;
     width: 457px;
-    padding-top: 100px;
 }
 
 .mainImage {
@@ -203,9 +209,9 @@
     gap: 16px;
     width: 100%;
     max-width: 457px;
-    // justify-content: center;
-    // align-items: center;
-    align-self: center;
+    // center
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .button {
@@ -262,10 +268,4 @@
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
-}
-
-.breadcrumb {
-    font-size: 14px;
-    color: #70706e; // Adjust color as needed
-    margin-bottom: 16px; // Space below the breadcrumb
 }

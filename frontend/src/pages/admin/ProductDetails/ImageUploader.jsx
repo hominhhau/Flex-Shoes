@@ -1,17 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import classNames from 'classnames/bind';
 import styles from './ProductForm.module.scss';
 
 const cx = classNames.bind(styles);
 
-const thumbnails = [
-    { id: 1, name: 'Product thumbnail.png', progress: 50 },
-    { id: 2, name: 'Product thumbnail.png', progress: 50 },
-    { id: 3, name: 'Product thumbnail.png', progress: 50 },
-    { id: 4, name: 'Product thumbnail.png', progress: 50 },
-];
+// Thumbnail component wrapped in React.memo
+const Thumbnail = React.memo(({ url, index, onDelete }) => {
+    return (
+        <div className={cx('thumbnailItem')}>
+            <img src={url} alt={`Thumbnail ${index + 1}`} className={cx('thumbnail')} />
+            <div className={cx('thumbnailInfo')}>
+                <p className={cx('thumbnailName')}>Uploaded Image {index + 1}</p>
+            </div>
+            <img
+                // Replace with your delete icon URL
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/888abed304c7b62175d81ba429c625f88c079f22266ff2d7777f87ff6130d33b?placeholderIfAbsent=true&apiKey=e18ee7c2ed144d6ea9fc5b78b4956a1b"
+                alt="Delete thumbnail"
+                className={cx('deleteIcon')}
+                role="button"
+                tabIndex={0}
+                onClick={onDelete}
+            />
+        </div>
+    );
+});
 
 export function ImageUploader() {
+    const [imageUrl, setImageUrl] = useState('');
+    const [uploadedImages, setUploadedImages] = useState(() => {
+        const savedImages = localStorage.getItem('uploadedImages');
+        return savedImages ? JSON.parse(savedImages) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+    }, [uploadedImages]);
+
+    const handleAddImage = useCallback(() => {
+        if (imageUrl) {
+            console.log('Adding image:', imageUrl);
+            setUploadedImages((prevImages) => [...prevImages, imageUrl]);
+            setImageUrl('');
+        }
+    }, [imageUrl]);
+
+    const handleDeleteImage = useCallback((index) => {
+        console.log('Deleting image at index:', index);
+        setUploadedImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    }, []);
+
     return (
         <section className={cx('imageSection')}>
             <div className={cx('mainImage')}>
@@ -25,37 +62,24 @@ export function ImageUploader() {
             <div className={cx('fieldGroup')}>
                 <h2 className={cx('fieldLabel')}>Product Gallery</h2>
                 <div className={cx('dropZone')}>
-                    <img
-                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/2a6ec2b79dfcb23a459b9b9d6541aaef60a163fd6b36dd4cdd9f2a55631bb934?placeholderIfAbsent=true&apiKey=e18ee7c2ed144d6ea9fc5b78b4956a1b"
-                        alt=""
-                        className={cx('uploadIcon')}
+                    <input
+                        type="text"
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        placeholder="        Enter image URL"
                     />
-                    <p className={cx('uploadText')}>Drop your imager here, or browse</p>
-                    <p className={cx('uploadHint')}>Jpeg, png are allowed</p>
+                    <br />
+                    <button onClick={handleAddImage} style={{ color: 'green', paddingTop: '20px' }}>
+                        Add Image
+                    </button>
                 </div>
             </div>
 
             <div className={cx('thumbnailList')}>
-                {thumbnails.map((thumbnail) => (
-                    <div key={thumbnail.id} className={cx('thumbnailItem')}>
-                        <img
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/dc8767cdbeabc46517901576f88041cf42721a02ca501d48eed025f74784f4e5?placeholderIfAbsent=true&apiKey=e18ee7c2ed144d6ea9fc5b78b4956a1b"
-                            alt={`Thumbnail ${thumbnail.id}`}
-                            className={cx('thumbnail')}
-                        />
-                        <div className={cx('thumbnailInfo')}>
-                            <p className={cx('thumbnailName')}>{thumbnail.name}</p>
-                            <div className={cx('progressBar')} />
-                        </div>
-                        <img
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/97113f1067f43df227ecafbbd19e17a2a63efcb68bd5da1296df0667d44741f2?placeholderIfAbsent=true&apiKey=e18ee7c2ed144d6ea9fc5b78b4956a1b"
-                            alt="Delete thumbnail"
-                            className={cx('deleteIcon')}
-                            role="button"
-                            tabIndex={0}
-                        />
-                    </div>
-                ))}
+                {uploadedImages.length > 0 &&
+                    uploadedImages.map((url, index) => (
+                        <Thumbnail key={index} url={url} index={index} onDelete={() => handleDeleteImage(index)} />
+                    ))}
             </div>
         </section>
     );

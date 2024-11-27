@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import styles from './ProductForm.module.scss';
+import RecentPurchases from './RecentPurchases';
 
 const cx = classNames.bind(styles);
 
@@ -11,15 +12,17 @@ export function ProductDetails() {
                 <span>Home</span> &gt; <span>All Products</span> &gt; <span>Product Details</span>
             </nav>
 
+            {/* Product Name */}
             <div className={cx('fieldGroup')}>
                 <label htmlFor="productName" className={cx('fieldLabel')}>
                     Product Name
                 </label>
                 <div className={cx('inputWrapper')}>
-                    <input id="productName" type="text" className={cx('textInput')} defaultValue="Adidas Ultra boost" />
+                    <input id="productName" type="text" className={cx('textInput')} defaultValue="Adidas Ultra Boost" />
                 </div>
             </div>
 
+            {/* Description */}
             <div className={cx('fieldGroup')}>
                 <label htmlFor="description" className={cx('fieldLabel')}>
                     Description
@@ -33,53 +36,74 @@ export function ProductDetails() {
                 </div>
             </div>
 
-            <div className={cx('fieldGroup')}>
-                <label htmlFor="category" className={cx('fieldLabel')}>
-                    Category
-                </label>
-                <div className={cx('inputWrapper')}>
-                    <input id="category" type="text" className={cx('textInput')} defaultValue="Sneaker" />
-                </div>
-            </div>
-
-            <div className={cx('fieldGroup')}>
-                <label htmlFor="brand" className={cx('fieldLabel')}>
-                    Brand Name
-                </label>
-                <div className={cx('inputWrapper')}>
-                    <input id="brand" type="text" className={cx('textInput')} defaultValue="Addidas" />
-                </div>
-            </div>
-
+            {/* Category */}
             <div className={cx('fieldGroup')}>
                 <div className={cx('twoColumnGroup')}>
                     <div className={cx('columnField')}>
-                        <label htmlFor="sku" className={cx('fieldLabel')}>
-                            SKU
+                        <label htmlFor="category" className={cx('fieldLabel')}>
+                            Category
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <input id="sku" type="text" className={cx('textInput')} defaultValue="#32A53" />
+                            <select id="category" className={cx('selectInput')} defaultValue="Sneaker">
+                                <option value="Sneaker">Sneaker</option>
+                                <option value="Running">Running</option>
+                                <option value="Casual">Casual</option>
+                            </select>
                         </div>
                     </div>
+
                     <div className={cx('columnField')}>
-                        <label htmlFor="stock" className={cx('fieldLabel')}>
-                            Stock Quantity
+                        <label htmlFor="brand" className={cx('fieldLabel')}>
+                            Brand Name
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <input id="stock" type="number" className={cx('textInput')} defaultValue="21" />
+                            <select id="brand" className={cx('selectInput')} defaultValue="Adidas">
+                                <option value="Adidas">Adidas</option>
+                                <option value="Nike">Nike</option>
+                                <option value="Puma">Puma</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             </div>
 
+            {/* Gender */}
             <div className={cx('fieldGroup')}>
                 <div className={cx('twoColumnGroup')}>
                     <div className={cx('columnField')}>
-                        <label htmlFor="regularPrice" className={cx('fieldLabel')}>
-                            Regular Price
+                        <label htmlFor="gender" className={cx('fieldLabel')}>
+                            Gender
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <input id="regularPrice" type="text" className={cx('textInput')} defaultValue="$110.40" />
+                            <select id="gender" className={cx('selectInput')} defaultValue="Men">
+                                <option value="Men">Men</option>
+                                <option value="Women">Women</option>
+                                <option value="Unisex">Unisex</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* VAT */}
+                    <div className={cx('columnField')}>
+                        <label htmlFor="vat" className={cx('fieldLabel')}>
+                            VAT (%)
+                        </label>
+                        <div className={cx('inputWrapper')}>
+                            <input id="vat" type="number" className={cx('textInput')} defaultValue="10" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Pricing */}
+            <div className={cx('fieldGroup')}>
+                <div className={cx('twoColumnGroup')}>
+                    <div className={cx('columnField')}>
+                        <label htmlFor="originalPrice" className={cx('fieldLabel')}>
+                            Original Price
+                        </label>
+                        <div className={cx('inputWrapper')}>
+                            <input id="originalPrice" type="number" className={cx('textInput')} defaultValue="100.00" />
                         </div>
                     </div>
                     <div className={cx('columnField')}>
@@ -87,25 +111,39 @@ export function ProductDetails() {
                             Sale Price
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <input id="salePrice" type="text" className={cx('textInput')} defaultValue="$450" />
+                            <input id="salePrice" type="number" className={cx('textInput')} defaultValue="90.00" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className={cx('fieldGroup')}>
-                <label htmlFor="tags" className={cx('fieldLabel')}>
-                    Tag
+            {/* VAT */}
+            {/* <div className={cx('fieldGroup')}>
+                <label htmlFor="vat" className={cx('fieldLabel')}>
+                    VAT (%)
                 </label>
                 <div className={cx('inputWrapper')}>
-                    <div className={cx('tagInput')}>
-                        <div className={cx('tagList')}>
-                            <span className={cx('tag')}>Adidas</span>
-                            <span className={cx('tag')}>Shoes</span>
-                            <span className={cx('tag')}>Sneakers</span>
-                            <span className={cx('tag')}>Ultraboost</span>
-                        </div>
-                    </div>
+                    <input id="vat" type="number" className={cx('textInput')} defaultValue="10" />
+                </div>
+            </div> */}
+
+            {/* Status */}
+            <div className={cx('fieldGroup')}>
+                <label htmlFor="status" className={cx('fieldLabel')}>
+                    Status
+                </label>
+                <div className={cx('inputWrapper')}>
+                    <select id="status" className={cx('selectInput')} defaultValue="Active">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* Recent Purchases */}
+            <div className={cx('fieldGroup')}>
+                <div className={cx('inputWrapper')}>
+                    <RecentPurchases />
                 </div>
             </div>
         </section>
