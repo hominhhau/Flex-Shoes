@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Api_InvoiceAdmin } from '../../../../apis/Api_InvoiceAdmin';
 import classNames from 'classnames/bind';
 import styles from './RecentOrders.module.scss';
+import { Link, useNavigate } from 'react-router-dom';
+import config from '../../../config';
 
 const cx = classNames.bind(styles);
 
 function RecentOrders() {
+    const navigator = useNavigate();
+
     const [orders, setOrders] = useState([]); // State lưu danh sách hóa đơn
     const [loading, setLoading] = useState(true); // State quản lý trạng thái tải
     const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
@@ -96,7 +100,13 @@ function RecentOrders() {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200 ">
                         {currentOrders.map((order, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
+                            <tr
+                                key={index}
+                                className="hover:bg-gray-50"
+                                onClick={() => {
+                                    navigator(config.routes.OrderDetails, { state: { invoiceId: order.invoiceId } });
+                                }}
+                            >
                                 <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">
                                     {order.invoiceId}
                                 </td>
