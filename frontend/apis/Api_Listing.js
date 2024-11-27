@@ -1,15 +1,10 @@
-import { ApiManager } from "./ApiManager";
-
-
+import { ApiManager } from './ApiManager';
 
 // register
 
 export const Api_Listing = {
-
     filterProductsByCriteria: async (filterData) => {
-
         const params = new URLSearchParams({
-
             colors: filterData.colors.join(','),
 
             sizes: filterData.sizes.join(','),
@@ -23,13 +18,8 @@ export const Api_Listing = {
             minPrice: filterData.minPrice,
 
             maxPrice: filterData.maxPrice,
-
         }).toString();
 
-
-
-        return ApiManager.get(`/api/listing-products/filter?${params}`);
-
+        return ApiManager.get(`/api/public/listing-products/filter?${params}`);
     },
-
-}
+};

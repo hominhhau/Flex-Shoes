@@ -1,8 +1,8 @@
 import classNames from 'classnames/bind';
 import { useState, useEffect } from 'react';
-import { WiDirectionRight } from "react-icons/wi";
-import { FcGoogle } from "react-icons/fc";
-import { FaApple, FaFacebook } from "react-icons/fa";
+import { WiDirectionRight } from 'react-icons/wi';
+import { FcGoogle } from 'react-icons/fc';
+import { FaApple, FaFacebook } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,9 +12,7 @@ import config from '../../config';
 import { Api_Auth } from '../../../apis/Api_Auth';
 import { useAuth } from '../../hooks/useAuth';
 
-
 const cx = classNames.bind(styles);
-
 
 function Login() {
     // State để lưu email và password
@@ -91,16 +89,24 @@ function Login() {
                         </div>
                         <div className={cx('form-group')}>
                             <button type="submit" className={cx('custom-button')}>
-                                <span class="text">LOGIN</span>
-                                <span class="icon"><WiDirectionRight size={50} /></span>
+                                <span className="text">LOGIN</span>
+                                <span className="icon">
+                                    <WiDirectionRight size={50} />
+                                </span>
                             </button>
                         </div>
                     </form>
                 </div>
                 <div className={cx('option')}>
-                    <button className={cx('custom-icon')}><FcGoogle size={25} /></button>
-                    <button className={cx('custom-icon')}><FaApple size={25} /></button>
-                    <button className={cx('custom-icon')}><FaFacebook size={25} color='blue' /></button>
+                    <button className={cx('custom-icon')}>
+                        <FcGoogle size={25} />
+                    </button>
+                    <button className={cx('custom-icon')}>
+                        <FaApple size={25} />
+                    </button>
+                    <button className={cx('custom-icon')}>
+                        <FaFacebook size={25} color="blue" />
+                    </button>
                 </div>
                 <div className={cx('content-bottom')}>
                     <p>
@@ -132,10 +138,12 @@ function Login() {
                         adiClub.
                     </p>
                 </div>
-                <div >
+                <div>
                     <button className={cx('custom-button')}>
-                        <span class="text">JOIN TO CLUB</span>
-                        <span class="icon"><WiDirectionRight size={50} /></span>
+                        <span className="text">JOIN TO CLUB</span>
+                        <span className="icon">
+                            <WiDirectionRight size={50} />
+                        </span>
                     </button>
                 </div>
             </div>
