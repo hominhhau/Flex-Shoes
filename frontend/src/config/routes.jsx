@@ -2,7 +2,7 @@ import OrderDetails from "../pages/admin/OrderDetails/OrderDetails";
 
 const routes = {
     main: '/',
-    home: '/',
+    C: '/',
     // productdetail: '/productdetail',
     home: '/',
     //productdetail: '/productdetail',
