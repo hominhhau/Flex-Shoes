@@ -1,13 +1,13 @@
 .formContainer {
-    align-items: end;
+    // align-items: end;
     border-radius: 16px;
     background: #fff;
     display: flex;
     flex-direction: column;
     justify-content: start;
-    padding-top: 96px;
-    // padding-left: 260px;
-    // background-color: red;
+    padding-top: 120px;
+    padding-left: 300px;
+
 }
 
 .formContent {
@@ -201,6 +201,9 @@
     gap: 16px;
     width: 100%;
     max-width: 457px;
+    // center
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .button {
