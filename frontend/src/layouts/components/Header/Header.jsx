@@ -27,8 +27,9 @@ import { useAuth } from '../../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
-function Header({user}) {
+function Header({ user }) {
     const { isLoggedIn, setIsLoggedIn } = useAuth();
+    // setIsLoggedIn(true);
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
@@ -38,21 +39,14 @@ function Header({user}) {
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
-            to: '/',
-            separate: true
+            // to: '/',
+            separate: true,
+            onClick: () => handleLogout(),
         },
     ];
     const handleLogout = () => {
-      
-            const token =  localStorage.getItem('token');
-            console.log('token : ', token);
-            
-       
-       
-            setIsLoggedIn(false);
-        
-        
-    }
+        console.log('token : ', localStorage.getItem('token'));
+    };
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>

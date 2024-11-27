@@ -8,7 +8,9 @@ import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 
-const defaultFunction = () => {};
+const defaultFunction = () => {
+    console.log('default function');
+};
 
 function Menu({ children, items = [], hideOnClick = false, onChange = defaultFunction }) {
     const [history, setHistory] = useState([{ data: items }]);
@@ -22,7 +24,9 @@ function Menu({ children, items = [], hideOnClick = false, onChange = defaultFun
                     key={index}
                     data={item}
                     onClick={() => {
-                        if (isParent) {
+                        if (item.onClick) {
+                            item.onClick(); // Gọi hàm onClick từ item nếu tồn tại
+                        } else if (isParent) {
                             setHistory((prev) => [...prev, item.children]);
                         } else {
                             onChange(item);
