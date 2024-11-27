@@ -16,7 +16,7 @@ const deliveryOptionsData = [
 ];
 
 const DeliveryOptionsButton = ({ onDeliveryChange }) => {
-  const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].title);
+  const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].price);
 
   const handleSelectOption = (option) => {
     console.log('Selected option:', option);

@@ -4,9 +4,12 @@ import { publicRoutes, privateRoutes } from './routes';
 import DefaultLayout from './layouts/DefaultLayout';
 import AdminLayout from './layouts/AdminLayout';
 import ScrollToTop from './components/ScrollToTop';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
-    const role = true;
+    const  { role } = useAuth();
+
+
     return (
         <Router>
             <ScrollToTop />

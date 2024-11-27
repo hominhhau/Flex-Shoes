@@ -30,6 +30,12 @@ function Sildebar() {
                         <button className={cx('menu-item')}>Order List</button>
                     </div>
                 </Link>
+                <Link to="/OrderDetails">
+                    <div className={cx('menu-wrapper')}>
+                        <FontAwesomeIcon icon={faClipboardList} />
+                        <button className={cx('menu-item')}>Order Details</button>
+                    </div>
+                </Link>
             </div>
         </div>
     );

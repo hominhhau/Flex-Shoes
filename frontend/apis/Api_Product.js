@@ -9,4 +9,5 @@ export const Api_Product = {
     getProductDetail: async (id) => ApiManager.get(`api/product-detail/${id}`),
 
     searchProduct: async (name) => ApiManager.get(`api/product/search?name=${encodeURIComponent(name)}`),
+    getAllProducts: async () => ApiManager.get('api/products/admin'),
 };

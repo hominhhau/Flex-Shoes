@@ -1,12 +1,58 @@
 import classNames from 'classnames/bind';
+import { useState, useEffect } from 'react';
+import { WiDirectionRight } from "react-icons/wi";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple, FaFacebook } from "react-icons/fa";
 import { Link } from 'react-router-dom';
-import config from '../../config';
+import { useNavigate } from 'react-router-dom';
 
 import styles from './Login.module.scss';
+import config from '../../config';
+
+import { Api_Auth } from '../../../apis/Api_Auth';
+import { useAuth } from '../../hooks/useAuth';
+
 
 const cx = classNames.bind(styles);
 
+
 function Login() {
+    // State để lưu email và password
+    const { role, setRole, isLoggedIn, setIsLoggedIn } = useAuth();
+    const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const [error, setError] = useState(null);
+
+    const onChangeUserName = (e) => {
+        setUsername(e.target.value);
+    };
+    const handleLogin = async () => {
+        try {
+            const response = await Api_Auth.login(username, password); // Gọi API login
+            // Lưu token vào localStorage
+            localStorage.setItem('token', response.result.token);
+            setIsLoggedIn(true); // Cập nhật trạng thái đăng nhập
+            console.log('isLoggedIn : ', isLoggedIn);
+            // Chuyển hướng sang trang chủ
+            console.log('response : ', response.result.nameAccess);
+            if (response.result.nameAccess == 'admin') {
+                setRole(true);
+            }
+            navigate(config.routes.home);
+        } catch (err) {
+            console.error('Login failed:', err.message);
+            setError('Invalid username or password');
+        }
+    };
+
+    // Hàm xử lý khi form được submit
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleLogin();
+    };
+
     return (
         <div className={cx('container-login')}>
             <div className={cx('form-login')}>
@@ -15,33 +61,53 @@ function Login() {
                     <a href="#">Forgot your password?</a>
                 </div>
                 <div className={cx('form')}>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div className={cx('form-group')}>
-                            <input type="email" name="email" id="email" placeholder="Email" />
+                            <input
+                                type="text"
+                                name="username"
+                                id="username"
+                                placeholder="Username"
+                                value={username} // Giá trị được lấy từ state
+                                onChange={(e) => setUsername(e.target.value)} // Cập nhật state khi người dùng nhập
+                            />
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="password" name="password" id="password" placeholder="password" />
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="Password"
+                                value={password} // Giá trị được lấy từ state
+                                onChange={(e) => setPassword(e.target.value)} // Cập nhật state khi người dùng nhập
+                            />
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="checkbox" name="remember" id="remember" />
+                            <input type="checkbox" name="remember" id="remember" /> &nbsp;&nbsp;
                             <label htmlFor="remember">
                                 Join now to start earning points, reach new levels, and unlock more rewards and benefits
                                 from adiClub
                             </label>
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="submit" value="EMAIL LOGIN" />
+                            <button type="submit" className={cx('custom-button')}>
+                                <span class="text">LOGIN</span>
+                                <span class="icon"><WiDirectionRight size={50} /></span>
+                            </button>
                         </div>
                     </form>
                 </div>
                 <div className={cx('option')}>
-                    <button>Google</button>
-                    <button>Apple</button>
-                    <button>Facebook</button>
+                    <button className={cx('custom-icon')}><FcGoogle size={25} /></button>
+                    <button className={cx('custom-icon')}><FaApple size={25} /></button>
+                    <button className={cx('custom-icon')}><FaFacebook size={25} color='blue' /></button>
                 </div>
                 <div className={cx('content-bottom')}>
                     <p>
-                        Don't have an account? <a href="#">Sign up</a>
+                        Don't have an account?
+                        <Link to={config.routes.register}>
+                            <span>Sign up</span>
+                        </Link>
                     </p>
                 </div>
             </div>
@@ -66,8 +132,11 @@ function Login() {
                         adiClub.
                     </p>
                 </div>
-                <div className={cx('content-footer')}>
-                    <button>JOIN THE CLUB</button>
+                <div >
+                    <button className={cx('custom-button')}>
+                        <span class="text">JOIN TO CLUB</span>
+                        <span class="icon"><WiDirectionRight size={50} /></span>
+                    </button>
                 </div>
             </div>
         </div>

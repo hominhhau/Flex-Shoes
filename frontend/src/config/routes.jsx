@@ -1,11 +1,11 @@
-// import ProductDetail from '../pages/productdetail';
+import OrderDetails from "../pages/admin/OrderDetails/OrderDetails";
 
 const routes = {
     main: '/',
     home: '/',
     // productdetail: '/productdetail',
     home: '/',
-    // productdetail: '/productdetail',
+    //productdetail: '/productdetail',
     productdetail: '/productdetail/:id',
     listing: '/listing',
     search: '/search',
@@ -19,6 +19,10 @@ const routes = {
     cart: '/cart',
     checkout: '/checkout',
     ProductDetails: '/ProductDetails',
+    OrderDetails: '/OrderDetails',
+
+    // AllProduct
+    AllProduct: '/AllProduct',
 };
 
 export default routes;

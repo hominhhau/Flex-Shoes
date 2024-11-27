@@ -21,13 +21,15 @@ function Menu({ children, items = [], hideOnClick = false, onChange = defaultFun
                 <MenuItem
                     key={index}
                     data={item}
-                    onClick={() => {
-                        if (isParent) {
-                            setHistory((prev) => [...prev, item.children]);
-                        } else {
-                            onChange(item);
-                        }
-                    }}
+                    onClick={
+                        data.onClick || (() => {
+                            if (isParent) {
+                                setHistory((prev) => [...prev, item.children]);
+                            } else {
+                                onChange(item);
+                            }
+                        })
+                    }
                 />
             );
         });
