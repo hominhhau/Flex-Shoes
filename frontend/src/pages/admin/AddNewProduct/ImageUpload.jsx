@@ -1,80 +1,83 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import classNames from 'classnames/bind';
 import styles from './AddNewProduct.module.scss';
+
 const cx = classNames.bind(styles);
 
-export function ImageUpload({
-    mainImage,
-    galleryImages = [],
-    onMainImageChange,
-    onGalleryImageAdd,
-    onGalleryImageRemove,
-}) {
-    const handleFileUpload = (e) => {
-        const files = e.target.files;
-        if (files.length > 0 && onGalleryImageAdd) {
-            const uploadedImages = Array.from(files).map((file) => ({
-                id: file.name,
-                name: file.name,
-                url: URL.createObjectURL(file),
-            }));
-            onGalleryImageAdd(uploadedImages);
+// Thumbnail component wrapped in React.memo
+const Thumbnail = React.memo(({ url, index, onDelete }) => {
+    return (
+        <div className={cx('thumbnailItem')}>
+            <img src={url} alt={`Thumbnail ${index + 1}`} className={cx('thumbnail')} />
+            <div className={cx('thumbnailInfo')}>
+                <p className={cx('thumbnailName')}>Uploaded Image {index + 1}</p>
+            </div>
+            <img
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/888abed304c7b62175d81ba429c625f88c079f22266ff2d7777f87ff6130d33b?placeholderIfAbsent=true&apiKey=e18ee7c2ed144d6ea9fc5b78b4956a1b"
+                alt="Delete thumbnail"
+                className={cx('deleteIcon')}
+                role="button"
+                tabIndex={0}
+                onClick={onDelete}
+            />
+        </div>
+    );
+});
+
+export function ImageUploader({ onImagesChange }) {
+    const [imageUrl, setImageUrl] = useState('');
+    const [uploadedImages, setUploadedImages] = useState([]);
+
+    const handleAddImage = useCallback(() => {
+        if (imageUrl) {
+            setUploadedImages((prevImages) => {
+                const newImages = [...prevImages, imageUrl];
+                onImagesChange(newImages); // Notify parent of new images
+                return newImages;
+            });
+            setImageUrl(''); // Clear input after adding
         }
-    };
+    }, [imageUrl, onImagesChange]);
+
+    const handleDeleteImage = useCallback((index) => {
+        setUploadedImages((prevImages) => {
+            const newImages = prevImages.filter((_, i) => i !== index);
+            onImagesChange(newImages); // Notify parent of updated images
+            return newImages;
+        });
+    }, [onImagesChange]);
 
     return (
         <section className={cx('imageSection')}>
-            {/* Main Image */}
-            {/* <div className={cx('mainImage')}>
-                <img src={mainImage} alt="Product main" className={cx('mainImagePreview')} />
-                {onMainImageChange && (
-                    <input
-                        type="file"
-                        accept="image/jpeg, image/png"
-                        className={cx('fileInput')}
-                        onChange={(e) => onMainImageChange(e.target.files[0])}
-                    />
-                )}
-            </div> */}
+            <div className={cx('mainImage')}>
+                <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/10d1c979e7fdd0cae80d0d7b7efaddba58cd007da57440ba0f4a1cd6ac321c1d?placeholderIfAbsent=true&apiKey=e18ee7c2ed144d6ea9fc5b78b4956a1b"
+                    alt="Product main image"
+                    className={cx('productImage')}
+                />
+            </div>
 
-            {/* Gallery Section */}
-            <div>
+            <div className={cx('fieldGroup')}>
                 <h2 className={cx('fieldLabel')}>Product Gallery</h2>
                 <div className={cx('dropZone')}>
                     <input
-                        type="file"
-                        accept="image/jpeg, image/png"
-                        multiple
-                        className={cx('fileInput')}
-                        onChange={handleFileUpload}
+                        type="text"
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        placeholder="        Enter image URL"
                     />
-                    <img
-                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/2a6ec2b79dfcb23a459b9b9d6541aaef60a163fd6b36dd4cdd9f2a55631bb934?placeholderIfAbsent=true&apiKey=e18ee7c2ed144d6ea9fc5b78b4956a1b"
-                        alt="Upload icon"
-                        width="64"
-                        height="64"
-                    />
-                    <div>
-                        <p>Drop your image here, or browse</p>
-                        <p>Jpeg, png are allowed</p>
-                    </div>
+                    <br />
+                    <button type="button" onClick={handleAddImage} style={{ color: 'green', paddingTop: '20px' }}>
+                        Add Image
+                    </button>
                 </div>
+            </div>
 
-                {/* Gallery Images */}
-                <div className={cx('gallery')}>
-                    {galleryImages.map((image) => (
-                        <div key={image.id} className={cx('galleryImage')}>
-                            <img src={image.url} alt={image.name} className={cx('galleryImagePreview')} />
-                            <button
-                                type="button"
-                                className={cx('deleteButton')}
-                                onClick={() => onGalleryImageRemove && onGalleryImageRemove(image.id)}
-                            >
-                                Remove
-                            </button>
-                        </div>
+            <div className={cx('thumbnailList')}>
+                {uploadedImages.length > 0 &&
+                    uploadedImages.map((url, index) => (
+                        <Thumbnail key={index} url={url} index={index} onDelete={() => handleDeleteImage(index)} />
                     ))}
-                </div>
             </div>
         </section>
     );

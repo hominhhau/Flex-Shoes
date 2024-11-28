@@ -31,7 +31,7 @@ const PurchaseTableHeader = () => (
         <div className={cx('headerCell')}>Color</div>
         <div className={cx('headerCell')}>Size</div>
         <div className={cx('headerCell')}>Quantity</div>
-        <div className={cx('headerCell')}>Actions</div>
+        {/* <div className={cx('headerCell')}>Actions</div> */}
     </header>
 );
 
@@ -44,18 +44,18 @@ const PurchaseTableRow = ({ purchase, onQuantityChange, onUpdate, onDelete }) =>
                 type="number"
                 className={cx('quantityInput')}
                 value={purchase.quantity}
-                min="1"
+                min="0"
                 onChange={(e) => onQuantityChange(purchase.id, parseInt(e.target.value, 10))}
             />
         </div>
-        <div className={cx('cell', 'actionCell')}>
+        {/* <div className={cx('cell', 'actionCell')}>
             <button className={cx('actionButton', 'updateButton')} onClick={() => onUpdate(purchase.id)}>
                 Update
             </button>
             <button className={cx('actionButton', 'deleteButton')} onClick={() => onDelete(purchase.id)}>
                 Delete
             </button>
-        </div>
+        </div> */}
     </div>
 );
 
