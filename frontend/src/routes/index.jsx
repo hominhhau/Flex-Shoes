@@ -13,6 +13,8 @@ import PaymentReturn from '../pages/PaymentReturn';
 import OrderConfirmation from '../pages/OrderConfirmation';
 import PurchasedProductsList from '../pages/PurchasedProductsList';
 import ProductForm from '../pages/admin/ProductDetails/ProductForm';
+import ProductDetails from '../pages/admin/ProductDetails';
+import OrderDetails from '../pages/admin/OrderDetails';
 
 import AddNewProduct from '../pages/admin/AddNewProduct';
 
@@ -42,6 +44,8 @@ const publicRoutes = [
     // AllProduct
     { path: config.routes.AllProduct, component: AllProduct },
     { path: config.routes.ProductDetails, component: ProductForm },
+    //admin
+    { path: config.routes.OrderDetails, component: OrderDetails },
     { path: config.routes.addNewProduct, component: AddNewProduct },
 ];
 const privateRoutes = [];

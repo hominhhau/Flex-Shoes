@@ -1,11 +1,16 @@
-.container-login {
+.container-register {
     margin: 0 auto;
     width: var(--default-layout-width, 1320px);
     display: flex;
     flex-direction: row;
     background-color: #e7e7e3;
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
 }
-.form-login {
+.form-register {
     padding: 50px;
     width: 45%;
     margin: 0 auto;
@@ -13,7 +18,7 @@
     flex-direction: column;
 }
 .form-login .content-header {
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 .form-login .form {
     display: flex;
@@ -25,6 +30,12 @@
     text-decoration: underline;
     &:hover {
         color: red;
+    }
+}
+.content-body{
+    ul{
+        list-style-type: disc;
+        margin-left: 40px;
     }
 }
 
@@ -40,7 +51,7 @@
     padding-left: 20px;
     outline: none;
 }
-.form input[type='submit'] {
+.form button[type='submit'] {
     width: 100%;
     margin-bottom: 20px;
     height: 50px;
@@ -130,4 +141,34 @@ input[type='checkbox']:checked::after {
 }
 .form-group {
     margin-bottom: 20px;
+    p{
+        margin-right: 10px;
+        font-size:12px;
+    }
 }
+.custom-button {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border: none; 
+    border-radius: 5px; 
+    padding: 0 10px; 
+    cursor: pointer; 
+    font-size: 16px; 
+    &:hover {
+        background-color: #4a69e2;
+    }
+    .text {
+        margin-left: auto;
+    }
+}
+.custom-icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+        background-color: white; 
+    }
+}
+
+

@@ -12,7 +12,7 @@ function Sildebar() {
     return (
         <div className={cx('sidebar')}>
             <div className={cx('menu')}>
-                <Link to="/admin">
+                <Link to="/dashboard">
                     <div className={cx('menu-wrapper')}>
                         <FontAwesomeIcon icon={faTable} />
                         <button className={cx('menu-item')}>Dashboard</button>
@@ -28,6 +28,12 @@ function Sildebar() {
                     <div className={cx('menu-wrapper')}>
                         <FontAwesomeIcon icon={faClipboardList} />
                         <button className={cx('menu-item')}>Order List</button>
+                    </div>
+                </Link>
+                <Link to="/OrderDetails">
+                    <div className={cx('menu-wrapper')}>
+                        <FontAwesomeIcon icon={faClipboardList} />
+                        <button className={cx('menu-item')}>Order Details</button>
                     </div>
                 </Link>
             </div>
