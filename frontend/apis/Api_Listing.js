@@ -28,7 +28,7 @@ export const Api_Listing = {
 
 
 
-        return ApiManager.get(`/api/listing-products/filter?${params}`);
+        return ApiManager.get(`/api/public/listing-products/filter?${params}`);
 
     },
 
