@@ -4,6 +4,7 @@ import classNames from 'classnames/bind';
 import styles from './productdetail.module.scss';
 import { Api_Product } from '../../../apis/Api_Product';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
@@ -24,6 +25,7 @@ const colors = {
 export default function ProductDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { isLoggedIn, role } = useAuth();
 
     const [productDetail, setProductDetail] = useState(null);
     const [selectedImage, setSelectedImage] = useState(0);
@@ -76,6 +78,11 @@ export default function ProductDetail() {
     //
 
     const handleAddToCart = () => {
+        if (!isLoggedIn) {
+            alert('Please login to add product to cart');
+            navigate('/login');
+        }
+
         if (!selectedSize || !selectedColor) {
             alert('Please select both size and color before adding to the cart.');
             return;
