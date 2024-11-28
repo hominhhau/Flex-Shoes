@@ -116,6 +116,7 @@ export default function ProductDetail() {
 
            // Lấy giỏ hàng hiện tại từ sessionStorage
     const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    //Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
     const updatedCart = [...existingCart, newProduct];
 
     // Cập nhật giỏ hàng trong sessionStorage

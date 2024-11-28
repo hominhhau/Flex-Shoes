@@ -53,6 +53,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   const increaseQuantity = () => {
     setQuantity((prevQuantity) => {
       const newQuantity = prevQuantity + 1;
+      console.log(`Số lượng mới: ${newQuantity}`);
       onQuantityChange(newQuantity);
       return newQuantity;
     });
@@ -61,6 +62,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   const decreaseQuantity = () => {
     setQuantity((prevQuantity) => {
       const newQuantity = Math.max(prevQuantity - 1, 1);
+      console.log(`Số lượng mới: ${newQuantity}`);
       onQuantityChange(newQuantity);
       return newQuantity;
     });

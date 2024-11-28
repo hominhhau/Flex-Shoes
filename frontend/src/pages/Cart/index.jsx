@@ -142,9 +142,24 @@ function Cart() {
   };
 
   // Tính tổng số lượng và tổng tiền dựa trên danh sách sản phẩm được chọn
-  const totalProducts = checkedItems.reduce((acc, product) => acc + product.quantity, 0);
-  const totalAmount = checkedItems.reduce((acc, product) => acc + product.price * product.quantity, 0);
+//   const totalProducts = checkedItems.reduce((acc, product) => acc + product.quantity, 0);
+//   const totalAmount = checkedItems.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
+  const [totalProducts, setTotalProducts] = useState(0);
+const [totalAmount, setTotalAmount] = useState(0);
+
+  // Sử dụng useEffect để tính lại tổng tiền mỗi khi data hoặc checkedItems thay đổi
+useEffect(() => {
+    const checkedProducts = data.filter((product) => 
+        checkedItems.some(item => item.id === product.id)
+    );
+    const newTotalAmount = checkedProducts.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+    const newTotalProducts = checkedProducts.reduce((acc, product) => acc + product.quantity, 0);
+
+    setTotalAmount(newTotalAmount);
+    setTotalProducts(newTotalProducts);
+
+}, [data, checkedItems]); // Cập nhật khi data hoặc checkedItems thay đổi
 
     return (
         <div className={cx('wrapper')}>
