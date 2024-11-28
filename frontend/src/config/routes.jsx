@@ -20,7 +20,7 @@ const routes = {
     register: '/register',
     // admin
     dashboard: '/dashboard',
-    purchasedProductsList: '/purchasedProductsList',
+    purchasedProductsList: '/purchasedProductsList/:id',
     cart: '/cart',
     checkout: '/checkout',
     managerCustomer: '/managerCustomer',
