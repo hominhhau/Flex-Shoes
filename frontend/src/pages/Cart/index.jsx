@@ -11,72 +11,6 @@ import styles from './Cart.module.scss';
 const cx = classNames.bind(styles);
 
 function Cart() {
-    // const [data, setData] = useState([
-    //   {
-    //     id: 1,
-    //     image: productImage,
-    //     name: 'Product 01',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 100.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 2,
-    //     image: productImage,
-    //     name: 'Product 02',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 300.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 3,
-    //     image: productImage,
-    //     name: 'Product 03',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 400.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 4,
-    //     image: productImage,
-    //     name: 'Product 04',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 500.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 5,
-    //     image: productImage,
-    //     name: 'Product 05',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 600.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 6,
-    //     image: productImage,
-    //     name: 'Product 06',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 700.00,
-    //     quantity: 1,
-    //   },
-
-    // ])
-
-
-    
 
     //truyen du lieu tu card sang checkout
     const location = useLocation();
@@ -182,17 +116,35 @@ function Cart() {
         sessionStorage.setItem('cart', JSON.stringify(data));
     };
 
-    const totalProducts = data.length;
-    console.log('Tổng số sản phẩm: ' + totalProducts);
+    // const totalProducts = data.length;
+    // console.log('Tổng số sản phẩm: ' + totalProducts);
 
-    const totalAmount = data.reduce((acc, product) => acc + product.price * product.quantity, 0);
+    // const totalAmount = data.reduce((acc, product) => acc + product.price * product.quantity, 0);
     const deliveryFee = 0;
+
+
 
     const [isCheckoutVisible, setCheckoutVisible] = useState(true);
 
     const toggleCheckoutVisibility = () => {
         setCheckoutVisible((prev) => !prev);
     };
+
+    const [checkedItems, setCheckedItems] = useState([]); // Lưu danh sách sản phẩm được chọn
+
+  // Hàm xử lý khi checkbox thay đổi
+  const handleCheckboxChange = (isChecked, product) => {
+    if (isChecked) {
+      setCheckedItems((prev) => [...prev, product]);
+    } else {
+      setCheckedItems((prev) => prev.filter((item) => item.id !== product.id || item.sizeOptions !== product.sizeOptions));
+    }
+  };
+
+  // Tính tổng số lượng và tổng tiền dựa trên danh sách sản phẩm được chọn
+  const totalProducts = checkedItems.reduce((acc, product) => acc + product.quantity, 0);
+  const totalAmount = checkedItems.reduce((acc, product) => acc + product.price * product.quantity, 0);
+
 
     return (
         <div className={cx('wrapper')}>
@@ -235,6 +187,7 @@ function Cart() {
                 removeIcon={faTrashCan}
                 allowQuantityChange={true}
                 allowSizeChange={true}
+                onCheckboxChange={(isChecked) => handleCheckboxChange(isChecked, product)}
             />
         );
     })
