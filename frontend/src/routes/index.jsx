@@ -20,6 +20,7 @@ import AddNewProduct from '../pages/admin/AddNewProduct';
 
 import config from '../config';
 import CheckoutForm from '../pages/Checkout';
+import ManagerCustomer from '../pages/admin/ManagerCustomer';
 
 // AllProduct
 import AllProduct from '../pages/admin/Allproduct/Allproduct';
@@ -39,6 +40,8 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
+    { path: config.routes.managerCustomer, component: ManagerCustomer },
+
     // { path: config.routes.ProductDetails, component: ProductDetails },
 
     // AllProduct

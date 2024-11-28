@@ -2,6 +2,7 @@ import OrderDetails from '../pages/admin/OrderDetails/OrderDetails';
 
 const routes = {
     main: '/',
+    //home: '/home',
 
     home: '/home',
     productdetail: '/productdetail',
@@ -19,6 +20,7 @@ const routes = {
     purchasedProductsList: '/purchasedProductsList',
     cart: '/cart',
     checkout: '/checkout',
+    managerCustomer: '/managerCustomer',
     ProductDetails: '/ProductDetails',
     OrderDetails: '/OrderDetails',
     addNewProduct: '/addNewProduct',
