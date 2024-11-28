@@ -15,6 +15,7 @@ import PurchasedProductsList from '../pages/PurchasedProductsList';
 
 import config from '../config';
 import CheckoutForm from '../pages/Checkout';
+import ManagerCustomer from '../pages/admin/ManagerCustomer';
 
 const publicRoutes = [
     { path: config.routes.main, component: Home },
@@ -31,6 +32,9 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
+    { path: config.routes.managerCustomer, component: ManagerCustomer},
+
+
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

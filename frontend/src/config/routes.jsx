@@ -16,6 +16,7 @@ const routes = {
     purchasedProductsList: '/purchasedProductsList',
     cart: '/cart',
     checkout: '/checkout',
+    managerCustomer: '/managerCustomer',
 };
 
 export default routes;
