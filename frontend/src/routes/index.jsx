@@ -37,7 +37,7 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
-    { path: config.routes.ProductDetails, component: ProductDetails },
+    // { path: config.routes.ProductDetails, component: ProductDetails },
 
     // AllProduct
     { path: config.routes.AllProduct, component: AllProduct },
