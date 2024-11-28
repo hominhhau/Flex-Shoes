@@ -12,4 +12,10 @@ export const Api_InvoiceAdmin = {
 
     // Lấy tổng tiền của tất cả hóa đơn
     getTotalRevenue: async () => ApiManager.get('api/invoices/total-amount'),
+
+    getInvoiceById: async (id) => ApiManager.get(`api/invoices/findById/${id}`),
+
+    getInvoiceDetail: async (id) => ApiManager.get(`api/invoices/findDetailById/${id}`),
+
+    updateInvoice: async (data) => ApiManager.put(`api/invoices/updateInvoice`, data),
 };

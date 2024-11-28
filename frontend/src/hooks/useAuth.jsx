@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 // Tạo context
 const AuthContext = createContext();
@@ -7,6 +7,11 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false); // Biến trạng thái đăng nhập
     const [role, setRole] = useState(false); // Biến quyền hạn
+    useEffect(() => {
+        (localStorage.getItem('token') != null) ? setIsLoggedIn(true) : setIsLoggedIn(false);
+        (localStorage.getItem('role') === 'ADMIN') ? setRole(true) : setRole(false);
+    
+    }, [isLoggedIn, role]);
 
     return (
         <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, role, setRole }}>

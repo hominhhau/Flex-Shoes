@@ -2,12 +2,15 @@ import OrderDetails from '../pages/admin/OrderDetails/OrderDetails';
 
 const routes = {
     main: '/',
-    //home: '/home',
+
 
     home: '/home',
     productdetail: '/productdetail',
 
     home: '/',
+
+    C: '/',
+
     // productdetail: '/productdetail',
     productdetail: '/productdetail/:id',
     listing: '/listing',

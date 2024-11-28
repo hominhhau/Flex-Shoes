@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Api_InvoiceAdmin } from '../../../../apis/Api_InvoiceAdmin';
 import classNames from 'classnames/bind';
 import styles from './RecentOrders.module.scss';
+import { Link, useNavigate } from 'react-router-dom';
+
+
+import {Api_InvoiceAdmin } from '../../../../apis/Api_InvoiceAdmin';
+import config from '../../../config';
 
 const cx = classNames.bind(styles);
 
 function RecentOrders() {
+    const navigator = useNavigate();
+
     const [orders, setOrders] = useState([]); // State lưu danh sách hóa đơn
     const [loading, setLoading] = useState(true); // State quản lý trạng thái tải
     const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
@@ -75,7 +81,7 @@ function RecentOrders() {
             </div>
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="">
                         <tr>
                             <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">
                                 ID đơn hàng
@@ -94,9 +100,15 @@ function RecentOrders() {
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-200 ">
                         {currentOrders.map((order, index) => (
-                            <tr key={index}>
+                            <tr
+                                key={index}
+                                className="hover:bg-gray-50"
+                                onClick={() => {
+                                    navigator(config.routes.OrderDetails, { state: { invoiceId: order.invoiceId } });
+                                }}
+                            >
                                 <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">
                                     {order.invoiceId}
                                 </td>
@@ -129,7 +141,7 @@ function RecentOrders() {
             {/* Pagination Controls */}
             <div className="flex justify-center mt-4">
                 <button
-                    className="px-4 py-2 ml-2 rounded-xl border border-solid border-gray-300 hover:bg-blue-500 hover:text-white"
+                    className="px-4 py-2 mx-2 rounded-xl border border-solid border-gray-300 hover:bg-blue-500 hover:text-white"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
@@ -140,7 +152,7 @@ function RecentOrders() {
                 {getPaginationPages().map((page, index) => (
                     <button
                         key={index}
-                        className={`px-4 py-2 mx-1 rounded-xl border border-gray-300 ${page === '...' ? 'bg-transparent' : currentPage === page ? 'bg-blue-500 text-white' : 'bg-white'}`}
+                        className={`px-4 py-2 mx-2 rounded-xl border border-gray-300 ${page === '...' ? 'bg-transparent' : currentPage === page ? 'bg-blue-500 text-white' : 'bg-white'}`}
                         onClick={() => page !== '...' && handlePageChange(page)}
                         disabled={page === '...'}
                     >
@@ -149,7 +161,7 @@ function RecentOrders() {
                 ))}
 
                 <button
-                    className="px-4 py-2 ml-2 rounded-xl border border-solid border-gray-300 hover:bg-blue-500 hover:text-white"
+                    className="px-4 py-2 mx-2 rounded-xl border border-solid border-gray-300 hover:bg-blue-500 hover:text-white"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                 >

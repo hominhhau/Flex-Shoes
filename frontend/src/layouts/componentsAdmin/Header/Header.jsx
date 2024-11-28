@@ -6,15 +6,21 @@ import styles from './Header.module.scss';
 import { Link } from 'react-router-dom';
 import { LogoIcon } from '../../../icons';
 import Search from '../../components/Search';
+import { useNavigate } from 'react-router-dom';
 
 // Tippy is a headless tooltip library powered by Popper.j
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
 import Menu from '../../components/Popper/Menu';
+import { useAuth } from '../../../hooks/useAuth';
+import { Api_Auth } from '../../../../apis/Api_Auth';
+import config from '../../../config';
 
 const cx = classNames.bind(styles);
 
 function Header() {
+    const navigate = useNavigate();
+    const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
@@ -24,10 +30,27 @@ function Header() {
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
-            to: '/home',
             separate: true,
+            onClick: (() => handleLogout()),
+    
         },
     ];
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await Api_Auth.logout(token); // Gọi API login
+            // Xóa token và role vào localStorage
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            setIsLoggedIn(false); 
+            setRole(false); 
+            navigate(config.routes.home);
+
+        } catch (err) {
+            console.error('Logout failed:', err.message);
+            setError('Logout failed');
+        }
+    };
     return (
         <div className={cx('header')}>
             <div className={cx('logo')}>
