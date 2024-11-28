@@ -10,4 +10,6 @@ export const Api_Product = {
 
     searchProduct: async (name) => ApiManager.get(`api/product/search?name=${encodeURIComponent(name)}`),
     getAllProducts: async () => ApiManager.get('api/products/admin'),
+    // Danh sách sản phẩm đã mua
+    getPurchasedProducts: async (id) => ApiManager.get(`/api/invoices/${id}`),
 };
