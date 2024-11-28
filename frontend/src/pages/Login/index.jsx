@@ -16,11 +16,10 @@ const cx = classNames.bind(styles);
 
 function Login() {
     // State để lưu email và password
-    const { role, setRole, isLoggedIn, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    const { setIsLoggedIn } = useAuth();
     const [error, setError] = useState(null);
 
     const onChangeUserName = (e) => {
@@ -29,15 +28,10 @@ function Login() {
     const handleLogin = async () => {
         try {
             const response = await Api_Auth.login(username, password); // Gọi API login
-            // Lưu token vào localStorage
+            // Lưu token và role vào localStorage
             localStorage.setItem('token', response.result.token);
-            setIsLoggedIn(true); // Cập nhật trạng thái đăng nhập
-            console.log('isLoggedIn : ', isLoggedIn);
-            // Chuyển hướng sang trang chủ
-            console.log('response : ', response.result.nameAccess);
-            if (response.result.nameAccess == 'admin') {
-                setRole(true);
-            }
+            localStorage.setItem('role', response.result.role);
+            setIsLoggedIn(true);
             navigate(config.routes.home);
         } catch (err) {
             console.error('Login failed:', err.message);

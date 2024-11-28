@@ -10,9 +10,11 @@ import {
     faGear,
     faCoins,
 } from '@fortawesome/free-solid-svg-icons';
+import {Api_Auth} from '../../../../apis/Api_Auth';
+import { useNavigate } from 'react-router-dom';
+
 
 import config from '../../../config';
-
 import styles from './Header.module.scss';
 import { LogoIcon } from '../../../icons';
 import Button from '../../../components/Button';
@@ -28,24 +30,37 @@ import { useAuth } from '../../../hooks/useAuth';
 const cx = classNames.bind(styles);
 
 function Header({ user }) {
-    const { isLoggedIn, setIsLoggedIn } = useAuth();
-    // setIsLoggedIn(true);
+    const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
+    const navigate = useNavigate();
+
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
-            title: 'Setting',
+            title: 'Setting', 
             to: '/settings',
         },
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
-            // to: '/',
+            to: '/',
             separate: true,
             onClick: () => handleLogout(),
         },
     ];
-    const handleLogout = () => {
-        console.log('token : ', localStorage.getItem('token'));
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await Api_Auth.logout(token); // Gọi API login
+            // Xóa token và role vào localStorage
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            setIsLoggedIn(false); 
+            setRole(false);    
+
+        } catch (err) {
+            console.error('Logout failed:', err.message);
+            setError('Logout failed');
+        }
     };
     return (
         <header className={cx('wrapper')}>
