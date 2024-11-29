@@ -18,4 +18,12 @@ export const Api_InvoiceAdmin = {
     getInvoiceDetail: async (id) => ApiManager.get(`api/invoices/findDetailById/${id}`),
 
     updateInvoice: async (data) => ApiManager.put(`api/invoices/updateInvoice`, data),
+
+    // Tìm kiếm hóa đơn dựa trên ID, tên khách hàng, hoặc trạng thái đơn hàng
+    searchInvoices: async (params) => {
+        // params là một object chứa các điều kiện tìm kiếm
+        // Ví dụ: { id: 1, customerName: 'John', orderStatus: 'processing' }
+        const queryString = new URLSearchParams(params).toString();
+        return ApiManager.get(`api/invoices/search?${queryString}`);
+    },
 };

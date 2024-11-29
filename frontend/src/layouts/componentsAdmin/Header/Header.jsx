@@ -59,7 +59,7 @@ function Header() {
                 </Link>
             </div>
             <div className={cx('menu')}>
-                <Search />
+                {/* <Search /> */}
                 <Link to="/admin">
                     <button className={cx('menu-item')}>
                         <FontAwesomeIcon icon={faBell} />
