@@ -20,6 +20,8 @@ export const Api_Listing = {
             maxPrice: filterData.maxPrice,
         }).toString();
 
+
         return ApiManager.get(`/api/public/listing-products/filter?${params}`);
+
     },
 };

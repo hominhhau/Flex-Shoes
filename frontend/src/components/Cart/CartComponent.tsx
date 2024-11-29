@@ -18,6 +18,7 @@ type CartComponentProps = {
   removeIcon: IconDefinition;
   onRemove: () => void;
   onQuantityChange: (quantity: number) => void;
+  onCheckboxChange: (isChecked: boolean) => void;
   allowQuantityChange?: boolean;
   allowSizeChange?: boolean;    
 };
@@ -34,11 +35,14 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   removeIcon,
   onRemove,
   onQuantityChange,
+  onCheckboxChange,
   allowQuantityChange = true,   
   allowSizeChange = true,       
 }) => {
   // const [size, setSize] = useState<string>(initialSize);
   const [quantity, setQuantity] = useState<number>(initialQuantity);
+  const [isChecked, setIsChecked] = useState(false); // State for checkbox
+
 
   const totalPrice = (price * quantity).toFixed(2);
 
@@ -49,6 +53,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   const increaseQuantity = () => {
     setQuantity((prevQuantity) => {
       const newQuantity = prevQuantity + 1;
+      console.log(`Số lượng mới: ${newQuantity}`);
       onQuantityChange(newQuantity);
       return newQuantity;
     });
@@ -57,15 +62,35 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   const decreaseQuantity = () => {
     setQuantity((prevQuantity) => {
       const newQuantity = Math.max(prevQuantity - 1, 1);
+      console.log(`Số lượng mới: ${newQuantity}`);
       onQuantityChange(newQuantity);
       return newQuantity;
     });
   };
-
+  const handleCheckboxChange = () => {
+    const newCheckedState = !isChecked;
+    setIsChecked(newCheckedState); // Cập nhật trạng thái trong con
+    if (onCheckboxChange) {
+      onCheckboxChange(newCheckedState); // Gọi callback để gửi trạng thái lên cha
+    }
+  };
   return (
     <main className={cx('bagContainer')}>
       <section className={cx('productContainer')}>
+         {/* Checkbox for item selection */}
+         <div className={cx('checkboxContainer')}>
+            <label>
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={handleCheckboxChange}
+                className={cx('checkbox')}
+              />
+              <span className={cx('checkboxLabel')}></span>
+            </label>
+          </div>
         <img loading="lazy" src={image} alt={name} className={cx('productImage')} />
+  
 
         <article className={cx('productDetailsContainer')}>
           <div className={cx('productInfoWrapper')}>

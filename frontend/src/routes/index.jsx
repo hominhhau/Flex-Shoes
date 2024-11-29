@@ -16,12 +16,14 @@ import ProductForm from '../pages/admin/ProductDetails/ProductForm';
 import ProductDetails from '../pages/admin/ProductDetails';
 import OrderDetails from '../pages/admin/OrderDetails';
 
+import AddNewProduct from '../pages/admin/AddNewProduct';
+
 import config from '../config';
 import CheckoutForm from '../pages/Checkout';
+import ManagerCustomer from '../pages/admin/ManagerCustomer';
 
 // AllProduct
 import AllProduct from '../pages/admin/Allproduct/Allproduct';
-
 
 const publicRoutes = [
     { path: config.routes.main, component: Home },
@@ -38,13 +40,16 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
-    { path: config.routes.ProductDetails, component: ProductDetails },
+    { path: config.routes.managerCustomer, component: ManagerCustomer },
+
+    // { path: config.routes.ProductDetails, component: ProductDetails },
 
     // AllProduct
     { path: config.routes.AllProduct, component: AllProduct },
     { path: config.routes.ProductDetails, component: ProductForm },
     //admin
-    {path: config.routes.OrderDetails, component: OrderDetails},
+    { path: config.routes.OrderDetails, component: OrderDetails },
+    { path: config.routes.addNewProduct, component: AddNewProduct },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

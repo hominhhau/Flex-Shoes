@@ -10,7 +10,7 @@ function ProductListPage({ products }) {
     const [visibleCount, setVisibleCount] = useState(12);
 
     // Create a Set to track unique productIds
-    const uniqueProducts = Array.from(new Map(products.map(product => [product.productId, product])).values());
+    const uniqueProducts = Array.from(new Map(products.map((product) => [product.productId, product])).values());
 
     const handleShowMore = () => {
         setVisibleCount((prevCount) => Math.min(prevCount + 4, uniqueProducts.length));

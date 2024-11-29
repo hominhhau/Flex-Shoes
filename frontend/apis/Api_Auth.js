@@ -1,7 +1,7 @@
 import { ApiManager } from "./ApiManager";
 
 export const Api_Auth = {
-   
+
     login: async (username, password) => {
         return ApiManager.post('api/auth/login', {
             username: username,
@@ -9,7 +9,7 @@ export const Api_Auth = {
         });
     },
     addCustomer: async (userInfor) => {
-        return ApiManager.post('api/customer/add', userInfor);
+        return ApiManager.post('api/customers/add', userInfor);
     },
     registerAccount: async (loginDetails) => {
         return ApiManager.post('api/account/register', loginDetails);
@@ -18,5 +18,5 @@ export const Api_Auth = {
         return ApiManager.post('api/auth/logout', token);
     },
 
-   
+
 };

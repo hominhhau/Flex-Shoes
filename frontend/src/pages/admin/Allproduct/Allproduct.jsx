@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './AllProduct.module.scss';
-import { useNavigate } from 'react-router-dom';
-import { Api_Product } from "../../../../apis/Api_Product";
+import { Api_Product } from '../../../../apis/Api_Product';
 
 const cx = classNames.bind(styles);
 
 const AllProduct = () => {
-    // const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [products, setProducts] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(0);
-
 
     // Fetch products on mount
     useEffect(() => {
@@ -23,9 +19,8 @@ const AllProduct = () => {
                 const response = await Api_Product.getAllProducts();
                 if (response) {
                     setProducts(response);
-                    console.log("Đây là response", response);
+                    console.log('Product Data:', response);
                 }
-             
             } catch (error) {
                 setError(error.message); // Handle any errors from the API call
             } finally {
@@ -60,27 +55,33 @@ const AllProduct = () => {
             <div className={cx('product-list')}>
                 {products.map((product) => (
                     <div key={product.productId} className={cx('product-card')}>
-                        {/* Display first image from the array or a default image */}
-                        <img
-                            src={product.images && product.images.length > 0 ? product.images[0] : '/default-image.png'}
-                            alt={product.productName}
-                            className={cx('product-image')}
-                        />
-                        <h2>{product.productName}</h2>
-                        <p className={cx('brand')}>{product.brandName}</p>
-                        {/* <p className={cx('category')}>{product.categoryName}</p> */}
-                        <p className={cx('price')}>${product.finalPrice.toFixed(2)}</p>
-                        <p className={cx('description')}>{product.description}</p>
-
-                        <div className={cx('stats')}>
-                            <div>
-                                <p>Sales</p>
-                                {/* <p>${product.salePrice.toFixed(2)}</p> Show sale price */}
-                                <p>{product.quantity}</p> {/* Show quantity */}
+                        <div className={cx('product-info')}>
+                            <img
+                                src={
+                                    product.images && product.images.length > 0
+                                        ? product.images[0]
+                                        : '/default-image.png'
+                                }
+                                alt={product.productName}
+                                className={cx('product-image')}
+                            />
+                            <div className={cx('product-details')}>
+                                <h2>{product.productName}</h2>
+                                <p className={cx('price')}>${product.finalPrice.toFixed(2)}</p>
                             </div>
-                            <div>
+                        </div>
+                        <div>
+                            <p className={cx('summary')}>Summary</p>
+                            <p className={cx('description')}>{product.description}</p>
+                        </div>
+                        <div className={cx('stats')}>
+                            <div className={cx('stat-item')}>
+                                <p>Sales</p>
+                                <p>{product.quantity}</p>
+                            </div>
+                            <div className={cx('stat-item')}>
                                 <p>Remaining Products</p>
-                                <p>{product.quantity}</p> {/* Show quantity */}
+                                <p>{product.quantity}</p>
                             </div>
                         </div>
                     </div>

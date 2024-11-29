@@ -1,19 +1,13 @@
 import { Fragment } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { publicRoutes, privateRoutes } from './routes';
-import { useEffect } from 'react';
-
 import DefaultLayout from './layouts/DefaultLayout';
 import AdminLayout from './layouts/AdminLayout';
 import ScrollToTop from './components/ScrollToTop';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
-    const  { role, setRole } = useAuth();
-    useEffect(() => {
-        setRole(role);
-    }
-    , [role]);
+    const { role } = useAuth();
 
     return (
         <Router>
@@ -34,7 +28,7 @@ function App() {
                         if (route.layout) {
                             Layout = route.layout;
                         } else if (route.layout === null) {
-                            Layout = Fragment;
+                            Layout = Fragment; 
                         }
 
                         return (
@@ -49,7 +43,6 @@ function App() {
                             />
                         );
                     })}
-                    
                 </Routes>
             </div>
         </Router>
