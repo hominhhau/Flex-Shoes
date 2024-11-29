@@ -59,9 +59,11 @@ const OrderDetails = () => {
         setProductDelete([...productDelete, detail]);
         console.log('size = ', productDelete.length);
     };
-    const handleUpdateInvoice = async (data = {...invoice, invoiceDetails: details}) => {
+    const handleUpdateInvoice = async () => {
         try {
-            const response = await Api_InvoiceAdmin.updateInvoice(data);
+           const data = {...invoice, invoiceDetails : details};
+           const response = await Api_InvoiceAdmin.updateInvoice(data);
+           console.log('result = ', response.result);
         } catch (error) {
             console.error('Error updating invoice:', error);
         }
