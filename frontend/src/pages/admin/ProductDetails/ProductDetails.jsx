@@ -3,9 +3,13 @@ import classNames from 'classnames/bind';
 import styles from './ProductForm.module.scss';
 import RecentPurchases from './RecentPurchases';
 
+
+
 const cx = classNames.bind(styles);
 
-export function ProductDetails() {
+export function ProductDetails({ product, brand, category, setProduct, quantities, setQuantities }) {
+   
+
     return (
         <section className={cx('inputSection')}>
             <nav className={cx('breadcrumb')}>
@@ -18,7 +22,12 @@ export function ProductDetails() {
                     Product Name
                 </label>
                 <div className={cx('inputWrapper')}>
-                    <input id="productName" type="text" className={cx('textInput')} defaultValue="Adidas Ultra Boost" />
+                    <input id="productName" type="text" className={cx('textInput')}
+                        value={product.productName}
+                        onChange={(e) => {
+                            setProduct({ ...product, productName: e.target.value });
+                        }}
+                    />
                 </div>
             </div>
 
@@ -31,7 +40,10 @@ export function ProductDetails() {
                     <textarea
                         id="description"
                         className={cx('textArea')}
-                        defaultValue="Long distance running requires a lot from athletes."
+                        value={product.description}
+                        onChange={(e) => {
+                            setProduct({ ...product, description: e.target.value });
+                        }}
                     />
                 </div>
             </div>
@@ -44,10 +56,18 @@ export function ProductDetails() {
                             Category
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <select id="category" className={cx('selectInput')} defaultValue="Sneaker">
-                                <option value="Sneaker">Sneaker</option>
-                                <option value="Running">Running</option>
-                                <option value="Casual">Casual</option>
+                            <select id="category" className={cx('selectInput')}
+                                value={product.categoryName}
+                                onChange={(e) => {
+                                    setProduct({ ...product, categoryName: e.target.value, categoryId: category.find((item) => item.categoryName === e.target.value).categoryId });
+                                }}>
+                                {category.map((item) => (
+                                    <option key={item.categoryId} value={item.categoryName}>
+                                        {item.categoryName}
+                                    </option>
+                                ))}
+
+
                             </select>
                         </div>
                     </div>
@@ -57,10 +77,18 @@ export function ProductDetails() {
                             Brand Name
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <select id="brand" className={cx('selectInput')} defaultValue="Adidas">
-                                <option value="Adidas">Adidas</option>
-                                <option value="Nike">Nike</option>
-                                <option value="Puma">Puma</option>
+                            <select id="brand" className={cx('selectInput')} 
+                            value={product.brandName}
+                            onChange={(e) => {
+                                setProduct({ ...product, brandName: e.target.value, brandId: brand.find((item) => item.brandName === e.target.value).brandId });
+                            }
+                            }
+                            >
+                                {brand.map((item) => (
+                                    <option key={item.brandId} value={item.brandName}>
+                                        {item.brandName}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -75,10 +103,15 @@ export function ProductDetails() {
                             Gender
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <select id="gender" className={cx('selectInput')} defaultValue="Men">
-                                <option value="Men">Men</option>
-                                <option value="Women">Women</option>
-                                <option value="Unisex">Unisex</option>
+                            <select id="gender" className={cx('selectInput')}
+                                value={product.gender}
+                                onChange={(e) => {
+                                    setProduct({ ...product, gender: e.target.value });
+                                }
+                                }>
+                                <option value="MEN">Men</option>
+                                <option value="WOMEN">Women</option>
+                                <option value="UNISEX">Unisex</option>
                             </select>
                         </div>
                     </div>
@@ -89,7 +122,13 @@ export function ProductDetails() {
                             VAT (%)
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <input id="vat" type="number" className={cx('textInput')} defaultValue="10" />
+                            <input id="vat" type="number" className={cx('textInput')}
+                             value={product.vat}
+                             onChange={(e) => {
+                                setProduct({ ...product, vat: e.target.value });
+                             }
+                            }
+                             />
                         </div>
                     </div>
                 </div>
@@ -103,7 +142,13 @@ export function ProductDetails() {
                             Original Price
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <input id="originalPrice" type="number" className={cx('textInput')} defaultValue="100.00" />
+                            <input id="originalPrice" type="number" className={cx('textInput')}
+                                value={product.originalPrice}
+                                onChange={(e) => {
+                                    setProduct({ ...product, originalPrice: e.target.value });
+                                }
+                                }
+                            />
                         </div>
                     </div>
                     <div className={cx('columnField')}>
@@ -111,7 +156,12 @@ export function ProductDetails() {
                             Sale Price
                         </label>
                         <div className={cx('inputWrapper')}>
-                            <input id="salePrice" type="number" className={cx('textInput')} defaultValue="90.00" />
+                            <input id="salePrice" type="number" className={cx('textInput')}
+                                value={product.salePrice}
+                                onChange={(e) => {
+                                    setProduct({ ...product, salePrice: e.target.value });
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -133,9 +183,15 @@ export function ProductDetails() {
                     Status
                 </label>
                 <div className={cx('inputWrapper')}>
-                    <select id="status" className={cx('selectInput')} defaultValue="Active">
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                    <select id="status" className={cx('selectInput')}
+                        value={product.status}
+                        onChange={(e) => {
+                            setProduct({ ...product, status: e.target.value });
+                        }
+                        }
+                    >
+                        <option value="Available">Available</option>
+                        <option value="NotAvailable">Not Available</option>
                     </select>
                 </div>
             </div>
@@ -143,7 +199,10 @@ export function ProductDetails() {
             {/* Recent Purchases */}
             <div className={cx('fieldGroup')}>
                 <div className={cx('inputWrapper')}>
-                    <RecentPurchases />
+                    <RecentPurchases 
+                    quantities={quantities}
+                    setQuantities={setQuantities}
+                    />
                 </div>
             </div>
         </section>

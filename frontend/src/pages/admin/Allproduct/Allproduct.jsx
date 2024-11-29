@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './AllProduct.module.scss';
 import { Api_Product } from '../../../../apis/Api_Product';
-
+import { useNavigate } from 'react-router-dom';
+import config from '../../../config';
 const cx = classNames.bind(styles);
 
 const AllProduct = () => {
+    const navigator = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [products, setProducts] = useState([]);
@@ -50,11 +52,20 @@ const AllProduct = () => {
         <div className={cx('wrapper')}>
             <div className={cx('header')}>
                 <h1>All Products</h1>
-                <button className={cx('add-product')}>Add New Product</button>
+                <button className={cx('add-product')}
+                onClick={() => {
+                    navigator(config.routes.addNewProduct);
+                }
+                }
+                >Add New Product</button>
             </div>
             <div className={cx('product-list')}>
                 {products.map((product) => (
-                    <div key={product.productId} className={cx('product-card')}>
+                    <div key={product.productId} onClick={
+                        () => {
+                            navigator(config.routes.ProductDetails , { state: { productId: product.productId } });
+                        }
+                    } className={cx('product-card')}>
                         <div className={cx('product-info')}>
                             <img
                                 src={

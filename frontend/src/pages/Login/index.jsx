@@ -28,6 +28,7 @@ function Login() {
     const handleLogin = async () => {
         try {
             const response = await Api_Auth.login(username, password); // Gọi API login
+            
             // Lưu token và role vào localStorage
             localStorage.setItem('token', response.result.token);
             localStorage.setItem('role', response.result.role);

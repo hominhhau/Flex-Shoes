@@ -109,6 +109,11 @@ const CheckoutForm = () => {
             const totalInVND = Math.round(totalAmount * 23000);
     
             const invoiceData = {
+                //Sửa tên field id trong cartData thành tên field : productId
+                invoiceDetails: cartData.map((product) => ({
+                    productId: product.productId,
+                    quantity: product.quantity,
+                })),
                 //invoiceId: Date.now().toString(), // Tạo ID tạm thời (hoặc lấy từ server)
                 issueDate: new Date().toISOString().split('T')[0],//YYYY-MM-DD lấy ptu đầu tiên của mảng [0]
                 receiverNumber: phone,
@@ -116,15 +121,15 @@ const CheckoutForm = () => {
                 receiverAddress: address,
                 paymentMethod: 'VNPay',
                 deliveryMethod: 'Express',
-                //orderStatus: 'PENDING',
+                customerId: 1,
+                orderStatus: 'Processing',
                 total: totalInVND,
-                cartData: cartData,
             };
     
             console.log('Sending invoice data to server:', invoiceData);
     
             // Gửi dữ liệu đơn hàng lên server
-            const invoiceResponse = await axios.post('http://localhost:8080/api/invoices', invoiceData);
+            const invoiceResponse = await axios.post('http://localhost:8080/api/invoices/add', invoiceData);
     
             // if (!invoiceResponse?.data?.id) {
             //     throw new Error('Không thể lấy ID đơn hàng từ phản hồi server.');

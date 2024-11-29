@@ -17,6 +17,9 @@ export const Api_Auth = {
     logout: async (token) => {
         return ApiManager.post('api/auth/logout', token);
     },
+    getMyInfor: async () => {
+        return ApiManager.get('api/account/getMyInfor');
+    }
 
 
 };

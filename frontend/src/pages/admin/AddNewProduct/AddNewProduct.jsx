@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import classNames from 'classnames/bind';
+
 import styles from './AddNewProduct.module.scss';
 import { ImageUploader } from './ImageUpload';
 import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
+import { useNavigate } from 'react-router-dom';
+import config from '../../../config';
+
 
 const cx = classNames.bind(styles);
 
 const AddNewProduct = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         productName: '',
         description: '',
@@ -96,7 +101,7 @@ const AddNewProduct = () => {
             alert(
                 'Please fill in all required fields: Product Name, Description, Images, Category, Brand Name, Sale Price, and Regular Price.',
             );
-            return; // Prevent submission
+            
         }
 
         const addProductDto = {
@@ -160,6 +165,7 @@ const AddNewProduct = () => {
             }
             alert('There was an error submitting the product. Please try again.');
         }
+        navigate(config.routes.AllProduct);
     };
 
     const handleAddPurchase = () => {

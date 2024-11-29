@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './RecentPurchases.module.scss';
+import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
 
 const cx = classNames.bind(styles);
 
@@ -37,8 +38,8 @@ const PurchaseTableHeader = () => (
 
 const PurchaseTableRow = ({ purchase, onQuantityChange, onUpdate, onDelete }) => (
     <div className={cx('tableRow')}>
-        <div className={cx('cell')}>{purchase.color}</div>
-        <div className={cx('cell')}>{purchase.size}</div>
+        <div className={cx('cell')}>{purchase.colorName}</div>
+        <div className={cx('cell')}>{purchase.sizeName}</div>
         <div className={cx('cell')}>
             <input
                 type="number"
@@ -62,8 +63,8 @@ const PurchaseTableRow = ({ purchase, onQuantityChange, onUpdate, onDelete }) =>
 PurchaseTableRow.propTypes = {
     purchase: PropTypes.shape({
         id: PropTypes.string.isRequired,
-        color: PropTypes.string.isRequired,
-        size: PropTypes.string.isRequired,
+        colorName: PropTypes.string.isRequired,
+        sizeName: PropTypes.string.isRequired,
         quantity: PropTypes.number.isRequired,
     }).isRequired,
     onQuantityChange: PropTypes.func.isRequired,
@@ -71,21 +72,49 @@ PurchaseTableRow.propTypes = {
     onDelete: PropTypes.func.isRequired,
 };
 
-const RecentPurchases = () => {
+const RecentPurchases = ( { quantities, setQuantities}) => {
+    
     const handleQuantityChange = (id, newQuantity) => {
-        console.log(`Updated quantity for product ${id} to ${newQuantity}`);
-        // Update state logic goes here
+        setQuantities((prevQuantities) => {
+            const updatedQuantities = prevQuantities.map((purchase) => {
+                if (purchase.id === id) {
+                    return { ...purchase, quantity: newQuantity };
+                }
+                return purchase;
+            });
+            console.log('Updated quantities:', updatedQuantities);
+            return updatedQuantities;
+        });
     };
 
-    const handleUpdate = (id) => {
-        console.log(`Update clicked for product ${id}`);
-        // Update logic goes here
+    const handleUpdateOne = (id, data) => {
+      try {
+        //Xu ly tim quantity theo id
+
+        data = quantities.find((quantity) => quantity.id === id);
+        console.log('Data:', data);
+        const response = Api_AddProduct.updateQuantity(id, data);
+        console.log('Quantity updated:', response);
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+        alert('Failed to update quantity');
+        
+      }
     };
 
-    const handleDelete = (id) => {
-        console.log(`Delete clicked for product ${id}`);
-        // Delete logic goes here
+    const handleDeleteOne = (id) => {
+       try {
+        const response = Api_AddProduct.deleteQuantity(id);
+        // console.log('Quantity deleted:', response);
+        const updatedQuantities = quantities.filter((purchase) => purchase.id !== id);
+        setQuantities(updatedQuantities);
+       } catch (error) {
+        console.error('Error deleting quantity:', error);
+        alert('Failed to delete quantity');
+        
+       }
     };
+
 
     return (
         <section className={cx('container')}>
@@ -93,13 +122,13 @@ const RecentPurchases = () => {
             <div className={cx('divider')} />
             <main className={cx('tableContainer')}>
                 <PurchaseTableHeader />
-                {purchaseData.map((purchase) => (
-                    <PurchaseTableRow
+                {quantities.map((purchase) => (
+                    <PurchaseTableRow 
                         key={purchase.id}
                         purchase={purchase}
                         onQuantityChange={handleQuantityChange}
-                        onUpdate={handleUpdate}
-                        onDelete={handleDelete}
+                        onUpdate={handleUpdateOne}
+                        onDelete={handleDeleteOne}
                     />
                 ))}
             </main>

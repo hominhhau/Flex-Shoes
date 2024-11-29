@@ -180,7 +180,6 @@ function Register() {
                                 name="email"
                                 id="email"
                                 placeholder="Email"
-                                pattern="^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                                 required
                                 value={userInfor.email}
                                 onChange={onChangeEmail}

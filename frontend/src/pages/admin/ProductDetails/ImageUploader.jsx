@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import classNames from 'classnames/bind';
 import styles from './ProductForm.module.scss';
-
 const cx = classNames.bind(styles);
 
 // Thumbnail component wrapped in React.memo

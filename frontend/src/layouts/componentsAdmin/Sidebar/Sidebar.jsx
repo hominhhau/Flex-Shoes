@@ -18,7 +18,7 @@ function Sildebar() {
                         <button className={cx('menu-item')}>Dashboard</button>
                     </div>
                 </Link>
-                <Link to="/admin">
+                <Link to="/AllProduct">
                     <div className={cx('menu-wrapper')}>
                         <FontAwesomeIcon icon={faInbox} />
                         <button className={cx('menu-item')}>All Product</button>
@@ -28,12 +28,6 @@ function Sildebar() {
                     <div className={cx('menu-wrapper')}>
                         <FontAwesomeIcon icon={faClipboardList} />
                         <button className={cx('menu-item')}>Order List</button>
-                    </div>
-                </Link>
-                <Link to="/OrderDetails">
-                    <div className={cx('menu-wrapper')}>
-                        <FontAwesomeIcon icon={faClipboardList} />
-                        <button className={cx('menu-item')}>Order Details</button>
                     </div>
                 </Link>
             </div>

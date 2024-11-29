@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { CiUser, CiDeliveryTruck  } from 'react-icons/ci';
+import { CiUser, CiDeliveryTruck } from 'react-icons/ci';
 import classNames from 'classnames/bind';
 import { IoBagHandle, IoPrintOutline, IoCalendarOutline, IoReloadCircle } from 'react-icons/io5';
-import { MdOutlineCancel  } from "react-icons/md";
+import { MdOutlineCancel } from "react-icons/md";
 import { useLocation } from 'react-router-dom';
 
 import styles from './OrderDetails.module.scss';
@@ -18,18 +18,25 @@ const OrderDetails = () => {
     const [invoice, setInvoice] = useState({});
     const [details, setDetails] = useState([]);
     const [productDelete, setProductDelete] = useState([]);
-    
+    const [subtotal, setSubtotal] = useState(0);
+    const [tax, setTax] = useState(0);
+    const [discount, setDiscount] = useState(0);
+    const [total, setTotal] = useState(0);
 
-    useEffect (() => {
+
+    useEffect(() => {
         const fetchInvoice = async () => {
             setLoading(true);
             setError(null);
             try {
+                console.log('invoiceId = ', invoiceId);
                 const response = await Api_InvoiceAdmin.getInvoiceById(invoiceId);
-                const responseDetail = await Api_InvoiceAdmin.getInvoiceDetail(invoiceId);
-                if (response && responseDetail) {
+                if (response) {
                     setInvoice(response.result);
-                    setDetails(responseDetail.result);
+                    setDetails(response.result.invoiceDetails);
+                    console.log('invoice = ', response.result);
+                    console.log('details = ', responseDetail.result.invoiceDetails);
+                
                 }
 
             } catch (error) {
@@ -38,19 +45,30 @@ const OrderDetails = () => {
                 setLoading(false);
             }
         };
+        
 
         fetchInvoice();
     }, []);
+    useEffect(() => {
+        const newSubtotal = details.reduce(
+            (total, product) => total + product.quantity * product.originalPrice,
+            0
+          );
+          const newDiscount = details.reduce(
+            (total, product) => total + product.salePrice,
+            0
+          );
+          const newTax = newSubtotal * 0.1; // 10% tax
+          const newTotal = newSubtotal + newTax - newDiscount;
+      
+          setSubtotal(newSubtotal);
+          setDiscount(newDiscount);
+          setTax(newTax);
+          setTotal(newTotal);
+    }, [details]);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
     const handleChange = (event) => {
-        setInvoice({...invoice , orderStatus : event.target.value}); // Cập nhật giá trị khi thay đổi
+        setInvoice({ ...invoice, orderStatus: event.target.value }); // Cập nhật giá trị khi thay đổi
     };
     const handleDeteleProduct = (detail) => {
         const updatedDetails = details.filter((product) => product.productId !== detail.productId);
@@ -61,9 +79,15 @@ const OrderDetails = () => {
     };
     const handleUpdateInvoice = async () => {
         try {
-           const data = {...invoice, invoiceDetails : details};
-           const response = await Api_InvoiceAdmin.updateInvoice(data);
-           console.log('result = ', response.result);
+            productDelete.forEach(async (item) => {
+                const responseDelete = await Api_InvoiceAdmin.delete(item.detailId);
+                console.log('result = ', responseDelete);
+            });
+
+            //Update invoice
+            const data = { ...invoice, customerId: invoice.customerId, invoiceDetails: details, total: total };
+            const response = await Api_InvoiceAdmin.updateInvoice(data);
+            console.log('result = ', response.result);
         } catch (error) {
             console.error('Error updating invoice:', error);
         }
@@ -130,7 +154,7 @@ const OrderDetails = () => {
                     </div>
                     <div className={cx('card')}>
                         <div className={cx('cardIcon')}>
-                            <CiDeliveryTruck  className={cx('icon')} size={20} color="white" />
+                            <CiDeliveryTruck className={cx('icon')} size={20} color="white" />
                         </div>
                         <div className={cx('cardInfor')}>
                             <b>Deliver to</b>
@@ -140,13 +164,13 @@ const OrderDetails = () => {
                 </div>
             </div>
             <div className={cx('contentProduct')}>
-                <div className='flex items-center'> <h2>Product</h2> { (productDelete.length != 0)
-                ? <IoReloadCircle size={25}  
+                <div className='flex items-center'> <h2>Product</h2> {(productDelete.length != 0)
+                    ? <IoReloadCircle size={25}
                         className='text-green-500 ml-5'
                         onClick={() => setDetails([...details, productDelete.pop()])}
-                        
-                        />
-                : <div></div> }   </div>
+
+                    />
+                    : <div></div>}   </div>
                 <div className={cx('totalProduct')}>
                     <table>
                         <tr>
@@ -155,22 +179,22 @@ const OrderDetails = () => {
                             <th>Quantity</th>
                             <th>Total</th>
                         </tr>
-                         {details.map((detail, index) => (
-                            <tr 
+                        {details.map((detail, index) => (
+                            <tr
                                 key={index}
                             >
                                 <td>
                                     <div className='flex justify-start items-center'>
-                                    <MdOutlineCancel size={20} className='ml-10 mr-10 text-red-600' onClick={() => handleDeteleProduct(detail)}/>
-                                    {detail.productId} - {detail.productName}
-                                 
+                                        <MdOutlineCancel size={20} className='ml-10 mr-10 text-red-600' onClick={() => handleDeteleProduct(detail)} />
+                                        {detail.productId} - {detail.productName}
+
                                     </div>
                                 </td>
                                 <td>#{detail.invoiceId}</td>
                                 <td >{detail.quantity}</td>
-                                <td >{detail.quantity * detail.salePrice}</td>
+                                <td >{detail.quantity * detail.originalPrice}</td>
                             </tr>
-                        ))} 
+                        ))}
                     </table>
                 </div>
                 <div className={cx('totalPayment')}>
@@ -178,7 +202,7 @@ const OrderDetails = () => {
                         <tr>
                             <td>Subtotal</td>
                             <td>
-                                {details.reduce((total, product) => total + product.quantity * product.salePrice, 0)}
+                            {subtotal.toFixed(2)}
                             </td>
                         </tr>
                         <tr>
@@ -187,14 +211,16 @@ const OrderDetails = () => {
                         </tr>
                         <tr>
                             <td>Discount</td>
-                            <td>0</td>
+                            <td>
+                                {discount.toFixed(2)}
+                            </td>
                         </tr>
                         <tr>
                             <td>
                                 <b>Total</b>
                             </td>
                             <td>
-                                <b>{invoice.total}</b>
+                                <b>{total.toFixed(2)}</b>
                             </td>
                         </tr>
                     </table>

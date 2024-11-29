@@ -39,4 +39,31 @@ export const Api_AddProduct = {
             throw error;
         }
     },
+    getProductById: async (productId) => {
+        return ApiManager.get(`/api/product/findById/${productId}`);
+    },
+    getBrand: async () => {
+        return ApiManager.get('/api/product/getBrand');
+    },
+    getColor: async () => {
+        return ApiManager.get('/api/product/getColor');
+    },
+    getCategory: async () => {
+        return ApiManager.get('/api/product/getCategory');
+    },
+    updateProduct: async (product) => {
+        return ApiManager.put('/api/product/update', product);
+    },
+    deleteProduct: async (productId) => {
+        return ApiManager.delete(`/api/product/delete/${productId}`);
+    },
+    getQuantity: async (productId) => {
+        return ApiManager.get(`/api/product/getQuantityByProductId/${productId}`);
+    },
+    updateQuantity: async (id, data) => {
+        return ApiManager.put(`/api/product/updateQuantity/${id}`, data);
+    },
+    deleteQuantity: async (quantityId) => {
+        return ApiManager.delete(`/api/product/deleteQuantity/${quantityId}`);
+    },
 }
