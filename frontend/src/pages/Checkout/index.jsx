@@ -102,12 +102,13 @@ const CheckoutForm = () => {
 
     const handlePlaceOrder = async () => {
         try {
+            console.log('cartData:', cartData);
             // Chuyển đổi tổng tiền sang VND
             const totalInVND = Math.round(totalAmount * 23000);
             console.log('invoiceData:', cartData);
             const invoiceData = {
                 invoiceDetails: cartData.map((product) => ({
-                    productId: product.productId,
+                    productId: product.id || product.productId,
                     quantity: product.quantity,
                 })),
 
@@ -130,7 +131,7 @@ const CheckoutForm = () => {
             console.log('Received Invoice:', invoiceResponse);
             //Update quantity after checkout
             const handleCartData = cartData.map((product) => ({
-                productId: product.productId,
+                productId: product.productId || product.id,
                 quantity: product.quantity,
                 colorName: product.color,
                 sizeName: product.size,

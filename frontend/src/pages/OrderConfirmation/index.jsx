@@ -64,12 +64,7 @@ const OrderConfirmation = () => {
                     >
                         Historry oders
                     </Link>
-                    <Link
-                        to="/purchasedProductsList/1"
-                        className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors ml-4"
-                    >
-                        Historry oders
-                    </Link>
+                    
                 </div>
             </div>
         </div>
