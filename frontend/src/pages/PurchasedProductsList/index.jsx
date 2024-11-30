@@ -16,6 +16,7 @@ function PurchasedProductsList() {
     const { id } = useParams();  // Lấy id từ URL
     console.log("Customer ID from URL:", id);  // Kiểm tra giá trị của id
 
+
     useEffect(() => {
         const fetchPurchasedProducts = async () => {
             setLoading(true);
@@ -24,6 +25,7 @@ function PurchasedProductsList() {
             try {
                 // Gọi API với customerId từ URL
                 const response = await Api_Product.getPurchasedProducts(id);
+                console.log("Response từ API:", response);  // Kiểm tra dữ liệu trả về từ API
                 if (response) {
                     setPurchasedProducts(response);
                     console.log("Response từ API:", response);  // Kiểm tra dữ liệu trả về từ API

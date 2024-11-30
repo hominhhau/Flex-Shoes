@@ -1,7 +1,10 @@
 import { useLocation, Link } from 'react-router-dom';
 import { formatCurrency } from '../../utils/formatCurrency';
+// import { useAuth } from '../../hooks/useAuth';
 
 const OrderConfirmation = () => {
+    // const { id } = useParams();
+    // const { isLoggedIn, role } = useAuth()
     const { state } = useLocation();
     const { invoiceId, amount, bankCode, orderInfo, transactionNo, payDate } = state || {};
 
@@ -57,6 +60,12 @@ const OrderConfirmation = () => {
                         className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                     >
                         Tiếp tục mua sắm
+                    </Link>
+                    <Link
+                        to="/purchasedProductsList/1"
+                        className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors ml-4"
+                    >
+                        Historry oders
                     </Link>
                 </div>
             </div>

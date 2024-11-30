@@ -76,6 +76,13 @@ export default function ProductDetail() {
     }
 
     //
+    // Remove duplicate colors and sizes
+    const uniqueColors = Array.from(new Set(productDetail.colors.map((color) => color.colorId))).map((id) =>
+        productDetail.colors.find((color) => color.colorId === id),
+    );
+    const uniqueSizes = Array.from(new Set(productDetail.sizes.map((size) => size.sizeId))).map((id) =>
+        productDetail.sizes.find((size) => size.sizeId === id),
+    );
 
     const handleAddToCart = () => {
         if (!isLoggedIn) {
@@ -101,27 +108,6 @@ export default function ProductDetail() {
         //tôi muốn in console để kiểm tra
         console.log('Product added to cart:', newProduct);
         console.log('Trước khi truyền: ', newProduct.size);
-
-        // // Lấy giỏ hàng hiện tại từ sessionStorage
-        // const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-
-        // // Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
-        // const existingProductIndex = currentCart.findIndex(
-        //     (item) =>
-        //         item.productId === newProduct.productId &&
-        //         item.size === newProduct.size &&
-        //         item.color === newProduct.color,
-        // );
-
-        // if (existingProductIndex !== -1) {
-        //     // Nếu sản phẩm đã tồn tại, tăng số lượng
-        //     currentCart[existingProductIndex].quantity += 1;
-        // } else {
-        //     // Nếu sản phẩm chưa tồn tại, thêm vào giỏ
-        //     currentCart.push(newProduct);
-        // }
-
-        // sessionStorage.setItem('cart', JSON.stringify(currentCart));
 
         // Lấy giỏ hàng hiện tại từ sessionStorage
         const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
@@ -169,37 +155,37 @@ export default function ProductDetail() {
                     <div className={cx('color-selection')}>
                         <p>COLOR</p>
                         <div className={cx('color-options')}>
-                            {productDetail.colors &&
-                                productDetail.colors.map((color, index) => (
-                                    <button
-                                        key={index}
-                                        className={cx('color-option', {
-                                            active: selectedColor === color.colorId,
-                                        })}
-                                        style={{
-                                            backgroundColor: colors[color.colorName] || '#000',
-                                        }}
-                                        onClick={() => setSelectedColor(color.colorId)}
-                                    ></button>
-                                ))}
+                            {uniqueColors.map((color, index) => (
+                                <button
+                                    key={index}
+                                    className={cx('color-option', {
+                                        active: selectedColor === color.colorId,
+                                    })}
+                                    style={{
+                                        backgroundColor: colors[color.colorName] || '#000',
+                                    }}
+                                    onClick={() => setSelectedColor(color.colorId)}
+                                ></button>
+                            ))}
                         </div>
                     </div>
 
                     <div className={cx('size-selection')}>
                         <p>SIZE</p>
                         <div className={cx('size-options')}>
-                            {productDetail.sizes &&
-                                productDetail.sizes.map((size) => (
-                                    <button
-                                        key={size.sizeId}
-                                        className={cx('size-option', {
-                                            active: selectedSize === size,
-                                        })}
-                                        onClick={() => setSelectedSize(size)}
-                                    >
-                                        {size.sizeName}
-                                    </button>
-                                ))}
+                   
+                      
+                            {uniqueSizes.map((size) => (
+                                <button
+                                    key={size.sizeId}
+                                    className={cx('size-option', {
+                                        active: selectedSize === size.sizeId,
+                                    })}
+                                    onClick={() => setSelectedSize(size.sizeId)}
+                                >
+                                    {size.sizeName}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
@@ -213,6 +199,11 @@ export default function ProductDetail() {
                             onClick={() => {
                                 if (!selectedSize || !selectedColor) {
                                     alert('Please select both size and color before proceeding.');
+                                    return;
+                                }
+                                if (!isLoggedIn) {
+                                    alert('Please login to proceed with the purchase.');
+                                    navigate('/login');
                                     return;
                                 }
 
