@@ -39,6 +39,9 @@ function RecentOrders() {
             const filters = {
                 id: searchQuery || undefined, // Tìm kiếm theo ID (nếu có)
             };
+            console.log('====================================');
+            console.log('id', filters.id);
+            console.log('====================================');
             const filteredOrders = await Api_InvoiceAdmin.searchInvoices(filters); // Gọi API tìm kiếm theo ID
             setOrders(filteredOrders); // Cập nhật state với kết quả tìm kiếm
         } catch (error) {
