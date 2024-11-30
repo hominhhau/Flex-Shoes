@@ -29,7 +29,7 @@ export default function ProductDetail() {
 
     const [productDetail, setProductDetail] = useState(null);
     const [selectedImage, setSelectedImage] = useState(0);
-    const [selectedColor, setSelectedColor] = useState('');
+    const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -155,16 +155,12 @@ export default function ProductDetail() {
                     <div className={cx('color-selection')}>
                         <p>COLOR</p>
                         <div className={cx('color-options')}>
-                            {uniqueColors.map((color, index) => (
+                            {uniqueColors.map((color) => (
                                 <button
-                                    key={index}
-                                    className={cx('color-option', {
-                                        active: selectedColor === color.colorId,
-                                    })}
-                                    style={{
-                                        backgroundColor: colors[color.colorName] || '#000',
-                                    }}
-                                    onClick={() => setSelectedColor(color.colorId)}
+                                    key={color.colorId}
+                                    className={cx('color-option', { active: selectedColor === color })}
+                                    style={{ backgroundColor: colors[color.colorName] || '#000' }}
+                                    onClick={() => setSelectedColor(color)}
                                 ></button>
                             ))}
                         </div>
@@ -173,15 +169,11 @@ export default function ProductDetail() {
                     <div className={cx('size-selection')}>
                         <p>SIZE</p>
                         <div className={cx('size-options')}>
-                   
-                      
                             {uniqueSizes.map((size) => (
                                 <button
                                     key={size.sizeId}
-                                    className={cx('size-option', {
-                                        active: selectedSize === size.sizeId,
-                                    })}
-                                    onClick={() => setSelectedSize(size.sizeId)}
+                                    className={cx('size-option', { active: selectedSize === size })}
+                                    onClick={() => setSelectedSize(size)}
                                 >
                                     {size.sizeName}
                                 </button>
