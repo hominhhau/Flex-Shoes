@@ -36,8 +36,8 @@ function Header({ user }) {
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
-            title: 'Setting', 
-            to: '/settings',
+            title: 'History', 
+            to: '/purchasedProductsList/1',
         },
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,

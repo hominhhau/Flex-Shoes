@@ -12,5 +12,5 @@ export const Api_Product = {
     getAllProducts: async () => ApiManager.get(`api/products/admin`),
 
     // Danh sách sản phẩm đã mua
-    getPurchasedProducts: async (id) => ApiManager.get(`/api/invoices/${customerId}`),
+    getPurchasedProducts: async (customerId) => ApiManager.get(`/api/invoices/${customerId}`),
 };

@@ -24,10 +24,10 @@ function Sildebar() {
                         <button className={cx('menu-item')}>All Product</button>
                     </div>
                 </Link>
-                <Link to="/admin">
+                <Link to="/managerCustomer">
                     <div className={cx('menu-wrapper')}>
                         <FontAwesomeIcon icon={faClipboardList} />
-                        <button className={cx('menu-item')}>Order List</button>
+                        <button className={cx('menu-item')}>Customer List</button>
                     </div>
                 </Link>
             </div>

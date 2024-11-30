@@ -85,7 +85,7 @@ const AllProduct = () => {
                             <p className={cx('summary')}>Summary</p>
                             <p className={cx('description')}>{product.description}</p>
                         </div>
-                        <div className={cx('stats')}>
+                        {/* <div className={cx('stats')}>
                             <div className={cx('stat-item')}>
                                 <p>Sales</p>
                                 <p>{product.quantity}</p>
@@ -94,7 +94,7 @@ const AllProduct = () => {
                                 <p>Remaining Products</p>
                                 <p>{product.quantity}</p>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 ))}
             </div>

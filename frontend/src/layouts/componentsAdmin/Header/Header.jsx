@@ -22,11 +22,11 @@ function Header() {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
     const userMenu = [
-        {
-            icon: <FontAwesomeIcon icon={faGear} />,
-            title: 'Setting',
-            to: '/settings',
-        },
+        // {
+        //     icon: <FontAwesomeIcon icon={faGear} />,
+        //     title: 'Setting',
+        //     to: '/settings',
+        // },
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',

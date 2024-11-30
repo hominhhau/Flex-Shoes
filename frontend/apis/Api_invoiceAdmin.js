@@ -32,5 +32,4 @@ export const Api_InvoiceAdmin = {
     delete: async (id) => ApiManager.delete(`api/invoiceDetail/delete/${id}`),
 
     updateQuantityAfterCheckout: async (data) => ApiManager.put(`api/product/updateQuantityAfterCheckout`, data),
-
-}
+};
