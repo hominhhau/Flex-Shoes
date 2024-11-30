@@ -67,6 +67,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
       return newQuantity;
     });
   };
+
   const handleCheckboxChange = () => {
     const newCheckedState = !isChecked;
     setIsChecked(newCheckedState); // Cập nhật trạng thái trong con
@@ -74,6 +75,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
       onCheckboxChange(newCheckedState); // Gọi callback để gửi trạng thái lên cha
     }
   };
+  
   return (
     <main className={cx('bagContainer')}>
       <section className={cx('productContainer')}>

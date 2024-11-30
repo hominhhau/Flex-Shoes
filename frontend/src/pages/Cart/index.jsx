@@ -104,10 +104,20 @@ function Cart() {
     // const handleQuantityChange = (id, newQuantity) => {
     //     setData(data.map((product) => (product.id === id ? { ...product, quantity: newQuantity } : product)));
     // };
+
     // Hàm cập nhật số lượng sản phẩm
+    // const handleQuantityChange = (id, newQuantity) => {
+    //     setData(data.map((product) => (product.id === id ? { ...product, quantity: newQuantity } : product)));
+    //     sessionStorage.setItem('cart', JSON.stringify(data));
+    // };
+
     const handleQuantityChange = (id, newQuantity) => {
-        setData(data.map((product) => (product.id === id ? { ...product, quantity: newQuantity } : product)));
-        sessionStorage.setItem('cart', JSON.stringify(data));
+        const updatedData = data.map((product) =>
+            product.id === id ? { ...product, quantity: newQuantity } : product
+        );
+        setData(updatedData);
+        // Lưu trạng thái mới vào sessionStorage
+        sessionStorage.setItem('cart', JSON.stringify(updatedData));
     };
 
     // const totalProducts = data.length;
@@ -124,33 +134,33 @@ function Cart() {
 
     const [checkedItems, setCheckedItems] = useState([]); // Lưu danh sách sản phẩm được chọn
 
-    // Hàm xử lý khi checkbox thay đổi
     const handleCheckboxChange = (isChecked, product) => {
-        if (isChecked) {
-            setCheckedItems((prev) => [...prev, product]);
-        } else {
-            setCheckedItems((prev) =>
-                prev.filter((item) => item.id !== product.id || item.sizeOptions !== product.sizeOptions),
-            );
-        }
+        setCheckedItems((prev) => {
+            if (isChecked) {
+                // Nếu chọn checkbox, thêm sản phẩm vào checkedItems
+                return [...prev, product];
+            } else {
+                // Nếu bỏ chọn checkbox, loại bỏ sản phẩm khỏi checkedItems
+                return prev.filter(
+                    (item) => item.id !== product.id || item.sizeOptions !== product.sizeOptions || item.color !== product.color,
+                );
+            }
+        });
     };
 
-    // Tính tổng số lượng và tổng tiền dựa trên danh sách sản phẩm được chọn
-    //   const totalProducts = checkedItems.reduce((acc, product) => acc + product.quantity, 0);
-    //   const totalAmount = checkedItems.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
     const [totalProducts, setTotalProducts] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
 
     // Sử dụng useEffect để tính lại tổng tiền mỗi khi data hoặc checkedItems thay đổi
     useEffect(() => {
-        const checkedProducts = data.filter((product) => checkedItems.some((item) => item.id === product.id));
-        const newTotalAmount = checkedProducts.reduce((acc, product) => acc + product.price * product.quantity, 0);
-        const newTotalProducts = checkedProducts.reduce((acc, product) => acc + product.quantity, 0);
-
+        //const checkedProducts = data.filter((product) => checkedItems.some((item) => item.id === product.id));
+        const checkedProducts = checkedItems;
+        const newTotalAmount = checkedProducts.reduce((acc, product) => acc + product.price * product.quantity,0);
+        const newTotalProducts = checkedProducts.length
         setTotalAmount(newTotalAmount);
         setTotalProducts(newTotalProducts);
-    }, [data, checkedItems]); // Cập nhật khi data hoặc checkedItems thay đổi
+    }, [checkedItems]); // Cập nhật khi data hoặc checkedItems thay đổi
 
     return (
         <div className={cx('wrapper')}>
