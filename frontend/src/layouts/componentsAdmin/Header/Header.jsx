@@ -31,8 +31,7 @@ function Header() {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
             separate: true,
-            onClick: (() => handleLogout()),
-    
+            onClick: () => handleLogout(),
         },
     ];
     const handleLogout = async () => {
@@ -42,10 +41,9 @@ function Header() {
             // Xóa token và role vào localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('role');
-            setIsLoggedIn(false); 
-            setRole(false); 
+            setIsLoggedIn(false);
+            setRole(false);
             navigate(config.routes.home);
-
         } catch (err) {
             console.error('Logout failed:', err.message);
             setError('Logout failed');
@@ -59,7 +57,7 @@ function Header() {
                 </Link>
             </div>
             <div className={cx('menu')}>
-                <Search />
+                {/* <Search /> */}
                 <Link to="/admin">
                     <button className={cx('menu-item')}>
                         <FontAwesomeIcon icon={faBell} />

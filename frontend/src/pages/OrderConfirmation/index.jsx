@@ -21,12 +21,8 @@ const OrderConfirmation = () => {
         <div className="max-w-2xl mx-auto p-6">
             <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
                 <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold text-green-600 mb-2">
-                        Thanh toán thành công!
-                    </h1>
-                    <p className="text-gray-600">
-                        Cảm ơn bạn đã mua hàng. Dưới đây là chi tiết đơn hàng của bạn.
-                    </p>
+                    <h1 className="text-2xl font-bold text-green-600 mb-2">Thanh toán thành công!</h1>
+                    <p className="text-gray-600">Cảm ơn bạn đã mua hàng. Dưới đây là chi tiết đơn hàng của bạn.</p>
                 </div>
 
                 <div className="border-t border-b py-4 mb-4">
@@ -64,4 +60,4 @@ const OrderConfirmation = () => {
     );
 };
 
-export default OrderConfirmation; 
+export default OrderConfirmation;
