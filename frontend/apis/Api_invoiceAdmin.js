@@ -17,6 +17,8 @@ export const Api_InvoiceAdmin = {
 
     getInvoiceDetail: async (id) => ApiManager.get(`api/invoices/findDetailById/${id}`),
 
+    createInvoice: async (data) => ApiManager.post(`api/invoices/add`, data),
+
     updateInvoice: async (data) => ApiManager.put(`api/invoices/updateInvoice`, data),
 
     // Tìm kiếm hóa đơn dựa trên ID, tên khách hàng, hoặc trạng thái đơn hàng
@@ -29,4 +31,6 @@ export const Api_InvoiceAdmin = {
 
     delete: async (id) => ApiManager.delete(`api/invoiceDetail/delete/${id}`),
 
-};
+    updateQuantityAfterCheckout: async (data) => ApiManager.put(`api/product/updateQuantityAfterCheckout`, data),
+
+}

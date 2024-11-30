@@ -4,12 +4,12 @@ import styles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
 import InputField from './InputField';
 import DeliveryOptionsButton from './DelivelyOptions';
+import PaymentOptionsButton from './PaymentOptionsButton';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
 
 import { Api_Payment } from '../../../apis/Api_Payment';
-
-import axios from 'axios';
+import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
 
 const cx = classNames.bind(styles);
 
@@ -24,29 +24,30 @@ const CheckoutForm = () => {
     const [lastName, setLastName] = useState('');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
-
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+    const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('unpaid');
-
     const location = useLocation();
     console.log(location.state);
-
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
     console.log('Checkout data:', cartData);
-
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee);
 
     const handleDeliveryChange = (newDeliveryFee) => {
         console.log('New delivery fee:', newDeliveryFee);
         setSelectedDeliveryFee(newDeliveryFee);
+        setSelectedDeliveryMethod(newDeliveryFee === 0 ? 'Collect in store' : 'Standard Delivery');
     };
 
     const handleQuantityChange = (productId, newQuantity) => {
         const updatedCartData = cartData.map((product) =>
-            product.id === productId ? { ...product, quantity: newQuantity } : product,
+            product.productId === productId ? { ...product, quantity: newQuantity } : product,
         );
         console.log('Updated cart data:', updatedCartData);
-        // Update state with the new cartData array
-        // setCartData(updatedCartData); // Uncomment if cartData is managed locally in state
+    };
+    const handlePaymentChange = (paymentMethod) => {
+        console.log('Selected payment method:', paymentMethod);
+        setSelectedPaymentMethod(paymentMethod);
     };
 
     // const handlePlaceOrder = () => {
@@ -103,31 +104,42 @@ const CheckoutForm = () => {
         try {
             // Chuyển đổi tổng tiền sang VND
             const totalInVND = Math.round(totalAmount * 23000);
-
+            console.log('invoiceData:', cartData);
             const invoiceData = {
-                //Sửa tên field id trong cartData thành tên field : productId
                 invoiceDetails: cartData.map((product) => ({
                     productId: product.productId,
                     quantity: product.quantity,
                 })),
-                //invoiceId: Date.now().toString(), // Tạo ID tạm thời (hoặc lấy từ server)
+
                 issueDate: new Date().toISOString().split('T')[0], //YYYY-MM-DD lấy ptu đầu tiên của mảng [0]
                 receiverNumber: phone,
                 receiverName: `${firstName} ${lastName}`,
                 receiverAddress: address,
-                paymentMethod: 'VNPay',
-                deliveryMethod: 'Express',
+                paymentMethod: selectedPaymentMethod.toString(),
+                deliveryMethod: selectedDeliveryMethod.toString(),
                 customerId: 1,
                 orderStatus: 'Processing',
                 total: totalInVND,
             };
-            // in ra invoiceDetails
-            console.log('invoiceDetails fsfsdfsdf:', invoiceData.invoiceDetails);
 
             console.log('Sending invoice data to server:', invoiceData);
 
             // Gửi dữ liệu đơn hàng lên server
-            const invoiceResponse = await axios.post('http://localhost:8080/api/invoices/add', invoiceData);
+
+            const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
+            console.log('Received Invoice:', invoiceResponse);
+            //Update quantity after checkout
+            const handleCartData = cartData.map((product) => ({
+                productId: product.productId,
+                quantity: product.quantity,
+                colorName: product.color,
+                sizeName: product.size,
+            }));
+            console.log('handleCartData:', handleCartData);
+            const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
+            console.log('Updated quantity:', updateQuantity);
+
+            //Update quantity after checkout
 
             // if (!invoiceResponse?.data?.id) {
             //     throw new Error('Không thể lấy ID đơn hàng từ phản hồi server.');
@@ -138,20 +150,28 @@ const CheckoutForm = () => {
             // }
 
             // Lấy `invoiceId` từ phản hồi server
-            const invoiceID = invoiceResponse.data.id;
-            console.log('Received Invoice ID:', invoiceID);
 
-            // Gọi API VNPay để lấy URL thanh toán
-            const paymentResponse = await Api_Payment.createPayment({
-                total: totalInVND,
-                invoiceId: invoiceID, // ID đơn hàng từ server
-            });
+            if (!(selectedPaymentMethod === 'Cash on Delivery')) {
+                const paymentResponse = await Api_Payment.createPayment({
+                    total: totalInVND,
+                    invoiceId: invoiceResponse.invoiceId, // ID đơn hàng từ server
+                });
 
-            if (paymentResponse?.URL) {
-                window.location.href = paymentResponse.URL;
-            } else {
-                throw new Error('Không nhận được URL thanh toán từ VNPay.');
+                if (paymentResponse?.URL) {
+                    window.location.href = paymentResponse.URL;
+                } else {
+                    alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+                    throw new Error('Không nhận được URL thanh toán từ VNPay.');
+                }
             }
+            // Xóa product da mua trong giỏ hàng sau khi đặt hàng
+            //su dung filter de loai bo product da mua
+            const newCartData = cartData.filter(
+                (product) => !invoiceData.invoiceDetails.some((item) => item.productId === product.productId),
+            );
+            sessionStorage.setItem('cart', JSON.stringify(newCartData));
+
+            alert('Đặt hàng thành công!');
         } catch (error) {
             console.error('Lỗi khi xử lý thanh toán:', error);
             alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
@@ -242,7 +262,9 @@ const CheckoutForm = () => {
                 <br />
                 {/* Delivery */}
                 <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} />
-
+                <br />
+                {/* Payment */}
+                <PaymentOptionsButton onPaymentChange={handlePaymentChange} />
                 {/* Checkbox */}
                 <section className={cx('checkoutOptions')}>
                     <div className={cx('option')}>
