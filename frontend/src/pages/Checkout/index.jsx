@@ -155,8 +155,12 @@ const CheckoutForm = () => {
             if (!(selectedPaymentMethod === 'Cash on Delivery')) {
                 const paymentResponse = await Api_Payment.createPayment({
                     total: totalInVND,
-                    invoiceId: invoiceResponse.invoiceId, // ID đơn hàng từ server
+                    invoiceId: invoiceResponse.invoiceId 
+                    // invoiceId: Math.floor(Math.random() * 1000000),
                 });
+                console.log('====================================');
+                console.log("invoiceId", invoiceResponse.invoiceId);
+                console.log('====================================');
 
                 if (paymentResponse?.URL) {
                     window.location.href = paymentResponse.URL;
