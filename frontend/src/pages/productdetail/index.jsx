@@ -109,13 +109,34 @@ export default function ProductDetail() {
         console.log('Product added to cart:', newProduct);
         console.log('Trước khi truyền: ', newProduct.size);
 
-        // Lấy giỏ hàng hiện tại từ sessionStorage
-        const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-        //Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
-        const updatedCart = [...existingCart, newProduct];
+        // // Lấy giỏ hàng hiện tại từ sessionStorage
+        const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+
+        // // Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
+        const existingProductIndex = currentCart.findIndex(
+            (item) =>
+                item.productId === newProduct.productId &&
+                item.size === newProduct.size &&
+                item.color === newProduct.color,
+        );
+
+        if (existingProductIndex !== -1) {
+            // Nếu sản phẩm đã tồn tại, tăng số lượng
+            currentCart[existingProductIndex].quantity += newProduct.quantity;
+        } else {
+            // Nếu sản phẩm chưa tồn tại, thêm vào giỏ
+            currentCart.push(newProduct);
+        }
+
+        // sessionStorage.setItem('cart', JSON.stringify(currentCart));
+
+        // // Lấy giỏ hàng hiện tại từ sessionStorage
+        // const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        // //Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
+        // const updatedCart = [...existingCart, newProduct];
 
         // Cập nhật giỏ hàng trong sessionStorage
-        sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+        sessionStorage.setItem('cart', JSON.stringify(currentCart));
         alert('Product added to cart!');
 
         // // Điều hướng đến trang giỏ hàng
@@ -193,20 +214,49 @@ export default function ProductDetail() {
                                     alert('Please select both size and color before proceeding.');
                                     return;
                                 }
-                                if (!isLoggedIn) {
-                                    alert('Please login to proceed with the purchase.');
-                                    navigate('/login');
-                                    return;
+
+                                // Tạo đối tượng sản phẩm cho Buy It Now
+                                const newProduct = {
+                                    productId: productDetail.productId,
+                                    name: productDetail.productName,
+                                    size: selectedSize.sizeName,
+                                    color: selectedColor.colorName,
+                                    price: productDetail.salePrice,
+                                    image: productDetail.images[0],
+                                    quantity: 1,
+                                };
+
+                                // Lấy giỏ hàng hiện tại từ sessionStorage
+                                const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+
+                                // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+                                const existingProductIndex = currentCart.findIndex(
+                                    (item) =>
+                                        item.productId === newProduct.productId &&
+                                        item.size === newProduct.size &&
+                                        item.color === newProduct.color,
+                                );
+
+                                if (existingProductIndex !== -1) {
+                                    // Nếu sản phẩm đã có, tăng số lượng
+                                    currentCart[existingProductIndex].quantity += 1;
+                                } else {
+                                    // Nếu sản phẩm chưa có, thêm vào giỏ
+                                    currentCart.push(newProduct);
                                 }
 
+                                // Lưu giỏ hàng vào sessionStorage
+                                sessionStorage.setItem('cart', JSON.stringify(currentCart));
+
+                                // Điều hướng đến trang giỏ hàng
                                 navigate('/cart', {
                                     state: {
-                                        productId: productDetail.productId, // ID của sản phẩm
-                                        name: productDetail.productName, // Tên sản phẩm
-                                        size: selectedSize.sizeName, // Tên size
-                                        color: selectedColor.colorName, // Tên màu
-                                        price: productDetail.salePrice, // Giá giảm
-                                        image: productDetail.images[0], // Ảnh chính
+                                        productId: productDetail.productId,
+                                        name: productDetail.productName,
+                                        size: selectedSize.sizeName,
+                                        color: selectedColor.colorName,
+                                        price: productDetail.salePrice,
+                                        image: productDetail.images[0],
                                     },
                                 });
                             }}

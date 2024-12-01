@@ -51,7 +51,8 @@
 }
 
 .productDetailsContainer {
-  flex: 1;/* Cho phép vùng chi tiết chiếm toàn bộ không gian còn lại */
+  flex: 1;
+  /* Cho phép vùng chi tiết chiếm toàn bộ không gian còn lại */
   display: flex;
   min-width: 240px;
   flex-direction: column;
@@ -139,7 +140,7 @@
   color: #333;
   background-color: #fff;
   border: 1px solid #ccc;
-  border-radius: 50%; 
+  border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -177,10 +178,14 @@
 }
 
 input[type="checkbox"] {
-  width: 24px; /* Đặt chiều rộng */
-  height: 24px; /* Đặt chiều cao */
-  transform: scale(1.7); /* Phóng to checkbox */
-  cursor: pointer; /* Hiển thị con trỏ pointer khi rê chuột */
+  width: 24px;
+  /* Đặt chiều rộng */
+  height: 24px;
+  /* Đặt chiều cao */
+  transform: scale(1.7);
+  /* Phóng to checkbox */
+  cursor: pointer;
+  /* Hiển thị con trỏ pointer khi rê chuột */
 }
 
 .checkbox {
@@ -194,7 +199,8 @@ input[type="checkbox"] {
 }
 
 .checkbox:checked {
-  background-color: #ff5757; /* Màu nền khi được chọn */
+  background-color: #ff5757;
+  /* Màu nền khi được chọn */
 }
 
 .checkboxLabel {

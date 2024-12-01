@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './PurchasedProductsList.module.scss';
-import { Api_Product } from "../../../apis/Api_Product";  // Đảm bảo import đúng
-import { useParams } from "react-router-dom";  // Để lấy tham số từ URL
+import { Api_Product } from '../../../apis/Api_Product'; // Đảm bảo import đúng
+import { useParams } from 'react-router-dom'; // Để lấy tham số từ URL
 
 const cx = classNames.bind(styles);
 
@@ -13,9 +13,8 @@ function PurchasedProductsList() {
     const totalSpent = purchasedProducts.reduce((sum, product) => sum + product.total, 0);
 
     // Lấy customerId từ URL
-    const { id } = useParams();  // Lấy id từ URL
-    console.log("Customer ID from URL:", id);  // Kiểm tra giá trị của id
-
+    const { id } = useParams(); // Lấy id từ URL
+    console.log('Customer ID from URL:', id); // Kiểm tra giá trị của id
 
     useEffect(() => {
         const fetchPurchasedProducts = async () => {
@@ -25,10 +24,10 @@ function PurchasedProductsList() {
             try {
                 // Gọi API với customerId từ URL
                 const response = await Api_Product.getPurchasedProducts(id);
-                console.log("Response từ API:", response);  // Kiểm tra dữ liệu trả về từ API
+                console.log('Response từ API:', response); // Kiểm tra dữ liệu trả về từ API
                 if (response) {
                     setPurchasedProducts(response);
-                    console.log("Response từ API:", response);  // Kiểm tra dữ liệu trả về từ API
+                    console.log('Response từ API:', response); // Kiểm tra dữ liệu trả về từ API
                 }
             } catch (error) {
                 setError(error.message);
@@ -40,7 +39,7 @@ function PurchasedProductsList() {
         if (id) {
             fetchPurchasedProducts();
         }
-    }, [id]);  // Giám sát sự thay đổi của id
+    }, [id]); // Giám sát sự thay đổi của id
 
     if (loading) {
         return <div>Loading...</div>;
@@ -87,18 +86,14 @@ function PurchasedProductsList() {
                                 <td className={cx('tableCell')}>
                                     {new Date(product.issueDate).toLocaleDateString('vi-VN')}
                                 </td>
-                                <td className={cx('tableCell')}>
-                                    {product.total.toLocaleString('vi-VN')} ₫
-                                </td>
+                                <td className={cx('tableCell')}>{product.total.toLocaleString('vi-VN')} ₫</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
             <div className={cx('cardFooter')}>
-                <div className={cx('totalSpent')}>
-                    Tổng chi tiêu: {totalSpent.toLocaleString('vi-VN')} ₫
-                </div>
+                <div className={cx('totalSpent')}>Tổng chi tiêu: {totalSpent.toLocaleString('vi-VN')} ₫</div>
             </div>
         </div>
     );
