@@ -39,7 +39,7 @@ const publicRoutes = [
     { path: config.routes.register, component: Register },
     { path: config.routes.dashboard, component: Dashboard },
     { path: '/payment-return', component: PaymentReturn },
-    { path: 'payment-failed', component: PaymentReturn },
+    // { path: 'payment-failed', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
     { path: config.routes.managerCustomer, component: ManagerCustomer },
 
@@ -51,7 +51,7 @@ const publicRoutes = [
     //admin
     { path: config.routes.OrderDetails, component: OrderDetails },
     { path: config.routes.addNewProduct, component: AddNewProduct },
-    { path: 'payment-failed', component: Home },
+    { path: '/payment-failed', component: Home },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };
