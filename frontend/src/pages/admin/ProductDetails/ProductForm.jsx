@@ -9,6 +9,7 @@ import { ImageUploader } from './ImageUploader';
 import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import config1 from '../../../config';
+import  Modal from '../../../components/Modal';
 
 
 const cx = classNames.bind(styles);
@@ -21,6 +22,9 @@ const ProductForm = () => {
     const [brand, setBrand] = useState([]);
     const [category, setCategory] = useState([]);
     const [quantities, setQuantities] = useState([]);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [isAnnounce, setIsAnnounce] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -50,10 +54,10 @@ const ProductForm = () => {
             // Call API to update product details
             const response = await Api_AddProduct.updateProduct(product);
             console.log('Product updated:', response);
-            alert('Product updated successfully');
+            setIsSuccess(true);
         } catch (error) {
             console.error('Error updating product:', error);
-            alert('Failed to update product');
+            setIsError(true);
         }
     }
     const handleDeleteProduct = async () => {
@@ -61,17 +65,19 @@ const ProductForm = () => {
             // Call API to delete product
             const response = await Api_AddProduct.deleteProduct(productId);
            if(response){
-                alert('Product deleted successfully');
-                navigator(config1.routes.AllProduct);
+                setIsSuccess(true);
               }
            
         } catch (error) {
             console.error('Error deleting product:', error);
-            alert('Failed to delete product');
+            setIsError(true);
+
         }
     }
+    
 
     return (
+        <>
         <form className={cx('formContainer')} onSubmit={handleSummit} >
             <div className={cx('formContent')}>
                 <ProductDetails 
@@ -92,7 +98,7 @@ const ProductForm = () => {
                     Update
                 </button>
                 <button type="button" className={cx('button', 'deleteButton')} 
-                    onClick={handleDeleteProduct}
+                    onClick={() => setIsAnnounce(true)}
                 >
                     Delete
                 </button>
@@ -103,6 +109,50 @@ const ProductForm = () => {
                 </button>
             </div>
         </form>
+          {isSuccess && (
+                <Modal
+                    valid={true}
+                    title="Success!"
+                    message="Your information has been updated successfully"
+                    isConfirm={true}
+                    onConfirm={() => navigator(config1.routes.AllProduct)}
+                    contentConfirm={'OK'}
+                />
+            )}
+            {
+                isError && (
+                    <Modal
+                        valid={false}
+                        title="Failed!"
+                        message="Please check your information again or try again later"
+                        isConfirm={true}
+                        onConfirm={handleTryAgain}
+                        contentConfirm={'OK'}
+                        
+                    />
+                )
+            }
+            {
+                isAnnounce && (
+                    <Modal
+                        valid={true}
+                        title="Announce!"
+                        message="Do you want to delete this product?"
+                        isConfirm={true}
+                        isCancel={true}
+                        onConfirm={
+                            () => {
+                                handleDeleteProduct();
+                                setIsAnnounce(false);
+                            }}
+                        onCancel={() => setIsAnnounce(false)}
+                        contentConfirm={'Yes'}
+                        contentCancel={'No'}
+                    />
+                )
+            }
+        
+        </>
     );
 };
 

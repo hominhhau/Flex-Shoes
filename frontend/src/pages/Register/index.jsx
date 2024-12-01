@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 import {Api_Auth} from '../../../apis/Api_Auth';
 import styles from './Register.module.scss';
-import config from '../../config';
 import Modal  from '../../components/Modal/Modal'; 
 
 
@@ -32,6 +31,7 @@ function Register() {
         password: ''
     })
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
     const [validFields, setValidFields] = useState({
         fname: true,
         lname: true,
@@ -116,6 +116,7 @@ function Register() {
             setIsSuccess(true);
         } catch (err) {
             console.error('Register failed:', err.message);
+            setIsError(true);
         }
     }
    
@@ -127,11 +128,11 @@ function Register() {
 
     }
     const handleLoginRedirect = () => {
-        navigate("/login"); // Chuyển đến trang đăng nhập
+        navigate("/login"); 
     };
 
-    const handleHomeRedirect = () => {
-        navigate("/"); // Trở về trang chủ
+    const handleTryAgain = () => {
+        setIsError(false);
     };
 
 
@@ -319,14 +320,29 @@ function Register() {
             </div>
             {isSuccess && (
                 <Modal
+                    valid={true}
                     title="Registration Successful!"
-                    message="Would you like to login or return to the homepage?"
+                    message="You may now login with your account"
+                    isConfirm={true}
                     onConfirm={handleLoginRedirect}
-                    onCancel={handleHomeRedirect}
-                    contentButtonRight="Go to HomePage"
-                    contentButtonLeft="Go to LoginPage"
+                    contentConfirm={'OK'}
                 />
             )}
+            {
+                isError && (
+                    <Modal
+                        valid={false}
+                        title="Registration Failed!"
+                        message="Please check your information again!"
+                        isConfirm={true}
+                        isCancel={true}
+                        onConfirm={handleTryAgain}
+                        onCancel={handleLoginRedirect}
+                        contentConfirm={'Try again'}
+                        contentCancel="Login page"
+                    />
+                )
+            }
         </div>
         
     );

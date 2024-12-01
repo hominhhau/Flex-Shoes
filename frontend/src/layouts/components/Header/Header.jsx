@@ -31,13 +31,12 @@ const cx = classNames.bind(styles);
 
 function Header({ user }) {
     const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
-    const navigate = useNavigate();
-
+    const customerID = localStorage.getItem('customerId');
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
             title: 'History', 
-            to: '/purchasedProductsList/1',
+            to: `/purchasedProductsList/${customerID}`,
         },
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
@@ -54,6 +53,7 @@ function Header({ user }) {
             // Xóa token và role vào localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('role');
+            localStorage.removeItem('customerId');
             setIsLoggedIn(false); 
             setRole(false);    
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
 import InputField from './InputField';
@@ -7,6 +7,7 @@ import DeliveryOptionsButton from './DelivelyOptions';
 import PaymentOptionsButton from './PaymentOptionsButton';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
+import  Modal  from '../../components/Modal';
 
 import { Api_Payment } from '../../../apis/Api_Payment';
 import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
@@ -17,7 +18,7 @@ const CheckoutForm = () => {
     const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(false);
     const [isOver13, setIsOver13] = useState(false);
     const [newsletterSubscription, setNewsletterSubscription] = useState(false);
-
+    const navigator = useNavigate();
     //State user enter
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -27,6 +28,8 @@ const CheckoutForm = () => {
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
     const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('unpaid');
+    const [isCompleted, setIsCompleted] = useState(false);
+    const [isFailed, setIsFailed] = useState(false);
     const location = useLocation();
     console.log(location.state);
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
@@ -105,6 +108,8 @@ const CheckoutForm = () => {
             console.log('cartData:', cartData);
             // Chuyển đổi tổng tiền sang VND
             const totalInVND = Math.round(totalAmount * 23000);
+            const customerID = localStorage.getItem('customerId');
+            console.log('customerID:', customerID);
             console.log('invoiceData:', cartData);
             const invoiceData = {
                 invoiceDetails: cartData.map((product) => ({
@@ -118,7 +123,7 @@ const CheckoutForm = () => {
                 receiverAddress: address,
                 paymentMethod: selectedPaymentMethod.toString(),
                 deliveryMethod: selectedDeliveryMethod.toString(),
-                customerId: 1,
+                customerId: customerID,
                 orderStatus: 'Processing',
                 total: totalInVND,
             };
@@ -140,17 +145,6 @@ const CheckoutForm = () => {
             const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
             console.log('Updated quantity:', updateQuantity);
 
-            //Update quantity after checkout
-
-            // if (!invoiceResponse?.data?.id) {
-            //     throw new Error('Không thể lấy ID đơn hàng từ phản hồi server.');
-            // }
-
-            // if (!invoiceResponse || !invoiceResponse.data) {
-            //     throw new Error('Không thể lưu thông tin đơn hàng.');
-            // }
-
-            // Lấy `invoiceId` từ phản hồi server
 
             if (!(selectedPaymentMethod === 'Cash on Delivery')) {
                 const paymentResponse = await Api_Payment.createPayment({
@@ -166,16 +160,18 @@ const CheckoutForm = () => {
                 }
             }
             // Xóa product da mua trong giỏ hàng sau khi đặt hàng
-            //su dung filter de loai bo product da mua
             const newCartData = cartData.filter(
                 (product) => !invoiceData.invoiceDetails.some((item) => item.productId === product.productId),
             );
             sessionStorage.setItem('cart', JSON.stringify(newCartData));
 
-            alert('Đặt hàng thành công!');
+            // Hiển thị thông báo đặt hàng thành công
+            setIsCompleted(true);
+
+
         } catch (error) {
             console.error('Lỗi khi xử lý thanh toán:', error);
-            alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+            setIsFailed(true);
         }
     };
 
@@ -339,8 +335,33 @@ const CheckoutForm = () => {
                     ) : (
                         <p>No items in the cart.</p>
                     )}
+                  
                 </div>
             </div>
+            {
+                    isCompleted &&
+                   <Modal
+                        valid={true}
+                        title="Order placed successfully!"
+                        message="Thank you for shopping with us."
+                        onConfirm={() => navigator(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
+                        isConfirm={true}
+                        contentConfirm="OK"
+                        isCancel={false}
+
+                    />
+                   }
+                   {
+                    isFailed &&
+                    <Modal
+                        valid={false}
+                        title="Order failed!"
+                        message="Please try again."
+                        onConfirm={() => navigator(`/cart`)}
+                        isConfirm={true}
+                        contentConfirm="OK"
+                    />
+                   }
         </main>
     );
 };

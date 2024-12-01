@@ -8,9 +8,11 @@ import { useNavigate } from 'react-router-dom';
 
 import styles from './Login.module.scss';
 import config from '../../config';
+import Modal from '../../components/Modal/Modal';
 
 import { Api_Auth } from '../../../apis/Api_Auth';
 import { useAuth } from '../../hooks/useAuth';
+
 
 const cx = classNames.bind(styles);
 
@@ -20,7 +22,7 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const { setIsLoggedIn } = useAuth();
-    const [error, setError] = useState(null);
+    const [isError, setIsError] = useState(false);
 
     const onChangeUserName = (e) => {
         setUsername(e.target.value);
@@ -28,16 +30,23 @@ function Login() {
     const handleLogin = async () => {
         try {
             const response = await Api_Auth.login(username, password); // Gọi API login
-            
             // Lưu token và role vào localStorage
             localStorage.setItem('token', response.result.token);
             localStorage.setItem('role', response.result.role);
+            if (response.result.role === 'USER') {
+                localStorage.setItem('customerId', response.result.customerId);
+            }
             setIsLoggedIn(true);
             navigate(config.routes.home);
+
         } catch (err) {
             console.error('Login failed:', err.message);
-            setError('Invalid username or password');
+            setIsError(true);
         }
+    };
+
+    const handleTryAgain = () => {
+        setIsError(false);
     };
 
     // Hàm xử lý khi form được submit
@@ -142,6 +151,19 @@ function Login() {
                     </button>
                 </div>
             </div>
+            {
+                isError && (
+                    <Modal
+                        valid={false}
+                        title="Registration Failed!"
+                        message="Please check your information again!"
+                        isConfirm={true}                      
+                        onConfirm={handleTryAgain}
+                        contentConfirm={'Try again'}
+                        contentCancel="Login page"
+                    />
+                )
+            }
         </div>
     );
 }
