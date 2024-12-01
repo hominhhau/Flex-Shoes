@@ -56,7 +56,7 @@ function Cart() {
                         name: productData.name,
                         color: productData.color,
                         sizeOptions: productData.size,
-                        price: parseFloat(productData.price),
+                        price: parseFloat(productData.finalPrice),
                         quantity: productData.quantity,
                     },
                 ]

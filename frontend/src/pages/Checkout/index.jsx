@@ -149,8 +149,8 @@ const CheckoutForm = () => {
             if (!(selectedPaymentMethod === 'Cash on Delivery')) {
                 const paymentResponse = await Api_Payment.createPayment({
                     total: totalInVND,
-                    invoiceId: invoiceResponse.invoiceId,
-                    // invoiceId: Math.floor(Math.random() * 1000000),
+                    // invoiceId: invoiceResponse.invoiceId,
+                    invoiceId: Math.floor(Math.random() * 1000000),
                 });
                 console.log('====================================');
                 console.log('invoiceId', invoiceResponse.invoiceId);

@@ -100,7 +100,7 @@ export default function ProductDetail() {
             name: productDetail.productName,
             size: selectedSize.sizeName,
             color: selectedColor.colorName,
-            price: productDetail.salePrice,
+            price: productDetail.finalPrice,
             image: productDetail.images[0],
             quantity: 1,
         };
@@ -172,7 +172,7 @@ export default function ProductDetail() {
                 <div className={cx('product-info')}>
                     <span className={cx('status')}>{productDetail.status}</span>
                     <h1 className={cx('product-name')}>{productDetail.productName}</h1>
-                    <p className={cx('product-price')}>${productDetail.salePrice.toFixed(2)}</p>
+                    <p className={cx('product-price')}>${productDetail.finalPrice.toFixed(2)}</p>
                     <div className={cx('color-selection')}>
                         <p>COLOR</p>
                         <div className={cx('color-options')}>
@@ -221,10 +221,12 @@ export default function ProductDetail() {
                                     name: productDetail.productName,
                                     size: selectedSize.sizeName,
                                     color: selectedColor.colorName,
-                                    price: productDetail.salePrice,
+                                    price: productDetail.finalPrice,
                                     image: productDetail.images[0],
                                     quantity: 1,
                                 };
+
+                                console.log('Product added to cart buy', newProduct);
 
                                 // Lấy giỏ hàng hiện tại từ sessionStorage
                                 const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
@@ -255,7 +257,7 @@ export default function ProductDetail() {
                                         name: productDetail.productName,
                                         size: selectedSize.sizeName,
                                         color: selectedColor.colorName,
-                                        price: productDetail.salePrice,
+                                        price: productDetail.finalPrice,
                                         image: productDetail.images[0],
                                     },
                                 });

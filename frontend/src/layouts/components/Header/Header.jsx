@@ -10,9 +10,8 @@ import {
     faGear,
     faCoins,
 } from '@fortawesome/free-solid-svg-icons';
-import {Api_Auth} from '../../../../apis/Api_Auth';
+import { Api_Auth } from '../../../../apis/Api_Auth';
 import { useNavigate } from 'react-router-dom';
-
 
 import config from '../../../config';
 import styles from './Header.module.scss';
@@ -35,7 +34,7 @@ function Header({ user }) {
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
-            title: 'History', 
+            title: 'History',
             to: `/purchasedProductsList/${customerID}`,
         },
         {
@@ -54,9 +53,8 @@ function Header({ user }) {
             localStorage.removeItem('token');
             localStorage.removeItem('role');
             localStorage.removeItem('customerId');
-            setIsLoggedIn(false); 
-            setRole(false);    
-
+            setIsLoggedIn(false);
+            setRole(false);
         } catch (err) {
             console.error('Logout failed:', err.message);
             setError('Logout failed');
@@ -91,10 +89,13 @@ function Header({ user }) {
                         <LogoIcon />
                     </div>
                 </Link>
+                <div className={cx('search')}>
+                    <Search />
+                </div>
+               
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>
-                            <Search />
                             <Link to={config.routes.cart}>
                                 <button className={cx('action-btn')}>
                                     <FontAwesomeIcon icon={faShoppingCart} />
