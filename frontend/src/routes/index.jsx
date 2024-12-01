@@ -51,6 +51,7 @@ const publicRoutes = [
     //admin
     { path: config.routes.OrderDetails, component: OrderDetails },
     { path: config.routes.addNewProduct, component: AddNewProduct },
+    { path: 'payment-failed', component: Home },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

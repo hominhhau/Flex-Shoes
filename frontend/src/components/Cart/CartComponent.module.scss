@@ -9,6 +9,9 @@
   max-width: 782px;
   flex-direction: column;
   padding: 16px;
+  padding: 16px;
+  //overflow-y: auto;//thêm cuộn dọc khi không đủ không gian
+  //max-height: 110vh;
 }
 
 @media (max-width: 991px) {
@@ -40,6 +43,7 @@
   align-items: start;
   gap: 24px;
   flex-wrap: wrap;
+  width: 100%;
   //background-color: aqua;
 }
 

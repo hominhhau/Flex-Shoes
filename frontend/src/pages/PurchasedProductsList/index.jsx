@@ -66,6 +66,7 @@ function PurchasedProductsList() {
                             <th className={cx('tableHead')}>Tên sản phẩm</th>
                             <th className={cx('tableHead')}>Số lượng</th>
                             <th className={cx('tableHead')}>Ngày mua</th>
+                            <th className={cx('tableHead')}>Trạng thái</th>
                             <th className={cx('tableHead')}>Tổng</th>
                         </tr>
                     </thead>
@@ -86,6 +87,7 @@ function PurchasedProductsList() {
                                 <td className={cx('tableCell')}>
                                     {new Date(product.issueDate).toLocaleDateString('vi-VN')}
                                 </td>
+                                <td className={cx('tableCell')}>{product.orderStatus}</td>
                                 <td className={cx('tableCell')}>{product.total.toLocaleString('vi-VN')} ₫</td>
                             </tr>
                         ))}
