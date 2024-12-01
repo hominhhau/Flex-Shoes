@@ -3,14 +3,17 @@ import { CiUser, CiDeliveryTruck } from 'react-icons/ci';
 import classNames from 'classnames/bind';
 import { IoBagHandle, IoPrintOutline, IoCalendarOutline, IoReloadCircle } from 'react-icons/io5';
 import { MdOutlineCancel } from 'react-icons/md';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import styles from './OrderDetails.module.scss';
 import { Api_InvoiceAdmin } from '../../../../apis/Api_invoiceAdmin';
+import Modal from '../../../components/Modal';
+import config from '../../../config';
 
 const cx = classNames.bind(styles);
 
 const OrderDetails = () => {
+    const navigate = useNavigate();
     const location = useLocation();
     const { invoiceId } = location.state || {}; // Lấy dữ liệu từ state
     const [loading, setLoading] = useState(true);
@@ -22,6 +25,9 @@ const OrderDetails = () => {
     const [tax, setTax] = useState(0);
     const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
+
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -46,10 +52,17 @@ const OrderDetails = () => {
         fetchInvoice();
     }, []);
     useEffect(() => {
-        const newSubtotal = details.reduce((total, product) => total + product.quantity * product.originalPrice, 0);
-        const newDiscount = details.reduce((total, product) => total + product.salePrice, 0);
+        const newSubtotal = details.reduce(
+            (total, product) =>
+                total + product.quantity * (product.originalPrice - product.originalPrice * (product.salePrice / 100)),
+            0,
+        );
+        const newDiscount = details.reduce(
+            (total, product) => total + product.originalPrice * (product.salePrice / 100),
+            0,
+        );
         const newTax = newSubtotal * 0.1; // 10% tax
-        const newTotal = newSubtotal + newTax - newDiscount;
+        const newTotal = newSubtotal + newTax;
 
         setSubtotal(newSubtotal);
         setDiscount(newDiscount);
@@ -61,11 +74,15 @@ const OrderDetails = () => {
         setInvoice({ ...invoice, orderStatus: event.target.value }); // Cập nhật giá trị khi thay đổi
     };
     const handleDeteleProduct = (detail) => {
-        const updatedDetails = details.filter((product) => product.productId !== detail.productId);
-        setDetails(updatedDetails);
-        //them product da xoa vao mang productDelete
-        setProductDelete([...productDelete, detail]);
-        console.log('size = ', productDelete.length);
+        try {
+            const updatedDetails = details.filter((product) => product.productId !== detail.productId);
+            setDetails(updatedDetails);
+            //them product da xoa vao mang productDelete
+            setProductDelete([...productDelete, detail]);
+            console.log('size = ', productDelete.length);
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
     };
     const handleUpdateInvoice = async () => {
         try {
@@ -78,9 +95,19 @@ const OrderDetails = () => {
             const data = { ...invoice, customerId: invoice.customerId, invoiceDetails: details, total: total };
             const response = await Api_InvoiceAdmin.updateInvoice(data);
             console.log('result = ', response.result);
+            setIsSuccess(true);
         } catch (error) {
             console.error('Error updating invoice:', error);
+            setIsError(true);
         }
+    };
+    const handleUpdateRedirect = () => {
+        setIsSuccess(false);
+        setIsError(false);
+        navigate(config.routes.dashboard);
+    };
+    const handleTryAgain = () => {
+        setIsError(false);
     };
 
     return (
@@ -221,6 +248,26 @@ const OrderDetails = () => {
                     </table>
                 </div>
             </div>
+            {isSuccess && (
+                <Modal
+                    valid={true}
+                    title="Update Success!"
+                    message="Your information has been updated successfully"
+                    isConfirm={true}
+                    onConfirm={handleUpdateRedirect}
+                    contentConfirm={'OK'}
+                />
+            )}
+            {isError && (
+                <Modal
+                    valid={false}
+                    title="Update Failed!"
+                    message="Please check your information again or try again later"
+                    isConfirm={true}
+                    onConfirm={handleTryAgain}
+                    contentConfirm={'OK'}
+                />
+            )}
         </div>
     );
 };
