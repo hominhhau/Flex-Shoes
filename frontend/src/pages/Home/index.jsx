@@ -11,6 +11,7 @@ import Reviews from '../../components/Reviews';
 import CategoriesShow from '../../layouts/components/CategoriesShow';
 
 import styles from './Home.module.scss';
+import ChatBot from '../chatbot/ChatBot';
 
 const cx = classNames.bind(styles);
 
@@ -51,6 +52,9 @@ function Home() {
                     <Reviews />
                 </div>
             </div>
+        
+        <ChatBot />
+        
         </div>
     );
 }

@@ -25,6 +25,8 @@ import ManagerCustomer from '../pages/admin/ManagerCustomer';
 // AllProduct
 import AllProduct from '../pages/admin/Allproduct/Allproduct';
 
+import AdminChat from '../pages/chatbot/ChatAdmin';
+
 const publicRoutes = [
     { path: config.routes.main, component: Home },
     // { path: config.routes.home, component: Home },
@@ -52,6 +54,7 @@ const publicRoutes = [
     { path: config.routes.OrderDetails, component: OrderDetails },
     { path: config.routes.addNewProduct, component: AddNewProduct },
     { path: '/payment-failed', component: Home },
+    { path: '/admin-chat', component: AdminChat },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };
