@@ -25,7 +25,7 @@ import ManagerCustomer from '../pages/admin/ManagerCustomer';
 // AllProduct
 import AllProduct from '../pages/admin/Allproduct/Allproduct';
 
-import AdminChat from '../pages/chatbot/ChatAdmin';
+import SidebarChat from '../pages/chatbot/SidebarChat';
 
 const publicRoutes = [
     { path: config.routes.main, component: Home },
@@ -54,7 +54,7 @@ const publicRoutes = [
     { path: config.routes.OrderDetails, component: OrderDetails },
     { path: config.routes.addNewProduct, component: AddNewProduct },
     { path: '/payment-failed', component: Home },
-    { path: '/admin-chat', component: AdminChat },
+    { path: '/admin-chat', component: SidebarChat },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

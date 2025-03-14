@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessages } from "../../redux/chatSlice";
 
 const ChatBot = () => {
+  const senderID = 3;  // khi login sẽ lấy từ user => chưa sửa
   const [isOpen, setIsOpen] = useState(false);
   const messages = useSelector((state) => state.chat.message);
   const [input, setInput] = useState("");
@@ -14,21 +15,20 @@ const ChatBot = () => {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    let res = await dispatch(sendMessages({ clientId: 2, senderId: 2, message: input }));
-    console.log("res", res);
+    let res = await dispatch(sendMessages({ clientId: senderID, senderId: 2, message: input }));
 
     if (res.payload.EC === 0) {
       setInput("");
-      await dispatch(getMessages());
+      await dispatch(getMessages({ senderID }));
     }
   };
 
   const fetchMessages = async () => {
-    await dispatch(getMessages());
+    await dispatch(getMessages({ senderID }));
   };
 
   useEffect(() => {
-    dispatch(getMessages());
+    dispatch(getMessages({ senderID }));
 
     const interval = setInterval(fetchMessages, 1000); // Lặp lại mỗi 1 giây
     return () => clearInterval(interval); // Cleanup khi component unmount
