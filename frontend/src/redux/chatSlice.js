@@ -7,7 +7,7 @@ const initialState = {
 };
 
 export const getMessages = createAsyncThunk('auth/getMessages', async (senderId, thunkAPI) => {
-    let response = await axios.post(`http://localhost:8080/show`, {senderId});
+    let response = await axios.post(`http://localhost:8080/show`, { senderId });
     return response.data;
 });
 

@@ -2,22 +2,44 @@ import { useState, useRef, useEffect } from "react";
 import { Search, Smile, Paperclip, Send } from "lucide-react";
 import "./SidebarChat.scss";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllSender } from "../../redux/chatSlice";
+// import { getAllSender } from "../../redux/chatSlice";
 import ChatAdmin from "./ChatAdmin";
 
 export default function SidebarChat() {
-    const senders = useSelector((state) => state.chat.senders);
+    // const senders = useSelector((state) => state.chat.senders);
+    const senders = [
+        {
+            clientId: 1,
+            name: "Nguyễn Văn A",
+            phoneNumber: "0123456789",
+            dateOfBirth: "2000-01-01",
+            time: "2023-10-01T12:00:00Z",
+        }, {
+            clientId: 2,
+            name: "Nguyễn Văn B",
+            phoneNumber: "0123456789",
+            dateOfBirth: "2000-01-01",
+            time: "2023-10-01T12:00:00Z",
+        },
+        {
+            clientId: 3,
+            name: "Nguyễn Văn C",
+            phoneNumber: "0123456789",
+            dateOfBirth: "2000-01-01",
+            time: "2023-10-01T12:00:00Z",
+        }
+    ]
     const [conversations, setConversations] = useState([]);
     const [info, setInfo] = useState({});
 
     const dispatch = useDispatch();
 
     const fetchListSender = async () => {
-        await dispatch(getAllSender());
+        // await dispatch(getAllSender());
     };
 
     useEffect(() => {
-        dispatch(getAllSender());
+        // dispatch(getAllSender());
 
         const interval = setInterval(fetchListSender, 1000); // Lặp lại mỗi 1 giây
         return () => clearInterval(interval); // Cleanup khi component unmount
@@ -53,17 +75,19 @@ export default function SidebarChat() {
         setConversations(
             senders.map(sender => ({
                 id: sender.clientId,
-                name: "Nguyễn Minh Tiến",
-                message: sender.message,
+                name: sender.name,
+                phoneNumber: sender.phoneNumber,
+                dateOfBirth: sender.dateOfBirth,
+                message: 'sender.message',
                 time: convertTime(new Date(sender.createdAt)),
                 avatar: "/placeholder.svg",
             }))
         );
-    }, [senders]);
+    }, []);
 
     const handleShowChat = (sender) => {
         setInfo({
-            id: sender.id,
+            clientId: sender.id,
             name: sender.name,
             avatar: sender.avatar,
             time: sender.time,

@@ -5,11 +5,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessages } from "../../redux/chatSlice";
 
 export default function ChatAdmin(props) {
-    const senderID = props.info.id;
+    const senderID = props.info.clientId;
     const name = props.info.name;
     const time = props.info.time;
     const avatar = props.info.avatar;
-    
+
     const [input, setInput] = useState("");
 
     const messages = useSelector((state) => state.chat.message);
