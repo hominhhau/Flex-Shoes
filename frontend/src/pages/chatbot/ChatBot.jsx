@@ -17,7 +17,7 @@ const ChatBot = () => {
     if (!input.trim()) return;
     let res = await dispatch(sendMessages({ clientId: senderID, senderId: 2, message: input }));
 
-    if (res.payload.EC === 0) {
+    if (res.meta.requestStatus === "fulfilled") {
       setInput("");
       await dispatch(getMessages({ senderID }));
     }

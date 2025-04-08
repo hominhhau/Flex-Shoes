@@ -20,7 +20,8 @@ export default function ChatAdmin(props) {
     const sendMessage = async () => {
         if (!input.trim()) return;
         let res = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: input }));
-        if (res.payload.EC === 0) {
+        
+        if (res.meta.requestStatus === "fulfilled") {
             setInput("");
             await dispatch(getMessages({ senderID }));
         }
