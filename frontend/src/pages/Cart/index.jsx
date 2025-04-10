@@ -15,33 +15,6 @@ function Cart() {
     const location = useLocation();
     const productData = location.state; // Không có || {} để tránh giá trị rỗng không xác định.
 
-    // const [data, setData] = useState(
-    //     [
-    //         productData
-    //             ? {
-    //                   id: productData.productId,
-    //                   image: productData.image,
-    //                   name: productData.name,
-    //                   color: productData.color,
-    //                   size: [productData.size],
-    //                   price: parseFloat(productData.price),
-    //                   quantity: 1,
-    //               }
-    //             : null,
-    //     ].filter(Boolean),
-    // );
-
-    // const [data, setData] = useState(() => {
-    //     const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-    //     return savedCart;
-    // });
-
-    // useEffect(() => {
-    //     // Lấy giỏ hàng từ sessionStorage mỗi khi trang được load lại
-    //     const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-    //     setData(savedCart);
-    // }, []);
-
     const [data, setData] = useState(() => {
         // Kiểm tra xem có dữ liệu giỏ hàng từ sessionStorage không
         const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
@@ -68,28 +41,13 @@ function Cart() {
         sessionStorage.setItem('cart', JSON.stringify(data));
     }, [data]);
 
-    //Check
-    console.log('Data hiển thị ghhgccg:  ', data);
-    console.log('Product Data:', productData);
-
     const navigate = useNavigate();
 
-    // const handleCheckout = () => {
-    //     console.log("Cart data before checkout: ", data);
-    //     navigate('/checkout', { state: { cartData: data } });
-    // };
-
-    const handleCheckout = () => {
+    const handleCheckout = () => { 
+          console.log('Dữ liệu giỏ hàng khi chuyển sang trang thanh toán:', data);
         navigate('/checkout', { state: { cartData: data, itemCount: totalProducts, totalAmount } });
+     
     };
-
-    // const handleRemove = (id) => {
-    //     console.log('Array trước khi xóa: ', data);
-    //     const updateData = data.filter((product) => product.id !== id);
-    //     setData(updateData);
-    //     console.log('Array sau khi xóa: ', updateData);
-    //     sessionStorage.setItem('cart', JSON.stringify(updateData));
-    // };
 
     const handleRemove = (id, color, size) => {
         console.log('Array trước khi xóa: ', data);
