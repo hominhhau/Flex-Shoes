@@ -21,7 +21,7 @@ export const Api_Listing = {
         }).toString();
 
 
-        return ApiManager.get(`/api/public/listing-products/filter?${params}`);
+        return ApiManager.get(`/inventory/filterProductsByCriteria?${params}`);
 
     },
 };
