@@ -29,12 +29,13 @@ function Login() {
     };
     const handleLogin = async () => {
         try {
-            const response = await Api_Auth.login(username, password); // Gọi API login
+            const data = await Api_Auth.login(username, password); // Gọi API login
             // Lưu token và role vào localStorage
-            localStorage.setItem('token', response.result.token);
-            localStorage.setItem('role', response.result.role);
-            if (response.result.role === 'USER') {
-                localStorage.setItem('customerId', response.result.customerId);
+            localStorage.setItem('token', data.response.token);
+            localStorage.setItem('role', JSON.stringify(data.response.roles));
+            // Nếu có điều kiện phân quyền
+            if (data.response.roles.some(role => role.authority === 'ROLE_USER')) {
+                localStorage.setItem('customerId', data.response.id); // hoặc data.customerId nếu có
             }
             setIsLoggedIn(true);
             navigate(config.routes.home);
@@ -155,7 +156,7 @@ function Login() {
                 isError && (
                     <Modal
                         valid={false}
-                        title="Registration Failed!"
+                        title="Login Failed!"
                         message="Please check your information again!"
                         isConfirm={true}                      
                         onConfirm={handleTryAgain}

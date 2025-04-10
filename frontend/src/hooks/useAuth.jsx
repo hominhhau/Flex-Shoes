@@ -8,8 +8,18 @@ export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false); // Biến trạng thái đăng nhập
     const [role, setRole] = useState(false); // Biến quyền hạn
     useEffect(() => {
-        (localStorage.getItem('token') != null) ? setIsLoggedIn(true) : setIsLoggedIn(false);
-        (localStorage.getItem('role') === 'ADMIN') ? setRole(true) : setRole(false);
+        const token = localStorage.getItem('token');
+        const storedRoles = localStorage.getItem('role');
+
+        setIsLoggedIn(!!token);
+
+        if (storedRoles) {
+            const parsedRoles = JSON.parse(storedRoles);
+            const isAdmin = parsedRoles.some(role => role.authority === 'ROLE_ADMIN');
+            setRole(isAdmin);
+        } else {
+            setRole(false);
+        }
     
     }, [isLoggedIn, role]);
 
