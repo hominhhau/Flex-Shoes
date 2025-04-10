@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {ApiManager} from '../../apis/ApiManager'
+import { ApiManager } from '../../apis/ApiManager';
 
 const initialState = {
     message: [],
     senders: [],
+    lastMessages :[]
 };
 
 export const getMessages = createAsyncThunk('auth/getMessages', async (senderId, thunkAPI) => {
@@ -18,6 +19,11 @@ export const sendMessages = createAsyncThunk('auth/sendMessages', async ({ clien
 
 export const getAllSender = createAsyncThunk('auth/getAllSender', async (thunkAPI) => {
     let response = await ApiManager.get('http://localhost:8080/getAllSender');
+    return response;
+});
+
+export const getLastMessage = createAsyncThunk('auth/getLastMessage', async (senderIds, thunkAPI) => {
+    let response = await ApiManager.get(`http://localhost:8080/getLastMessage?senderIds=${senderIds}`);
     return response;
 });
 
@@ -49,6 +55,14 @@ const chatSlice = createSlice({
                 state.senders = action.payload || [];
             })
             .addCase(getAllSender.rejected, (state, action) => {});
+
+        // getLastMessage
+        builder
+            .addCase(getLastMessage.pending, (state) => {})
+            .addCase(getLastMessage.fulfilled, (state, action) => {
+                state.lastMessages  = action.payload || [];
+            })
+            .addCase(getLastMessage.rejected, (state, action) => {});
     },
 });
 
