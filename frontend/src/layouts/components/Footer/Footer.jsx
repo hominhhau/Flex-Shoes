@@ -92,9 +92,7 @@ function Footer() {
                         </div>
                     </div>
                 </div>
-                <div className="mt-[40px] flex justify-center items-center">
-                    <LogoWhiteLargeIcon />
-                </div>
+                <div className="mt-[40px] flex justify-center items-center">{/* <LogoWhiteLargeIcon /> */}</div>
             </div>
         </footer>
     );

@@ -1,31 +1,33 @@
 .wrapper {
   width: 100%;
 }
+
 .promotion {
   padding: 20px;
   border-radius: 5px;
   margin-bottom: 20px;
-  
+
   h2 {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
   }
 
   p {
-      font-size: 14px;
-      color: #333;
-      margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
   }
 
   .links {
-      a {
-          color: #000;
-          text-decoration: underline;
-          margin-right: 5px;
-      }
+    a {
+      color: #000;
+      text-decoration: underline;
+      margin-right: 5px;
+    }
   }
 }
+
 .bagContainer {
   border-radius: 16px;
   //background: #fafafa;
@@ -40,6 +42,7 @@
     padding: 0 20px;
   }
 }
+
 .headerContainer {
   display: flex;
   width: 100%;
@@ -56,23 +59,29 @@
   margin-top: 8px;
   font: 400 16px "Open Sans", sans-serif;
 }
-.container{
+
+.container {
   display: flex;
   width: 100%;
-  gap: 24px;//kcach 2 cot
+  gap: 24px; //kcach 2 cot
+  flex-wrap: nowrap;
+  height: auto;
 }
+
 .leftContainer {
   // flex: 2;
-   display: flex;
+  display: flex;
   // flex-direction: column;
   // gap: 24px; //kcach giua cac sp
   width: 850px;
-  height: 400px;//chieu cao co dinh
-  overflow-y: auto;//cuon theo chieu doc
+  max-height: auto; //chieu cao co dinh
+  height: auto;
+  overflow-y: auto; //cuon theo chieu doc
   padding: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
+  gap: 16px;
   // background-color: pink;
   //flex-grow: 1;//container giu nguyen vi tri
   flex-direction: column;
@@ -86,9 +95,10 @@
 }
 
 .rightContainer {
-  flex: 1; 
+  flex: 1;
   background: #fafafa;
   padding: 24px;
   border-radius: 8px;
   min-width: 300px;
+  max-height: 500px; //chieu cao co dinh
 }

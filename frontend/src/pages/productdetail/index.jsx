@@ -7,18 +7,14 @@ import { useAuth } from '../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
-// Map color names to hex codes for display
-const colorMap = {
-  Red: '#FF0000',
-  Blue: '#0000FF',
-  Green: '#008000',
-  Black: '#000000',
-  White: '#FFFFFF',
-  Gray: '#808080',
-  Yellow: '#FFFF00',
-  Pink: '#FFC0CB',
-  Brown: '#A52A2A',
-  Purple: '#800080',
+const formatCurrency = (amount) => {
+  const formattedAmount = amount.toLocaleString('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+  return formattedAmount.replace('₫', '').trim(); // Loại bỏ ký tự '₫' và khoảng trắng thừa
 };
 
 const ProductDetail = () => {
@@ -32,6 +28,9 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [availableQuantities, setAvailableQuantities] = useState({});
+  const [uniqueColors, setUniqueColors] = useState([]);
+  const [uniqueSizes, setUniqueSizes] = useState([]);
 
   // Fetch product details
   useEffect(() => {
@@ -40,42 +39,47 @@ const ProductDetail = () => {
       setError(null);
 
       try {
-        const data = await Api_Product.getProductDetail(id);
+        const response = await Api_Product.getProductDetail(id);
+        const data = response.data;
+
         if (!data) throw new Error('Product not found');
 
         setProduct(data);
+        console.log('Product data:', data);
 
-        // Extract unique colors and sizes from inventory
-        const colors = [
-          ...new Map(
-            data.inventory
-              .filter(item => item.numberOfProduct?.color)
-              .map(item => [
-                item.numberOfProduct.color._id,
-                {
-                  colorId: item.numberOfProduct.color._id,
-                  colorName: item.numberOfProduct.color.colorName,
-                },
-              ]),
-          ).values(),
-        ];
+        // Initialize available quantities
+        const initialQuantities = {};
+        data.inventory.forEach(item => {
+          const colorId = item?.numberOfProduct?.color?._id;
+          const sizeId = item?.numberOfProduct?.size?._id;
+          if (colorId && sizeId) {
+            initialQuantities[`${colorId}-${sizeId}`] = item?.numberOfProduct?.quantity || 0;
+          }
+        });
+        setAvailableQuantities(initialQuantities);
 
-        const sizes = [
-          ...new Map(
-            data.inventory
-              .filter(item => item.numberOfProduct?.size)
-              .map(item => [
-                item.numberOfProduct.size._id,
-                {
-                  sizeId: item.numberOfProduct.size._id,
-                  sizeName: item.numberOfProduct.size.nameSize,
-                },
-              ]),
-          ).values(),
-        ];
+        // Extract unique colors and sizes
+        const colors = new Map();
+        const sizes = new Map();
+        data.inventory.forEach(item => {
+          const color = item?.numberOfProduct?.color;
+          if (color && !colors.has(color._id)) {
+            colors.set(color._id, color);
+          }
+          const size = item?.numberOfProduct?.size;
+          if (size && !sizes.has(size._id)) {
+            sizes.set(size._id, size);
+          }
+        });
+        setUniqueColors([...colors.values()]);
+        setUniqueSizes([...sizes.values()]);
 
-        setSelectedColor(colors[0] || null);
-        setSelectedSize(sizes[0] || null);
+        // Set initial selected color and size if available
+        if (data.inventory.length > 0) {
+          setSelectedColor(data.inventory[0]?.numberOfProduct?.color || null);
+          setSelectedSize(data.inventory[0]?.numberOfProduct?.size || null);
+        }
+
       } catch (err) {
         console.error('Failed to fetch product:', err);
         setError(err.message || 'Error fetching product details');
@@ -87,42 +91,22 @@ const ProductDetail = () => {
     if (id) fetchProduct();
   }, [id]);
 
+  // Update available quantity when color or size changes
+  useEffect(() => {
+    if (product && selectedColor && selectedSize) {
+      const key = `${selectedColor._id}-${selectedSize._id}`;
+      const quantity = availableQuantities[key] || 0;
+      console.log(`Available quantity for color ${selectedColor?.colorName}, size ${selectedSize?.nameSize}: ${quantity}`);
+    }
+  }, [selectedColor, selectedSize, availableQuantities, product]);
+
   // Loading and error states
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-10">Error: {error}</div>;
   if (!product) return <div className="text-center py-10">No product details available.</div>;
 
   // Extract images
-  const images = product.image.map(img => img.imageID.URL);
-
-  // Extract unique colors and sizes
-  const uniqueColors = [
-    ...new Map(
-      product.inventory
-        .filter(item => item.numberOfProduct?.color)
-        .map(item => [
-          item.numberOfProduct.color._id,
-          {
-            colorId: item.numberOfProduct.color._id,
-            colorName: item.numberOfProduct.color.colorName,
-          },
-        ]),
-    ).values(),
-  ];
-
-  const uniqueSizes = [
-    ...new Map(
-      product.inventory
-        .filter(item => item.numberOfProduct?.size)
-        .map(item => [
-          item.numberOfProduct.size._id,
-          {
-            sizeId: item.numberOfProduct.size._id,
-            sizeName: item.numberOfProduct.size.nameSize,
-          },
-        ]),
-    ).values(),
-  ];
+  const images = product.image?.map(img => img?.imageID?.URL) || [];
 
   // Add to cart handler
   const handleAddToCart = () => {
@@ -133,6 +117,13 @@ const ProductDetail = () => {
 
     if (!selectedColor || !selectedSize) {
       alert('Please select a color and size');
+      return;
+    }
+
+    const key = `${selectedColor._id}-${selectedSize._id}`;
+    const currentQuantity = availableQuantities[key] || 0;
+    if (currentQuantity <= 0) {
+      alert(`This color and size is currently out of stock.`);
       return;
     }
 
@@ -153,7 +144,7 @@ const ProductDetail = () => {
       item =>
         item.productId === cartItem.productId &&
         item.color === cartItem.color &&
-        item.size === cartItem.size,
+        item.size === cartItem.size
     );
 
     if (existingIndex >= 0) {
@@ -170,6 +161,13 @@ const ProductDetail = () => {
   const handleBuyNow = () => {
     if (!selectedColor || !selectedSize) {
       alert('Please select a color and size');
+      return;
+    }
+
+    const key = `${selectedColor._id}-${selectedSize._id}`;
+    const currentQuantity = availableQuantities[key] || 0;
+    if (currentQuantity <= 0) {
+      alert(`This color and size is currently out of stock.`);
       return;
     }
 
@@ -190,7 +188,7 @@ const ProductDetail = () => {
       item =>
         item.productId === cartItem.productId &&
         item.color === cartItem.color &&
-        item.size === cartItem.size,
+        item.size === cartItem.size
     );
 
     if (existingIndex >= 0) {
@@ -203,16 +201,42 @@ const ProductDetail = () => {
     navigate('/cart', { state: cartItem });
   };
 
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    // Optionally reset selected size if the new color doesn't have the previously selected size
+    if (selectedSize && !product.inventory.some(item => item?.numberOfProduct?.color?._id === color._id && item?.numberOfProduct?.size?._id === selectedSize._id)) {
+      setSelectedSize(null);
+    }
+  };
+
+  const handleSizeSelect = (size) => {
+    setSelectedSize(size);
+    // Optionally reset selected color if the new size doesn't have the previously selected color
+    if (selectedColor && !product.inventory.some(item => item?.numberOfProduct?.color?._id === selectedColor._id && item?.numberOfProduct?.size?._id === size._id)) {
+      setSelectedColor(null);
+    }
+  };
+
+  const getAvailableQuantity = () => {
+    if (selectedColor && selectedSize) {
+      const key = `${selectedColor._id}-${selectedSize._id}`;
+      return availableQuantities[key] || 0;
+    }
+    return 0;
+  };
+
   return (
     <div className={cx('wrapper')}>
       <div className={cx('content-header')}>
         {/* Product Images */}
         <div className={cx('product-images')}>
-          <img
-            src={images[selectedImageIndex]}
-            alt={product.productName}
-            className={cx('main-image')}
-          />
+          {images.length > 0 && (
+            <img
+              src={images[selectedImageIndex]}
+              alt={product.productName}
+              className={cx('main-image')}
+            />
+          )}
           <div className={cx('thumbnail-container')}>
             {images.map((src, index) => (
               <img
@@ -233,51 +257,70 @@ const ProductDetail = () => {
           </span>
           <h1 className={cx('product-name')}>{product.productName}</h1>
           <p className={cx('product-price')}>
-            ${(product.sellingPrice / 1000).toFixed(2)} {/* Giả định VND */}
+            {formatCurrency(product.sellingPrice)}
           </p>
 
           {/* Color Selection */}
-          <div className={cx('color-selection')}>
-            <p>COLOR</p>
-            <div className={cx('color-options')}>
-              {uniqueColors.map(color => (
-                <button
-                  key={color.colorId}
-                  className={cx('color-option', {
-                    active: selectedColor?.colorId === color.colorId,
-                  })}
-                  style={{ backgroundColor: colorMap[color.colorName] || '#000' }}
-                  onClick={() => setSelectedColor(color)}
-                />
-              ))}
+          {uniqueColors.length > 0 && (
+            <div className={cx('color-selection')}>
+              <p>COLOR</p>
+              <div className={cx('color-options')}>
+                {uniqueColors.map(color => (
+                  <button
+                    key={color._id}
+                    className={cx('color-option', {
+                      active: selectedColor?._id === color._id,
+                    })}
+                    style={{ backgroundColor: color.hex || '#000' }}
+                    onClick={() => handleColorSelect(color)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Size Selection */}
-          <div className={cx('size-selection')}>
-            <p>SIZE</p>
-            <div className={cx('size-options')}>
-              {uniqueSizes.map(size => (
-                <button
-                  key={size.sizeId}
-                  className={cx('size-option', {
-                    active: selectedSize?.sizeId === size.sizeId,
-                  })}
-                  onClick={() => setSelectedSize(size)}
-                >
-                  {size.sizeName}
-                </button>
-              ))}
+          {uniqueSizes.length > 0 && (
+            <div className={cx('size-selection')}>
+              <p>SIZE</p>
+              <div className={cx('size-options')}>
+                {uniqueSizes.map(size => (
+                  <button
+                    key={size._id}
+                    className={cx('size-option', {
+                      active: selectedSize?._id === size._id,
+                    })}
+                    onClick={() => handleSizeSelect(size)}
+                  >
+                    {size.nameSize}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Available Quantity */}
+          {(selectedColor && selectedSize) && (
+            <p className={cx('available-quantity')}>
+              Available: {getAvailableQuantity()}
+            </p>
+          )}
 
           {/* Actions */}
           <div className={cx('product-actions')}>
-            <button className={cx('add-to-cart')} onClick={handleAddToCart}>
+            <button
+              className={cx('add-to-cart')}
+              onClick={handleAddToCart}
+              disabled={!selectedColor || !selectedSize || getAvailableQuantity() <= 0}
+            >
               ADD TO CART
             </button>
             <button className={cx('add-to-wishlist')}>♡</button>
-            <button className={cx('buy-now')} onClick={handleBuyNow}>
+            <button
+              className={cx('buy-now')}
+              onClick={handleBuyNow}
+              disabled={!selectedColor || !selectedSize || getAvailableQuantity() <= 0}
+            >
               BUY IT NOW
             </button>
           </div>

@@ -9,6 +9,9 @@
   max-width: 782px;
   flex-direction: column;
   padding: 16px;
+  padding: 16px;
+  //overflow-y: auto;//thêm cuộn dọc khi không đủ không gian
+  //max-height: 110vh;
 }
 
 @media (max-width: 991px) {
@@ -40,6 +43,8 @@
   align-items: start;
   gap: 24px;
   flex-wrap: wrap;
+  width: 100%;
+  //background-color: aqua;
 }
 
 .productImage {
@@ -50,6 +55,8 @@
 }
 
 .productDetailsContainer {
+  flex: 1;
+  /* Cho phép vùng chi tiết chiếm toàn bộ không gian còn lại */
   display: flex;
   min-width: 240px;
   flex-direction: column;
@@ -137,7 +144,7 @@
   color: #333;
   background-color: #fff;
   border: 1px solid #ccc;
-  border-radius: 50%; 
+  border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -163,4 +170,45 @@
   object-fit: contain;
   width: 32px;
   cursor: pointer;
+}
+
+/* New styles for checkbox */
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  margin-left: 24px;
+}
+
+input[type="checkbox"] {
+  width: 24px;
+  /* Đặt chiều rộng */
+  height: 24px;
+  /* Đặt chiều cao */
+  transform: scale(1.7);
+  /* Phóng to checkbox */
+  cursor: pointer;
+  /* Hiển thị con trỏ pointer khi rê chuột */
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.checkbox:checked {
+  background-color: #ff5757;
+  /* Màu nền khi được chọn */
+}
+
+.checkboxLabel {
+  font-size: 16px;
+  color: #232321;
+  opacity: 0.8;
 }

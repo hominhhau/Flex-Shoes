@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,93 +11,67 @@ import styles from './Cart.module.scss';
 const cx = classNames.bind(styles);
 
 function Cart() {
-    // const [data, setData] = useState([
-    //   {
-    //     id: 1,
-    //     image: productImage,
-    //     name: 'Product 01',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 100.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 2,
-    //     image: productImage,
-    //     name: 'Product 02',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 300.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 3,
-    //     image: productImage,
-    //     name: 'Product 03',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 400.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 4,
-    //     image: productImage,
-    //     name: 'Product 04',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 500.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 5,
-    //     image: productImage,
-    //     name: 'Product 05',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 600.00,
-    //     quantity: 1,
-    //   },
-    //   {
-    //     id: 6,
-    //     image: productImage,
-    //     name: 'Product 06',
-    //     category: 'Category',
-    //     color: 'Red',
-    //     sizeOptions: ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
-    //     price: 700.00,
-    //     quantity: 1,
-    //   },
-
-    // ])
-
     //truyen du lieu tu card sang checkout
     const location = useLocation();
-    const productData = location.state|| {};
+    const productData = location.state; // Không có || {} để tránh giá trị rỗng không xác định.
 
-    const [data, setData] = useState(
-        [
-            productData
-                ? {
-                      id: Date.now(),
-                      image: productData.image,
-                      name: productData.name,
-                      color: productData.color,
-                      sizeOptions: [productData.size],
-                      price: parseFloat(productData.price),
-                      quantity: 1,
-                  }
-                : null,
-        ].filter(Boolean),
-    );
+    // const [data, setData] = useState(
+    //     [
+    //         productData
+    //             ? {
+    //                   id: productData.productId,
+    //                   image: productData.image,
+    //                   name: productData.name,
+    //                   color: productData.color,
+    //                   sizeOptions: [productData.size],
+    //                   price: parseFloat(productData.price),
+    //                   quantity: 1,
+    //               }
+    //             : null,
+    //     ].filter(Boolean),
+    // );
+
+    // const [data, setData] = useState(() => {
+    //     const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    //     return savedCart;
+    // });
+
+    // useEffect(() => {
+    //     // Lấy giỏ hàng từ sessionStorage mỗi khi trang được load lại
+    //     const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    //     setData(savedCart);
+    // }, []);
+
+    const [data, setData] = useState(() => {
+        // Kiểm tra xem có dữ liệu giỏ hàng từ sessionStorage không
+        const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        return savedCart.length > 0
+            ? savedCart
+            : productData
+              ? [
+                    {
+                        id: productData.productId,
+                        //category: productData.category,
+                        image: productData.image,
+                        name: productData.name,
+                        color: productData.color,
+                        sizeOptions: productData.size,
+                        price: parseFloat(productData.finalPrice),
+                        quantity: productData.quantity,
+                    },
+                ]
+              : [];
+    });
+
+    // Lưu giỏ hàng vào sessionStorage mỗi khi dữ liệu thay đổi
+    useEffect(() => {
+        sessionStorage.setItem('cart', JSON.stringify(data));
+    }, [data]);
+
     //Check
-    console.log('Data: ', data);
-    console.log('Location State:', location.state);
-    
+    console.log('Data hiển thị ghhgccg:  ', data);
+    console.log('Product Data:', productData);
+
     const navigate = useNavigate();
 
     // const handleCheckout = () => {
@@ -108,30 +82,52 @@ function Cart() {
     const handleCheckout = () => {
         navigate('/checkout', { state: { cartData: data, itemCount: totalProducts, totalAmount } });
     };
-    
-    const handleRemove = (id) => {
+
+    // const handleRemove = (id) => {
+    //     console.log('Array trước khi xóa: ', data);
+    //     const updateData = data.filter((product) => product.id !== id);
+    //     setData(updateData);
+    //     console.log('Array sau khi xóa: ', updateData);
+    //     sessionStorage.setItem('cart', JSON.stringify(updateData));
+    // };
+
+    const handleRemove = (id, color, size) => {
         console.log('Array trước khi xóa: ', data);
-        const updateData = data.filter((product) => product.id !== id);
+        const updateData = data.filter(
+            (product) => product.id !== id || product.color !== color || product.size !== size,
+        );
         setData(updateData);
         console.log('Array sau khi xóa: ', updateData);
+        sessionStorage.setItem('cart', JSON.stringify(updateData));
     };
 
     // const handleQuantityChange = (id, newQuantity) => {
     //     setData(data.map((product) => (product.id === id ? { ...product, quantity: newQuantity } : product)));
     // };
-      // Hàm cập nhật số lượng sản phẩm
-      const handleQuantityChange = (id, newQuantity) => {
-        setData(data.map((product) => 
-            product.id === id 
-                ? { ...product, quantity: newQuantity } 
-                : product
-        ));
+
+    // const handleQuantityChange = (id, newQuantity) => {
+    //     const updatedData = data.map((product) =>
+    //         product.id === id ? { ...product, quantity: newQuantity } : product
+    //     );
+    //     setData(updatedData);
+    //     // Lưu trạng thái mới vào sessionStorage
+    //     sessionStorage.setItem('cart', JSON.stringify(updatedData));
+    // };
+
+    const handleQuantityChange = (id, size, newQuantity) => {
+        const updatedData = data.map((product) =>
+            product.id === id && product.size === size ? { ...product, quantity: newQuantity } : product,
+        );
+
+        setData(updatedData);
+        // Lưu trạng thái mới vào sessionStorage
+        sessionStorage.setItem('cart', JSON.stringify(updatedData));
     };
 
-    const totalProducts = data.length;
-    console.log('Tổng số sản phẩm: ' + totalProducts);
+    // const totalProducts = data.length;
+    // console.log('Tổng số sản phẩm: ' + totalProducts);
 
-    const totalAmount = data.reduce((acc, product) => acc + product.price * product.quantity, 0);
+    // const totalAmount = data.reduce((acc, product) => acc + product.price * product.quantity, 0);
     const deliveryFee = 0;
 
     const [isCheckoutVisible, setCheckoutVisible] = useState(true);
@@ -139,6 +135,35 @@ function Cart() {
     const toggleCheckoutVisibility = () => {
         setCheckoutVisible((prev) => !prev);
     };
+
+    const [checkedItems, setCheckedItems] = useState([]); // Lưu danh sách sản phẩm được chọn
+
+    const handleCheckboxChange = (isChecked, product) => {
+        setCheckedItems((prev) => {
+            if (isChecked) {
+                // Nếu chọn checkbox, thêm sản phẩm vào checkedItems
+                return [...prev, product];
+            } else {
+                // Nếu bỏ chọn checkbox, loại bỏ sản phẩm khỏi checkedItems
+                return prev.filter(
+                    (item) => item.id !== product.id || item.size !== product.size || item.color !== product.color,
+                );
+            }
+        });
+    };
+
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+
+    // Sử dụng useEffect để tính lại tổng tiền mỗi khi data hoặc checkedItems thay đổi
+    useEffect(() => {
+        //const checkedProducts = data.filter((product) => checkedItems.some((item) => item.id === product.id));
+        const checkedProducts = checkedItems;
+        const newTotalAmount = checkedProducts.reduce((acc, product) => acc + product.price * product.quantity, 0);
+        const newTotalProducts = checkedProducts.length;
+        setTotalAmount(newTotalAmount);
+        setTotalProducts(newTotalProducts);
+    }, [checkedItems]); // Cập nhật khi data hoặc checkedItems thay đổi
 
     return (
         <div className={cx('wrapper')}>
@@ -164,23 +189,30 @@ function Cart() {
             <div className={cx('container')}>
                 <div className={cx('leftContainer')}>
                     {data.length > 0 ? (
-                        data.map((product) => (
-                            <ShoppingBag
-                                key={product.id}
-                                image={product.image}
-                                name={product.name}
-                                category={product.category}
-                                color={product.color}
-                                sizeOptions={product.sizeOptions}
-                                price={product.price}
-                                quantity={product.quantity}
-                                onRemove={() => handleRemove(product.id)}
-                                onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
-                                removeIcon={faTrashCan}
-                                allowQuantityChange={true}
-                                allowSizeChange={true}
-                            />
-                        ))
+                        data.map((product) => {
+                            console.log('Product being passed to ShoppingBag sdsdsadad:', product);
+                            return (
+                                <ShoppingBag
+                                    key={product.id}
+                                    image={product.image || productImage}
+                                    name={product.name || 'Null'}
+                                    //category={product.category || 'Null'}
+                                    color={product.color}
+                                    sizeOptions={product.size}
+                                    price={product.price}
+                                    //quantity={product.quantity}
+                                    initialQuantity={product.quantity}
+                                    onRemove={() => handleRemove(product.id, product.color, product.size)}
+                                    onQuantityChange={(newQuantity) =>
+                                        handleQuantityChange(product.id, product.size, newQuantity)
+                                    }
+                                    removeIcon={faTrashCan}
+                                    allowQuantityChange={true}
+                                    allowSizeChange={true}
+                                    onCheckboxChange={(isChecked) => handleCheckboxChange(isChecked, product)}
+                                />
+                            );
+                        })
                     ) : (
                         <p className={cx('empty-message')}>No products</p>
                     )}

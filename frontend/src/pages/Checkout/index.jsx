@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
 import InputField from './InputField';
 import DeliveryOptionsButton from './DelivelyOptions';
+import PaymentOptionsButton from './PaymentOptionsButton';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
+import  Modal  from '../../components/Modal';
 
 import { Api_Payment } from '../../../apis/Api_Payment';
-
-import axios from 'axios'; 
-
+import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
 
 const cx = classNames.bind(styles);
 
@@ -18,49 +18,51 @@ const CheckoutForm = () => {
     const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(false);
     const [isOver13, setIsOver13] = useState(false);
     const [newsletterSubscription, setNewsletterSubscription] = useState(false);
-
-
+    const navigator = useNavigate();
     //State user enter
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
-
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+    const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('unpaid');
-
+    const [isCompleted, setIsCompleted] = useState(false);
+    const [isFailed, setIsFailed] = useState(false);
     const location = useLocation();
     console.log(location.state);
-    
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
     console.log('Checkout data:', cartData);
-
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee);
-    
+
     const handleDeliveryChange = (newDeliveryFee) => {
         console.log('New delivery fee:', newDeliveryFee);
         setSelectedDeliveryFee(newDeliveryFee);
+        setSelectedDeliveryMethod(newDeliveryFee === 0 ? 'Collect in store' : 'Standard Delivery');
     };
 
     const handleQuantityChange = (productId, newQuantity) => {
         const updatedCartData = cartData.map((product) =>
-            product.id === productId ? { ...product, quantity: newQuantity } : product
+            product.productId === productId ? { ...product, quantity: newQuantity } : product,
         );
-        console.log("Updated cart data:", updatedCartData);
-        // Update state with the new cartData array
-        // setCartData(updatedCartData); // Uncomment if cartData is managed locally in state
+        console.log('Updated cart data:', updatedCartData);
+    };
+    const handlePaymentChange = (paymentMethod) => {
+        console.log('Selected payment method:', paymentMethod);
+        setSelectedPaymentMethod(paymentMethod);
     };
 
     // const handlePlaceOrder = () => {
     //     alert('Order placed successfully!');
     // };
-    
+
     // Hàm xử lý khi bấm nút "REVIEW AND PAY"
     // const handlePlaceOrder = async () => {
     //     try{
     //         // Chuyển đổi tổng số tiền từ USD sang VND
     //         const totalInVND = Math.round(totalAmount * 23000);
-            
+
     //         const invoiceData = {
     //             invoiceId: '30',
     //             // issueDate: new Date().toISOString().split('T')[0],
@@ -73,7 +75,6 @@ const CheckoutForm = () => {
     //             total: totalInVND,  // Tổng giá trị
     //             //cartData: cartData,  // Dữ liệu giỏ hàng
     //         };
-            
 
     //         console.log('Đang gửi yêu cầu thanh toán:', invoiceData);
     //         // Gọi API tạo thanh toán qua VNPay
@@ -89,7 +90,6 @@ const CheckoutForm = () => {
     //         console.error('Lỗi trong quá trình thanh toán:', error);
     //         alert('Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.');
     //     }
-        
 
     //     // try {
     //     //     const response = await axios.post('http://localhost:8080/api/invoices', invoiceData);
@@ -105,59 +105,82 @@ const CheckoutForm = () => {
 
     const handlePlaceOrder = async () => {
         try {
+            console.log('cartData:', cartData);
             // Chuyển đổi tổng tiền sang VND
             const totalInVND = Math.round(totalAmount * 23000);
-    
+            const customerID = localStorage.getItem('customerId');
+            console.log('customerID:', customerID);
+            console.log('invoiceData:', cartData);
             const invoiceData = {
-                //invoiceId: Date.now().toString(), // Tạo ID tạm thời (hoặc lấy từ server)
-                issueDate: new Date().toISOString().split('T')[0],//YYYY-MM-DD lấy ptu đầu tiên của mảng [0]
+                invoiceDetails: cartData.map((product) => ({
+                    productId: product.id || product.productId,
+                    quantity: product.quantity,
+                })),
+
+                issueDate: new Date().toISOString().split('T')[0], //YYYY-MM-DD lấy ptu đầu tiên của mảng [0]
                 receiverNumber: phone,
                 receiverName: `${firstName} ${lastName}`,
                 receiverAddress: address,
-                paymentMethod: 'VNPay',
-                deliveryMethod: 'Express',
-                //orderStatus: 'PENDING',
+                paymentMethod: selectedPaymentMethod.toString(),
+                deliveryMethod: selectedDeliveryMethod.toString(),
+                customerId: customerID,
+                orderStatus: 'Processing',
                 total: totalInVND,
-                cartData: cartData,
             };
-    
+
             console.log('Sending invoice data to server:', invoiceData);
-    
+
             // Gửi dữ liệu đơn hàng lên server
-            const invoiceResponse = await axios.post('http://localhost:8080/api/invoices', invoiceData);
-    
-            // if (!invoiceResponse?.data?.id) {
-            //     throw new Error('Không thể lấy ID đơn hàng từ phản hồi server.');
-            // }
-            
-            // if (!invoiceResponse || !invoiceResponse.data) {
-            //     throw new Error('Không thể lưu thông tin đơn hàng.');
-            // }
-    
-            // Lấy `invoiceId` từ phản hồi server
-            const invoiceID = invoiceResponse.data.id;
-            console.log('Received Invoice ID:', invoiceID);
+
+            const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
+            console.log('Received Invoice:', invoiceResponse);
+            //Update quantity after checkout
+            const handleCartData = cartData.map((product) => ({
+                productId: product.productId || product.id,
+                quantity: product.quantity,
+                colorName: product.color,
+                sizeName: product.size,
+            }));
+            console.log('handleCartData:', handleCartData);
+            const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
+            console.log('Updated quantity:', updateQuantity);
 
 
-            // Gọi API VNPay để lấy URL thanh toán
-            const paymentResponse = await Api_Payment.createPayment({
-                total: totalInVND,
-                invoiceId: invoiceID, // ID đơn hàng từ server
-            });
-    
-            if (paymentResponse?.URL) {
-                window.location.href = paymentResponse.URL;
-            } else {
-                throw new Error('Không nhận được URL thanh toán từ VNPay.');
+            if (!(selectedPaymentMethod === 'Cash on Delivery')) {
+                const paymentResponse = await Api_Payment.createPayment({
+                    total: totalInVND,
+                    // invoiceId: invoiceResponse.invoiceId,
+                    invoiceId: Math.floor(Math.random() * 100000)
+                });
+                console.log('====================================');
+                console.log('invoiceId', invoiceResponse.invoiceId);
+                console.log('====================================');
+
+                if (paymentResponse?.URL) {
+                    window.location.href = paymentResponse.URL;
+                } else {
+                    alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+                    throw new Error('Không nhận được URL thanh toán từ VNPay.');
+                }
             }
+            // Xóa product da mua trong giỏ hàng sau khi đặt hàng
+            const newCartData = cartData.filter(
+                (product) => !invoiceData.invoiceDetails.some((item) => item.productId === product.productId),
+            );
+            sessionStorage.setItem('cart', JSON.stringify(newCartData));
+
+            // Hiển thị thông báo đặt hàng thành công
+            setIsCompleted(true);
+
+
         } catch (error) {
             console.error('Lỗi khi xử lý thanh toán:', error);
-            alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+            setIsFailed(true);
         }
     };
 
     const handlePaymentStatusChange = (newStatus) => {
-        setPaymentStatus(newStatus);//paid or unpaid
+        setPaymentStatus(newStatus); //paid or unpaid
     };
 
     return (
@@ -176,13 +199,13 @@ const CheckoutForm = () => {
                     </header>
 
                     <form className={cx('inputGroup')}>
-                        <InputField 
-                        label="Email" 
-                        id="email" 
-                        placeholder="Email" 
-                        width={300} 
-                        value={email}//bind với giá trị state
-                        onChange={(e) => setEmail(e.target.value)}
+                        <InputField
+                            label="Email"
+                            id="email"
+                            placeholder="Email"
+                            width={300}
+                            value={email} //bind với giá trị state
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </form>
                 </section>
@@ -192,21 +215,21 @@ const CheckoutForm = () => {
 
                     <form className={cx('shippingForm')}>
                         <div className={cx('nameInputs')}>
-                            <InputField 
-                            label="First Name" 
-                            id="firstName" 
-                            placeholder="First Name*" 
-                            width={300} 
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            <InputField
+                                label="First Name"
+                                id="firstName"
+                                placeholder="First Name*"
+                                width={300}
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
                             />
-                            <InputField 
-                            label="Last Name" 
-                            id="lastName" 
-                            placeholder="Last Name*" 
-                            width={300} 
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                            <InputField
+                                label="Last Name"
+                                id="lastName"
+                                placeholder="Last Name*"
+                                width={300}
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
                             />
                         </div>
 
@@ -240,7 +263,9 @@ const CheckoutForm = () => {
                 <br />
                 {/* Delivery */}
                 <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} />
-
+                <br />
+                {/* Payment */}
+                <PaymentOptionsButton onPaymentChange={handlePaymentChange} />
                 {/* Checkbox */}
                 <section className={cx('checkoutOptions')}>
                     <div className={cx('option')}>
@@ -279,11 +304,7 @@ const CheckoutForm = () => {
                     </div>
                 </section>
 
-                <button 
-                onClick={handlePlaceOrder} 
-                className={cx('placeOrderButton')}
-                disabled={!isAllChecked}
-                >
+                <button onClick={handlePlaceOrder} className={cx('placeOrderButton')} disabled={!isAllChecked}>
                     REVIEW AND PAY
                 </button>
             </div>
@@ -304,8 +325,8 @@ const CheckoutForm = () => {
                                     image={product.image}
                                     name={product.name}
                                     category={product.category}
-                                    color={product.color}
-                                    sizeOptions={product.sizeOptions}
+                                    color={product.color || 'Color'}
+                                    sizeOptions={product.size || ['Size']}
                                     price={product.price}
                                     // quantity={product.quantity}
                                     initialQuantity={product.quantity}
@@ -318,8 +339,33 @@ const CheckoutForm = () => {
                     ) : (
                         <p>No items in the cart.</p>
                     )}
+                  
                 </div>
             </div>
+            {
+                    isCompleted &&
+                   <Modal
+                        valid={true}
+                        title="Order placed successfully!"
+                        message="Thank you for shopping with us."
+                        onConfirm={() => navigator(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
+                        isConfirm={true}
+                        contentConfirm="OK"
+                        isCancel={false}
+
+                    />
+                   }
+                   {
+                    isFailed &&
+                    <Modal
+                        valid={false}
+                        title="Order failed!"
+                        message="Please try again."
+                        onConfirm={() => navigator(`/cart`)}
+                        isConfirm={true}
+                        contentConfirm="OK"
+                    />
+                   }
         </main>
     );
 };

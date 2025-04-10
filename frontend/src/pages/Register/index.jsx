@@ -1,63 +1,295 @@
 import classnames from 'classnames/bind';
+import { WiDirectionRight } from "react-icons/wi";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple, FaFacebook, FaPlusSquare } from "react-icons/fa";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+
+import {Api_Auth} from '../../../apis/Api_Auth';
 import styles from './Register.module.scss';
+import Modal  from '../../components/Modal/Modal'; 
+
 
 const cx = classnames.bind(styles);
 
 function Register() {
+    // State để lưu userInfor, address, loginDetails và kết quả thành công
+    const navigate = useNavigate();
+    const [userInfor, setUserInfor] = useState({
+        customerName: '',
+        email: '',
+        gender:'',
+        phoneNumber:'',
+        registerDate: new Date()
+    })
+    const [fname, setFname] = useState('')
+    const [lname, setLname] = useState('')
+    const [addresses, setAddresses] = useState([''])
+    const [loginDetails, setLoginDetails] = useState({
+        username: '',
+        password: ''
+    })
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [validFields, setValidFields] = useState({
+        fname: true,
+        lname: true,
+        email: true,
+        phoneNumber: true,
+        address: true,
+        username: true,
+        password: true
+    });
+    const onChangeFName = (e) => {
+        const value = e.target.value;
+        const regex = /^[A-Za-z\s]{1,30}$/;
+        setFname(value);
+        //set border color
+
+        e.color = validFields.fname ? 'green' : 'red';
+        setValidFields({ ...validFields, fname: regex.test(value) });
+    };
+    const onChangeLName = (e) => {
+        const value = e.target.value;
+        const regex = /^[A-Za-z\s]{1,30}$/;
+        setFname(value);
+        setValidFields({ ...validFields, lname: regex.test(value) });
+    };
+    const onChangeEmail = (e) => {
+        const value = e.target.value;
+        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        setUserInfor({ ...userInfor, email: value });
+        setValidFields({ ...validFields, email: regex.test(value) });
+    };
+    const onChangePhoneNumber = (e) => {
+        const value = e.target.value;
+        const regex = /^0\d{9,10}$/;
+        setUserInfor({ ...userInfor, phoneNumber: value });
+        setValidFields({ ...validFields, phoneNumber: regex.test(value) });
+    };
+    const onChangeUserName = (e) => {
+        const value = e.target.value;
+        const regex = /^[A-Za-z0-9\-\/]{10,20}$/;
+        setLoginDetails({ ...loginDetails, username: value });
+        setValidFields({ ...validFields, username: regex.test(value) });
+    };
+    const onChangePassword = (e) => {
+        const value = e.target.value;
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@.?])[A-Za-z\d.?@]{8,}$/;
+        setLoginDetails({ ...loginDetails, password: value });
+        setValidFields({ ...validFields, password: regex.test(value) });
+    };
+
+    // Hàm để thêm một ô input mới
+    const handleAddAddress = () => {
+        setAddresses([...addresses, '']); // Thêm một phần tử trống vào danh sách
+        
+    };
+
+    // Hàm để cập nhật giá trị của một ô input
+    const handleAddressChange = (index, value) => {
+        const newAddresses = [...addresses];
+        newAddresses[index] = value; // Cập nhật giá trị tại chỉ số tương ứng
+        setAddresses(newAddresses);
+    };
+    // Hàm xử lý khi radio button thay đổi
+    const handleChange = (e) => {
+        setUserInfor({ ...userInfor, gender: e.target.value })
+        
+    };
+
+    //Hàm xử lý register
+    const handleRegister = async () => {
+        try {
+
+            const data = {...userInfor, address: addresses}
+            data.customerName = `${fname} ${lname}`
+            
+            const response = await Api_Auth.addCustomer(data); // Gọi API addCustomer
+            console.log('Add customer:', response);
+            const customerId = response.result.customerId;
+  
+            
+            const response2 = await Api_Auth.registerAccount({...loginDetails, "customerId" : customerId , role: 'USER'}); // Gọi API registerAccount
+
+            setIsSuccess(true);
+        } catch (err) {
+            console.error('Register failed:', err.message);
+            setIsError(true);
+        }
+    }
+   
+
+    //Hàm xử lý submit
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleRegister();
+
+    }
+    const handleLoginRedirect = () => {
+        navigate("/login"); 
+    };
+
+    const handleTryAgain = () => {
+        setIsError(false);
+    };
+
+
+
     return (
-        <div className={cx('container-login')}>
-            <div className={cx('form-login')}>
+        <div className={cx('container-register')}>
+            <div className={cx('form-register')}>
                 <div className={cx('content-header')}>
                     <h1>Register</h1>
                     <p>Sign up with</p>
                     <div className={cx('option')}>
-                        <button>Google</button>
-                        <button>Apple</button>
-                        <button>Facebook</button>
+                        <button className={cx('custom-icon')}><FcGoogle size={25} /></button>
+                        <button className={cx('custom-icon')}><FaApple size={25} /></button>
+                        <button className={cx('custom-icon')}><FaFacebook size={25} color='blue' /></button>
                     </div>
-                    <p>OR</p>
+                    <h2>OR</h2>
                 </div>
                 <div className={cx('form')}>
-                    <form action="">
+                    <form onSubmit={handleSubmit}>
                         <div className={cx('form-group')}>
                             <h2>Your Name</h2>
-                            <input type="text" name="fname" id="email" placeholder="First Name" />
-                            <input type="text" name="lname" id="password" placeholder="Last Name" />
+                            {!validFields.fname && <p style={{ color: 'red' }}>First name must be 1-30 characters and contain only letters</p>}
+                            <input type="text"
+                                name="fname"
+                                id="fname"
+                                value={userInfor.fname}
+                                onChange={onChangeFName}
+                                pattern="^[A-Za-z\s]{1,30}$"
+                                required
+                                placeholder="First Name"
+                                style={{ borderColor: validFields.fname ? 'black' : 'red' }} 
+                            />
+                            {!validFields.lname && <p style={{ color: 'red' }}>Last name must be 1-30 characters and contain only letters</p>}
+                            <input type="text"
+                                name="lname"
+                                id="lname"
+                                placeholder="Last Name"
+                                value={userInfor.lname}
+                                pattern="^[A-Za-z\s]{1,30}$"
+                                required
+                                onChange={onChangeLName}
+                                style={{ borderColor: validFields.lname ? 'black' : 'red' }}
+                            />
+                            {!validFields.email && <p style={{ color: 'red' }}>Email must be in the form of example: example@gmail.com</p>}
+                            <input type="email"
+                                name="email"
+                                id="email"
+                                placeholder="Email"
+                                required
+                                value={userInfor.email}
+                                onChange={onChangeEmail}
+                                style={{ borderColor: validFields.email ? 'black' : 'red' }}
+                            />
+                            {!validFields.phoneNumber && <p style={{ color: 'red' }}>Phone number must be start with 0 and have 10-11 digits</p>}
+                            <input type="text"
+                                name="phoneNumber"
+                                id="phoneNumber"
+                                placeholder="Phone Number"
+                                pattern="^0\d{9,10}$"
+                                required
+                                value={userInfor.phoneNumber}
+                                onChange={onChangePhoneNumber}
+                                style={{ borderColor: validFields.phoneNumber ? 'black' : 'red' }}
+                            />
+
+                        </div>
+                        <div className={cx('form-group')}>
+
+                            <div className='flex justify-between items-center' >
+                                <h2>Your Address</h2>
+                                <button onClick={handleAddAddress} type='button'><FaPlusSquare className='mb-8 mr-10' size={20} /></button>
+                            </div>
+
+                            {addresses.map((address, index) => (
+                                <div key={index} className='mb-2'>
+                                    <input
+                                        type="text"
+                                        value={address}
+                                        onChange={(e) => handleAddressChange(index, e.target.value)}
+                                        placeholder={`Address ${index + 1}`}
+                                    />
+                                </div>
+                            ))}
                         </div>
                         <div className={cx('form-group')}>
                             <h2>Gender</h2>
-                            <input type="radio" name="gender" value="male" />
-                            <label htmlFor="remember">Male</label>
-                            <input type="radio" name="gender" value="female" />
-                            <label htmlFor="remember">Female</label>
-                            <input type="radio" name="gender" id="other" />
-                            <label htmlFor="remember">Other</label>
+                            <input type="radio" 
+                                    name="gender" 
+                                    value="male" 
+                                    id="radMale"
+                                    checked={userInfor.gender === "male"}
+                                    onChange={handleChange}
+                                />&nbsp;&nbsp;
+                            <label htmlFor="radMale">Male</label>&nbsp;&nbsp;
+                            <input type="radio" 
+                                    name="gender" 
+                                    value="female" 
+                                    id='radFemale'
+                                    checked={userInfor.gender === "female"}
+                                    onChange={handleChange}
+                             />&nbsp;&nbsp;
+                            <label htmlFor="radFemale">Female</label>&nbsp;&nbsp;
+                            <input type="radio" 
+                                    name="gender" 
+                                    value="orther" 
+                                    id="radOrther"
+                                    checked={userInfor.gender === "orther"}
+                                    onChange={handleChange}
+                             />&nbsp;&nbsp;
+                            <label htmlFor="radOrther">Orther</label>&nbsp;&nbsp;
                         </div>
                         <div className={cx('form-group')}>
                             <h2>Login Details</h2>
-                            <input type="email" name="email" id="email" placeholder="Email" />
-                            <input type="password" name="password" id="password" placeholder="Password" />
+                            {!validFields.username && <p style={{ color: 'red' }}>User name must be 10-20 characters and contain only letters, numbers, hyphens, and slashes</p>}
+                            <input type="text" 
+                                    name="username" 
+                                    id="username" 
+                                    placeholder="Username"
+                                    required
+                                    pattern="^[A-Za-z0-9\-\/]{10,20}$"
+                                    value={loginDetails.username}
+                                    onChange={onChangeUserName}
+                                    style={{ borderColor: validFields.username ? 'black' : 'red' }}
+                                    />
+                            <input type="password" 
+                                    name="password" 
+                                    id="password" 
+                                    placeholder="Password"
+                                    required
+                                    pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@.?])[A-Za-z\d.?@]{8,}$"
+                                    value={loginDetails.password}
+                                    onChange={onChangePassword}
+                                    style={{ borderColor: validFields.password ? 'black' : 'red' }}
+                            />
                             <p>
                                 Minimum 8 characters with at least one uppercase, one lowercase, one special character
                                 and a number
                             </p>
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="checkbox" name="chkbox1" />
-                            <label htmlFor="remember">
+                            <input type="checkbox" name="policy1" id='chkPolicy1' />&nbsp;&nbsp;
+                            <label htmlFor="chkPolicy1">
                                 By clicking 'Log In' you agree to our website KicksClub Terms & Conditions, Kicks
                                 Privacy Notice and Terms & Conditions
                             </label>
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="checkbox" name="chkbox2" />
-                            <label htmlFor="remember">
+                            <input type="checkbox" name="polyci2" id='chkPolicy2' /> &nbsp;&nbsp;
+                            <label htmlFor="chkPolicy2">
                                 Keep me logged in - applies to all log in options below. More info
                             </label>
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="submit" value="REGISTER" />
+                            <button type="submit" className={cx('custom-button') }>
+                                <span class="text">REGISTER</span>
+                                <span class="icon"><WiDirectionRight size={50} /></span>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -83,11 +315,36 @@ function Register() {
                         adiClub.
                     </p>
                 </div>
-                <div className={cx('content-footer')}>
-                    <button>JOIN THE CLUB</button>
-                </div>
+
+
             </div>
+            {isSuccess && (
+                <Modal
+                    valid={true}
+                    title="Registration Successful!"
+                    message="You may now login with your account"
+                    isConfirm={true}
+                    onConfirm={handleLoginRedirect}
+                    contentConfirm={'OK'}
+                />
+            )}
+            {
+                isError && (
+                    <Modal
+                        valid={false}
+                        title="Registration Failed!"
+                        message="Please check your information again!"
+                        isConfirm={true}
+                        isCancel={true}
+                        onConfirm={handleTryAgain}
+                        onCancel={handleLoginRedirect}
+                        contentConfirm={'Try again'}
+                        contentCancel="Login page"
+                    />
+                )
+            }
         </div>
+        
     );
 }
 

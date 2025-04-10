@@ -10,9 +10,10 @@ import {
     faGear,
     faCoins,
 } from '@fortawesome/free-solid-svg-icons';
+import { Api_Auth } from '../../../../apis/Api_Auth';
+import { useNavigate } from 'react-router-dom';
 
 import config from '../../../config';
-
 import styles from './Header.module.scss';
 import { LogoIcon } from '../../../icons';
 import Button from '../../../components/Button';
@@ -23,26 +24,42 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
 import Menu from '../Popper/Menu';
 import Search from '../Search';
+import { useAuth } from '../../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
-function Header() {
-    const currentUser = true;
-
+function Header({ user }) {
+    const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
+    const customerID = localStorage.getItem('customerId');
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faGear} />,
-            title: 'Setting',
-            to: '/settings',
+            title: 'History',
+            to: `/purchasedProductsList/${customerID}`,
         },
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
-            to: '/logout',
+            to: '/',
             separate: true,
+            onClick: () => handleLogout(),
         },
     ];
-
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await Api_Auth.logout(token); // Gọi API login
+            // Xóa token và role vào localStorage
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('customerId');
+            setIsLoggedIn(false);
+            setRole(false);
+        } catch (err) {
+            console.error('Logout failed:', err.message);
+            setError('Logout failed');
+        }
+    };
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -72,10 +89,13 @@ function Header() {
                         <LogoIcon />
                     </div>
                 </Link>
+                <div className={cx('search')}>
+                    <Search />
+                </div>
+               
                 <div className={cx('actions')}>
-                    {currentUser ? (
+                    {isLoggedIn ? (
                         <>
-                            <Search />
                             <Link to={config.routes.cart}>
                                 <button className={cx('action-btn')}>
                                     <FontAwesomeIcon icon={faShoppingCart} />

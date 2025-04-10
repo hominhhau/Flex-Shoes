@@ -33,5 +33,10 @@ export const Api_Payment = {
     verifyPayment: async (paymentData) => {
         const response = await ApiManager.post('/api/payment/verify', paymentData);
         return response.data;
+    },
+
+    getOrderDetails: async () =>{
+        const response = await ApiManager.get('/api/order/order_details');
+        return response.data;
     }
 };
