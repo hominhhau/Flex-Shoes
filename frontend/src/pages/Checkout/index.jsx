@@ -326,7 +326,7 @@ const CheckoutForm = () => {
                                     name={product.name}
                                     category={product.category}
                                     color={product.color || 'Color'}
-                                    sizeOptions={product.size || ['Size']}
+                                    size={product.size || ['Size']}
                                     price={product.price}
                                     // quantity={product.quantity}
                                     initialQuantity={product.quantity}

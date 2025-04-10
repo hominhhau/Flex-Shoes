@@ -23,7 +23,7 @@ function Cart() {
     //                   image: productData.image,
     //                   name: productData.name,
     //                   color: productData.color,
-    //                   sizeOptions: [productData.size],
+    //                   size: [productData.size],
     //                   price: parseFloat(productData.price),
     //                   quantity: 1,
     //               }
@@ -55,8 +55,8 @@ function Cart() {
                         image: productData.image,
                         name: productData.name,
                         color: productData.color,
-                        sizeOptions: productData.size,
-                        price: parseFloat(productData.finalPrice),
+                        size: productData.size,
+                        price: parseFloat(productData.price),
                         quantity: productData.quantity,
                     },
                 ]
@@ -152,20 +152,25 @@ function Cart() {
         });
     };
 
-    const [totalProducts, setTotalProducts] = useState(0);
-    const [totalAmount, setTotalAmount] = useState(0);
+        const [totalProducts, setTotalProducts] = useState(0);
+        const [totalAmount, setTotalAmount] = useState(0);
 
-    // Sử dụng useEffect để tính lại tổng tiền mỗi khi data hoặc checkedItems thay đổi
-    useEffect(() => {
-        //const checkedProducts = data.filter((product) => checkedItems.some((item) => item.id === product.id));
-        const checkedProducts = checkedItems;
-        const newTotalAmount = checkedProducts.reduce((acc, product) => acc + product.price * product.quantity, 0);
-        const newTotalProducts = checkedProducts.length;
-        setTotalAmount(newTotalAmount);
-        setTotalProducts(newTotalProducts);
-    }, [checkedItems]); // Cập nhật khi data hoặc checkedItems thay đổi
+        // Sử dụng useEffect để tính lại tổng tiền mỗi khi data hoặc checkedItems thay đổi
+        useEffect(() => {
+            //const checkedProducts = data.filter((product) => checkedItems.some((item) => item.id === product.id));
+            const checkedProducts = checkedItems;
+            const newTotalAmount = checkedProducts.reduce((acc, product) => acc + product.price * product.quantity, 0);
+            const newTotalProducts = checkedProducts.length;
+            setTotalAmount(newTotalAmount);
+            setTotalProducts(newTotalProducts);
+        }, [checkedItems]); // Cập nhật khi data hoặc checkedItems thay đổi
 
-    return (
+
+        console.log('Tổng số sản phẩm đã chọn: ' + totalProducts);
+        console.log('Tổng tiền đã chọn: ' + totalAmount);
+        console.log('Danh sách sản phẩm đã chọn: ', checkedItems);
+        
+        return (
         <div className={cx('wrapper')}>
             <div className={cx('promotion')}>
                 <h2>Saving to celebrate</h2>
@@ -198,7 +203,7 @@ function Cart() {
                                     name={product.name || 'Null'}
                                     //category={product.category || 'Null'}
                                     color={product.color}
-                                    sizeOptions={product.size}
+                                    size={product.size}
                                     price={product.price}
                                     //quantity={product.quantity}
                                     initialQuantity={product.quantity}

@@ -1,41 +1,30 @@
-// import { ApiManager } from './ApiManager';
+import axios from 'axios';
 
-// export const Api_Product = {
-//     // get all product
-//     getProducts: async () => ApiManager.get('api/product'),
-//     createProduct: async (data) => ApiManager.post('api/product/add', data),
+const BASE_URL = 'http://localhost:8085';
 
-//     // Lấy chi tiết sản phẩm theo ID
-//     getProductDetail: async (id) => ApiManager.get(`api/product-detail/${id}`),
-
-//     searchProduct: async (name) => ApiManager.get(`api/product/search?name=${encodeURIComponent(name)}`),
-//     getAllProducts: async () => ApiManager.get(`api/products/admin`),
-
-//     // Danh sách sản phẩm đã mua
-//     getPurchasedProducts: async (customerId) => ApiManager.get(`/api/invoices/${customerId}`),
-// };
-
-
-import { ApiManager } from './ApiManager';
+export const ApiManager = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
 
 export const Api_Product = {
-    // Lấy tất cả sản phẩm (qua inventory_service)
-    getProducts: async () => ApiManager.get('/inventory/getAllProducts'),
+    // Lấy tất cả sản phẩm (user view)
+    getProducts: async () => ApiManager.get('/api/product'),
 
     // Tạo sản phẩm mới
-    createProduct: async (data) => ApiManager.post('/inventory/product/add', data),
+    createProduct: async (data) => ApiManager.post('/api/product/add', data),
 
-    // Lấy chi tiết sản phẩm theo ID
-    getProductDetail: async (id) => ApiManager.get(`/inventory/product-detail/${id}`),
+    // Lấy chi tiết sản phẩm theo ID (BE mẫu: http://localhost:8085/inventory/getAllProducts/67f4dc1caed1a8f2984039c9)
+    getProductDetail: async (id) => ApiManager.get(`/inventory/getAllProducts/${id}`),
 
     // Tìm kiếm sản phẩm theo tên
-    searchProduct: async (name) =>
-        ApiManager.get(`/inventory/product/search?name=${encodeURIComponent(name)}`),
+    searchProduct: async (name) => ApiManager.get(`/api/product/search?name=${encodeURIComponent(name)}`),
 
     // Lấy tất cả sản phẩm cho admin
-    getAllProducts: async () => ApiManager.get('/inventory/products/admin'),
+    getAllProducts: async () => ApiManager.get('/api/products/admin'),
 
-    // Danh sách sản phẩm đã mua (qua order_service)
-    getPurchasedProducts: async (customerId) =>
-        ApiManager.get(`/invoices/${customerId}`),
+    // Lấy danh sách sản phẩm đã mua của một customer
+    getPurchasedProducts: async (customerId) => ApiManager.get(`/api/invoices/${customerId}`),
 };
