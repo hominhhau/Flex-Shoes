@@ -128,7 +128,7 @@ function Cart() {
     // console.log('Tổng số sản phẩm: ' + totalProducts);
 
     // const totalAmount = data.reduce((acc, product) => acc + product.price * product.quantity, 0);
-    const deliveryFee = 0;
+    const deliveryFee = 300000;
 
     const [isCheckoutVisible, setCheckoutVisible] = useState(true);
 
