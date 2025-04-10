@@ -260,7 +260,7 @@ const ProductDetail = () => {
           </span>
           <h1 className={cx('product-name')}>{product.productName}</h1>
           <p className={cx('product-price')}>
-            {formatCurrency(product.sellingPrice)}
+            {product.sellingPrice}
           </p>
 
           {/* Color Selection */}
