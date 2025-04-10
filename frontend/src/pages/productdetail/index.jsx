@@ -7,16 +7,6 @@ import { useAuth } from '../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
-const formatCurrency = (amount) => {
-  const formattedAmount = amount.toLocaleString('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-  return formattedAmount.replace('₫', '').trim(); // Loại bỏ ký tự '₫' và khoảng trắng thừa
-};
-
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -31,6 +21,8 @@ const ProductDetail = () => {
   const [availableQuantities, setAvailableQuantities] = useState({});
   const [uniqueColors, setUniqueColors] = useState([]);
   const [uniqueSizes, setUniqueSizes] = useState([]);
+
+  
 
   // Fetch product details
   useEffect(() => {

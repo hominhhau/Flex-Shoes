@@ -40,6 +40,10 @@ function Register() {
         userName: true,
         password: true
     });
+
+    const [messageError, setMessageError] = useState("");
+
+
     const onChangeFName = (e) => {
         const value = e.target.value;
         const regex = /^[A-Za-z\s]{1,30}$/;
@@ -114,6 +118,8 @@ function Register() {
             const response = await Api_Auth.registerAccount(registerData);
             setIsSuccess(true);
         } catch (err) {
+            setMessageError(err.response.data.message);
+
             console.error('Register failed:', err.message);
             setIsError(true);
         }
@@ -332,7 +338,7 @@ function Register() {
                     <Modal
                         valid={false}
                         title="Registration Failed!"
-                        message="Please check your information again!"
+                        message={messageError}
                         isConfirm={true}
                         isCancel={true}
                         onConfirm={handleTryAgain}

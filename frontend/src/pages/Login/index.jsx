@@ -24,6 +24,8 @@ function Login() {
     const { setIsLoggedIn } = useAuth();
     const [isError, setIsError] = useState(false);
 
+    const [messageError, setMessageError] = useState("");
+
     const onChangeUserName = (e) => {
         setUsername(e.target.value);
     };
@@ -43,6 +45,7 @@ function Login() {
             navigate(config.routes.home);
 
         } catch (err) {
+            setMessageError(err.response.data.message)
             console.error('Login failed:', err.message);
             setIsError(true);
         }
@@ -159,7 +162,7 @@ function Login() {
                     <Modal
                         valid={false}
                         title="Login Failed!"
-                        message="Please check your information again!"
+                        message={messageError}
                         isConfirm={true}                      
                         onConfirm={handleTryAgain}
                         contentConfirm={'Try again'}
