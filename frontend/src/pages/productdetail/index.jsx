@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './productdetail.module.scss';
@@ -110,6 +110,7 @@ const ProductDetail = () => {
 
   // Add to cart handler
   const handleAddToCart = () => {
+    console.log('Before adding to cart, selectedSize:', selectedSize);
     if (!isLoggedIn) {
       alert('Please login to add product to cart');
       return navigate('/login');
@@ -128,10 +129,10 @@ const ProductDetail = () => {
     }
 
     const cartItem = {
-      productId: product._id,
+      id: product._id, // Sử dụng _id từ product
       name: product.productName,
       color: selectedColor.colorName,
-      size: selectedSize.sizeName,
+      size: selectedSize.nameSize,
       price: product.sellingPrice,
       image: images[0],
       quantity: 1,
@@ -142,7 +143,7 @@ const ProductDetail = () => {
     const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
     const existingIndex = cart.findIndex(
       item =>
-        item.productId === cartItem.productId &&
+        item.id === cartItem.id &&
         item.color === cartItem.color &&
         item.size === cartItem.size
     );
@@ -159,6 +160,7 @@ const ProductDetail = () => {
 
   // Buy now handler
   const handleBuyNow = () => {
+    console.log('Before buying now, selectedSize:', selectedSize);
     if (!selectedColor || !selectedSize) {
       alert('Please select a color and size');
       return;
@@ -172,10 +174,10 @@ const ProductDetail = () => {
     }
 
     const cartItem = {
-      productId: product._id,
+      id: product._id, // Sử dụng _id từ product
       name: product.productName,
       color: selectedColor.colorName,
-      size: selectedSize.sizeName,
+      size: selectedSize.nameSize,
       price: product.sellingPrice,
       image: images[0],
       quantity: 1,
@@ -186,7 +188,7 @@ const ProductDetail = () => {
     const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
     const existingIndex = cart.findIndex(
       item =>
-        item.productId === cartItem.productId &&
+        item.id === cartItem.id &&
         item.color === cartItem.color &&
         item.size === cartItem.size
     );
@@ -210,6 +212,7 @@ const ProductDetail = () => {
   };
 
   const handleSizeSelect = (size) => {
+    console.log('handleSizeSelect called with:', size); // Log khi chọn size
     setSelectedSize(size);
     // Optionally reset selected color if the new size doesn't have the previously selected color
     if (selectedColor && !product.inventory.some(item => item?.numberOfProduct?.color?._id === selectedColor._id && item?.numberOfProduct?.size?._id === size._id)) {

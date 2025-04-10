@@ -11,7 +11,7 @@ type CartComponentProps = {
     name: string;
     category: string;
     color: string;
-    sizeOptions: string;
+    size: string;
     initialSize?: string;
     initialQuantity?: number;
     price: number;
@@ -28,7 +28,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
     name,
     category,
     color,
-    sizeOptions,
+    size,
     initialSize,
     initialQuantity = 1,
     price,
@@ -107,7 +107,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
                                     <label htmlFor="size" className={cx('sizeLabel')}>
                                         Size
                                     </label>
-                                    <span className={cx('sizeText')}>{sizeOptions}</span>
+                                    <span className={cx('sizeText')}>{size}</span>
                                 </div>
 
                                 {/* Quantity */}
