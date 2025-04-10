@@ -1,11 +1,7 @@
 import axios from 'axios';
 
 // http://192.168.1.100:6002
-<<<<<<< HEAD
 const BASE_URL = 'http://localhost:8888/api/v1';
-=======
-const BASE_URL = 'http://192.168.1.2:8085';
->>>>>>> origin/feature/listingpage
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
