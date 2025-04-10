@@ -17,7 +17,6 @@ function Register() {
     // State để lưu userInfor, address, loginDetails và kết quả thành công
     const navigate = useNavigate();
     const [userInfor, setUserInfor] = useState({
-        customerName: '',
         email: '',
         gender:'',
         phoneNumber:'',
@@ -27,7 +26,7 @@ function Register() {
     const [lname, setLname] = useState('')
     const [addresses, setAddresses] = useState([''])
     const [loginDetails, setLoginDetails] = useState({
-        username: '',
+        userName: '',
         password: ''
     })
     const [isSuccess, setIsSuccess] = useState(false);
@@ -38,24 +37,24 @@ function Register() {
         email: true,
         phoneNumber: true,
         address: true,
-        username: true,
+        userName: true,
         password: true
     });
     const onChangeFName = (e) => {
         const value = e.target.value;
         const regex = /^[A-Za-z\s]{1,30}$/;
         setFname(value);
-        //set border color
-
-        e.color = validFields.fname ? 'green' : 'red';
+        setUserInfor({ ...userInfor, firstName: value }); 
         setValidFields({ ...validFields, fname: regex.test(value) });
     };
     const onChangeLName = (e) => {
         const value = e.target.value;
         const regex = /^[A-Za-z\s]{1,30}$/;
-        setFname(value);
+        setLname(value);
+        setUserInfor({ ...userInfor, lastName: value }); 
         setValidFields({ ...validFields, lname: regex.test(value) });
     };
+    
     const onChangeEmail = (e) => {
         const value = e.target.value;
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -71,8 +70,8 @@ function Register() {
     const onChangeUserName = (e) => {
         const value = e.target.value;
         const regex = /^[A-Za-z0-9\-\/]{10,20}$/;
-        setLoginDetails({ ...loginDetails, username: value });
-        setValidFields({ ...validFields, username: regex.test(value) });
+        setLoginDetails({ ...loginDetails, userName: value });
+        setValidFields({ ...validFields, userName: regex.test(value) });
     };
     const onChangePassword = (e) => {
         const value = e.target.value;
@@ -103,16 +102,16 @@ function Register() {
     const handleRegister = async () => {
         try {
 
-            const data = {...userInfor, address: addresses}
-            data.customerName = `${fname} ${lname}`
-            
-            const response = await Api_Auth.addCustomer(data); // Gọi API addCustomer
-            console.log('Add customer:', response);
-            const customerId = response.result.customerId;
-  
-            
-            const response2 = await Api_Auth.registerAccount({...loginDetails, "customerId" : customerId , role: 'USER'}); // Gọi API registerAccount
-
+            const registerData = {
+                ...loginDetails,
+                ...userInfor,
+                firstName: fname,
+                lastName: lname,
+                address: addresses,
+                roles: ['ROLE_USER']
+            };
+    
+            const response = await Api_Auth.registerAccount(registerData);
             setIsSuccess(true);
         } catch (err) {
             console.error('Register failed:', err.message);
@@ -221,41 +220,41 @@ function Register() {
                             <h2>Gender</h2>
                             <input type="radio" 
                                     name="gender" 
-                                    value="male" 
+                                    value="MEN" 
                                     id="radMale"
-                                    checked={userInfor.gender === "male"}
+                                    checked={userInfor.gender === "MEN"}
                                     onChange={handleChange}
                                 />&nbsp;&nbsp;
-                            <label htmlFor="radMale">Male</label>&nbsp;&nbsp;
+                            <label htmlFor="radMale">MEN</label>&nbsp;&nbsp;
                             <input type="radio" 
                                     name="gender" 
-                                    value="female" 
+                                    value="WOMEN" 
                                     id='radFemale'
-                                    checked={userInfor.gender === "female"}
+                                    checked={userInfor.gender === "WOMEN"}
                                     onChange={handleChange}
                              />&nbsp;&nbsp;
-                            <label htmlFor="radFemale">Female</label>&nbsp;&nbsp;
+                            <label htmlFor="radFemale">WOMEN</label>&nbsp;&nbsp;
                             <input type="radio" 
                                     name="gender" 
-                                    value="orther" 
+                                    value="UNISEX" 
                                     id="radOrther"
-                                    checked={userInfor.gender === "orther"}
+                                    checked={userInfor.gender === "UNISEX"}
                                     onChange={handleChange}
                              />&nbsp;&nbsp;
-                            <label htmlFor="radOrther">Orther</label>&nbsp;&nbsp;
+                            <label htmlFor="radOrther">UNISEX</label>&nbsp;&nbsp;
                         </div>
                         <div className={cx('form-group')}>
                             <h2>Login Details</h2>
-                            {!validFields.username && <p style={{ color: 'red' }}>User name must be 10-20 characters and contain only letters, numbers, hyphens, and slashes</p>}
+                            {!validFields.userName && <p style={{ color: 'red' }}>User name must be 10-20 characters and contain only letters, numbers, hyphens, and slashes</p>}
                             <input type="text" 
-                                    name="username" 
-                                    id="username" 
+                                    name="userName" 
+                                    id="userName" 
                                     placeholder="Username"
                                     required
                                     pattern="^[A-Za-z0-9\-\/]{10,20}$"
-                                    value={loginDetails.username}
+                                    value={loginDetails.userName}
                                     onChange={onChangeUserName}
-                                    style={{ borderColor: validFields.username ? 'black' : 'red' }}
+                                    style={{ borderColor: validFields.userName ? 'black' : 'red' }}
                                     />
                             <input type="password" 
                                     name="password" 

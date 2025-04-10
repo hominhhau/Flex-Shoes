@@ -10,17 +10,17 @@ const initialState = {
 };
 
 export const getMessages = createAsyncThunk('auth/getMessages', async (senderId, thunkAPI) => {
-    let response = await axios.post(`http://localhost:8080/show`, { senderId });
+    let response = await axios.post(`http://localhost:8089/show`, { senderId });
     return response.data;
 });
 
 export const sendMessages = createAsyncThunk('auth/sendMessages', async ({ clientId, senderId, message }, thunkAPI) => {
-    let response = await axios.post('http://localhost:8080/send', { clientId, senderId, message });
+    let response = await axios.post('http://localhost:8089/send', { clientId, senderId, message });
     return response.data;
 });
 
 export const getAllSender = createAsyncThunk('auth/getAllSender', async (thunkAPI) => {
-    let response = await axios.get('http://localhost:8080/getAllSender');
+    let response = await axios.get('http://localhost:8089/getAllSender');
     return response.data;
 });
 
