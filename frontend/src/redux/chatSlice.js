@@ -4,7 +4,7 @@ import { ApiManager } from '../../apis/ApiManager';
 const initialState = {
     message: [],
     senders: [],
-    lastMessages :[]
+    lastMessages: [],
 };
 
 export const getMessages = createAsyncThunk('auth/getMessages', async (senderId, thunkAPI) => {
@@ -24,6 +24,11 @@ export const getAllSender = createAsyncThunk('auth/getAllSender', async (thunkAP
 
 export const getLastMessage = createAsyncThunk('auth/getLastMessage', async (senderIds, thunkAPI) => {
     let response = await ApiManager.get(`http://localhost:8080/getLastMessage?senderIds=${senderIds}`);
+    return response;
+});
+
+export const updateMessageStatus = createAsyncThunk('auth/updateMessageStatus', async (senderId, thunkAPI) => {
+    let response = await ApiManager.post(`http://localhost:8080/updateMessageStatus`, senderId);
     return response;
 });
 
@@ -60,9 +65,17 @@ const chatSlice = createSlice({
         builder
             .addCase(getLastMessage.pending, (state) => {})
             .addCase(getLastMessage.fulfilled, (state, action) => {
-                state.lastMessages  = action.payload || [];
+                state.lastMessages = action.payload || [];
             })
             .addCase(getLastMessage.rejected, (state, action) => {});
+
+        // updateMessageStatus
+        builder
+            .addCase(updateMessageStatus.pending, (state) => {})
+            .addCase(updateMessageStatus.fulfilled, (state, action) => {
+                state.lastMessages = action.payload || [];
+            })
+            .addCase(updateMessageStatus.rejected, (state, action) => {});
     },
 });
 

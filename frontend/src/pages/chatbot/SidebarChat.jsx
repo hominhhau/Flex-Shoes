@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search, Smile, Paperclip, Send } from "lucide-react";
 import "./SidebarChat.scss";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllSender, getLastMessage } from "../../redux/chatSlice";
+import { getAllSender, getLastMessage, updateMessageStatus } from "../../redux/chatSlice";
 import ChatAdmin from "./ChatAdmin";
 
 export default function SidebarChat() {
@@ -49,11 +49,12 @@ export default function SidebarChat() {
             const formattedMessages = res.payload.DT.map(item => ({
                 senderId: item.clientId,
                 message: item.message,
+                state: item.status,
                 timestamp: item.createdAt // nếu cần dùng cho convertTime
             }));
             setLastMessages(formattedMessages);
         }
-        
+
     }
 
 
@@ -93,27 +94,42 @@ export default function SidebarChat() {
     useEffect(() => {
         const _conversations = senders.map(sender => {
             const lastMsg = lastMessages.find(m => m.senderId === sender.clientId);
-            console.log('lastMsg ',lastMsg);
-            
+            console.log('lastMsg ', lastMsg);
+
             return {
                 id: sender.clientId,
                 name: sender.name,
                 phoneNumber: sender.phoneNumber,
-                message: lastMsg?.message  || "",
+                message: lastMsg?.message || "",
                 time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt)),
                 avatar: "/placeholder.svg",
+                state: lastMsg?.state || 0
             };
         });
-        setConversations(_conversations);
+
+        // Sắp xếp theo timestamp mới nhất
+        const sorted = [..._conversations].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        setConversations(sorted);
     }, [lastMessages]);
 
-    const handleShowChat = (sender) => {
+    const handleShowChat = async (sender) => {
+        // Gửi yêu cầu cập nhật trạng thái đọc
+        try {
+            await dispatch(updateMessageStatus({ clientId: sender.id }))
+            // Sau khi cập nhật, gọi lại lastMessage để load lại trạng thái
+            await lastMessage(senders);
+        } catch (error) {
+            console.error("Failed to update message status:", error);
+        }
+
         setInfo({
             clientId: sender.id,
             name: sender.name,
             avatar: sender.avatar,
             time: sender.time,
         });
+
     }
 
     const handleSearch = () => {
@@ -222,8 +238,11 @@ export default function SidebarChat() {
                                         <div className="text-truncate fw-medium ">{chat.name}</div>
                                         <small className="text-muted ms-auto">{chat.time}</small>
                                     </div>
-                                    <div className="text-truncate small text-secondary">
-                                        {chat.message}
+                                    <div className={`text-truncate small ${chat.message && chat.state === 0
+                                        ? 'fw-semibold text-dark'
+                                        : 'text-secondary'
+                                        }`}>
+                                        {chat.message || "Không có tin nhắn"}
                                     </div>
                                 </div>
                             </div>
