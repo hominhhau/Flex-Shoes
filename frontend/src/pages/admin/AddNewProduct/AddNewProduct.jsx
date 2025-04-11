@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 
 import styles from './AddNewProduct.module.scss';
@@ -6,7 +6,6 @@ import { ImageUploader } from './ImageUpload';
 import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
-
 
 const cx = classNames.bind(styles);
 
@@ -18,12 +17,14 @@ const AddNewProduct = () => {
         category: null,
         brandName: null,
         status: 'Available',
-        salePrice: 0,
-        regularPrice: 0,
+        sellingPrice: 0,
+        originalPrice: 0,
         vat: 10,
         images: [],
         gender: null,
     });
+
+    console.log('Form data trước khi gửi:', formData);
 
     const [newPurchase, setNewPurchase] = useState({
         color: null,
@@ -32,37 +33,53 @@ const AddNewProduct = () => {
     });
 
     const [purchases, setPurchases] = useState([]);
+    const [colors, setColors] = useState([]);
+    const [sizes, setSizes] = useState([]);
 
-    const sizeMapping = {
-        S: 1,
-        M: 2,
-        L: 3,
-        XL: 4,
-        XXL: 5,
-        36: 6,
-        37: 7,
-        38: 8,
-        39: 9,
-        40: 10,
-        41: 11,
-        42: 12,
-        43: 13,
-        44: 14,
-        45: 15,
-    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const colorRes = await Api_AddProduct.getColor();
+                const sizeRes = await Api_AddProduct.getSize();
+                setColors(colorRes);
+                setSizes(sizeRes);
+            } catch (error) {
+                console.error('Lỗi khi load Color/Size:', error);
+            }
+        };
+        fetchData();
+    }, []);
 
-    const colorMapping = {
-        Red: 1,
-        Blue: 2,
-        Green: 3,
-        Black: 4,
-        White: 5,
-        Gray: 6,
-        Yellow: 7,
-        Pink: 8,
-        Brown: 9,
-        Purple: 10,
-    };
+    // const sizeMapping = {
+    //     S: 1,
+    //     M: 2,
+    //     L: 3,
+    //     XL: 4,
+    //     XXL: 5,
+    //     36: 6,
+    //     37: 7,
+    //     38: 8,
+    //     39: 9,
+    //     40: 10,
+    //     41: 11,
+    //     42: 12,
+    //     43: 13,
+    //     44: 14,
+    //     45: 15,
+    // };
+
+    // const colorMapping = {
+    //     Red: 1,
+    //     Blue: 2,
+    //     Green: 3,
+    //     Black: 4,
+    //     White: 5,
+    //     Gray: 6,
+    //     Yellow: 7,
+    //     Pink: 8,
+    //     Brown: 9,
+    //     Purple: 10,
+    // };
 
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({
@@ -85,9 +102,141 @@ const AddNewProduct = () => {
         }));
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+
+    //     // Validation checks
+    //     if (
+    //         !formData.productName ||
+    //         !formData.description ||
+    //         !formData.images.length ||
+    //         !formData.category ||
+    //         !formData.brandName ||
+    //         !formData.gender ||
+    //         formData.sellingPrice <= 0 ||
+    //         formData.originalPrice <= 0
+    //     ) {
+    //         alert(
+    //             'Please fill in all required fields: Product Name, Description, Images, Category, Brand Name, Sale Price, and Regular Price.',
+    //         );
+    //     }
+
+    //     const addProductDto = {
+    //         productName: formData.productName,
+    //         description: formData.description,
+    //         originalPrice: parseFloat(formData.originalPrice),
+    //         status: formData.status,
+    //         sellingPrice: parseFloat(formData.sellingPrice),
+    //         vat: formData.vat,
+    //         images: formData.images,
+    //         gender: formData.gender ? formData.gender.toUpperCase() : null,
+    //         brand: {
+    //             brandId: formData.brandName,
+    //         },
+    //         productCategory: {
+    //             categoryId: formData.category,
+    //         },
+    //     };
+
+    //     console.log('Product data:', addProductDto);
+
+    //     try {
+    //         // Create the product
+    //         const response = await Api_AddProduct.createProduct(addProductDto);
+    //         console.log('API Response:', response);
+
+    //         const createdProduct = response.product; // Adjust based on your API response structure
+    //         console.log('Created product:', createdProduct);
+
+    //         const productId = createdProduct._id;
+    //         const inventoryIds = [];
+
+    //         // Iterate through purchases to construct quantities array
+    //         const quantities = purchases.map((purchase) => ({
+    //             // product: {
+    //             //     productId: createdProduct.productId,
+    //             // },
+    //             // color: {
+    //             //     //colorId: colorMapping[purchase.color] || null,
+    //             //     colorId: purchase.color,
+    //             // },
+    //             // size: {
+    //             //     //sizeId: sizeMapping[purchase.size] || null,
+    //             //     sizeId: purchase.size,
+    //             // },
+    //             // quantity: purchase.quantity,
+    //             product: createdProduct._id, // Truyền thẳng ObjectId dạng chuỗi
+    //             color: purchase.color,
+    //             size: purchase.size,
+    //             quantity: purchase.quantity,
+    //         }));
+
+    //         console.log('Quantitiessssss:', quantities);
+
+    //         // Send each quantity to the API separately
+    //         for (const quantity of quantities) {
+    //             try {
+    //                 const quantityResponse = await Api_AddProduct.createQuantity(quantity);
+    //                 console.log('Quantity Response:', quantityResponse);
+    //             } catch (quantityError) {
+    //                 console.error('Error creating quantity:', quantityError);
+    //             }
+    //         }
+
+    //         alert('Product and quantities submitted successfully!');
+    //     } catch (error) {
+    //         console.error('Error submitting product:', error);
+    //         if (error.response) {
+    //             console.error('Error response data:', error.response.data);
+    //         }
+    //         alert('There was an error submitting the product. Please try again.');
+    //     }
+    //     navigate(config.routes.AllProduct);
+
+    //     console.log('Giá gốc:', formData.originalPrice);
+    //     console.log('Giá bán:', formData.sellingPrice);
+    // };
+
+    // const handleAddPurchase = () => {
+    //     if (!newPurchase.color || !newPurchase.size) {
+    //         alert('Please select both color and size before adding.');
+    //         return;
+    //     }
+
+    //     const colorId = colorMapping[newPurchase.color]; // Get colorId from mapping
+    //     const sizeId = sizeMapping[newPurchase.size]; // Get sizeId from mapping
+
+    //     const existingPurchase = purchases.find(
+    //         (purchase) => purchase.color === newPurchase.color && purchase.size === newPurchase.size,
+    //     );
+
+    //     if (existingPurchase) {
+    //         setPurchases((prevPurchases) =>
+    //             prevPurchases.map((purchase) =>
+    //                 purchase.color === existingPurchase.color && purchase.size === existingPurchase.size
+    //                     ? { ...purchase, quantity: purchase.quantity + newPurchase.quantity }
+    //                     : purchase,
+    //             ),
+    //         );
+    //     } else {
+    //         setPurchases((prevPurchases) => [
+    //             ...prevPurchases,
+    //             {
+    //                 color: newPurchase.color,
+    //                 size: newPurchase.size,
+    //                 quantity: newPurchase.quantity,
+    //                 colorId: colorId, // Set colorId here
+    //                 sizeId: sizeId, // Set sizeId here
+    //             },
+    //         ]);
+    //     }
+
+    //     setNewPurchase({ color: null, size: null, quantity: 1 });
+    // };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         // Validation checks
         if (
             !formData.productName ||
@@ -95,21 +244,22 @@ const AddNewProduct = () => {
             !formData.images.length ||
             !formData.category ||
             !formData.brandName ||
-            formData.salePrice <= 0 ||
-            formData.regularPrice <= 0
+            !formData.gender ||
+            formData.sellingPrice <= 0 ||
+            formData.originalPrice <= 0
         ) {
             alert(
-                'Please fill in all required fields: Product Name, Description, Images, Category, Brand Name, Sale Price, and Regular Price.',
+                'Please fill in all required fields: Product Name, Description, Images, Category, Brand Name, Sale Price, and Regular Price.'
             );
-            
+            return;
         }
-
+    
         const addProductDto = {
             productName: formData.productName,
             description: formData.description,
-            originalPrice: parseFloat(formData.regularPrice),
+            originalPrice: parseFloat(formData.originalPrice),
             status: formData.status,
-            salePrice: parseFloat(formData.salePrice),
+            sellingPrice: parseFloat(formData.sellingPrice),
             vat: formData.vat,
             images: formData.images,
             gender: formData.gender ? formData.gender.toUpperCase() : null,
@@ -120,44 +270,50 @@ const AddNewProduct = () => {
                 categoryId: formData.category,
             },
         };
-
+    
         console.log('Product data:', addProductDto);
-
+    
         try {
-            // Create the product
             const response = await Api_AddProduct.createProduct(addProductDto);
             console.log('API Response:', response);
-
-            const createdProduct = response; // Adjust based on your API response structure
+    
+            const createdProduct =  response.data._id; 
             console.log('Created product:', createdProduct);
-
-            // Iterate through purchases to construct quantities array
-            const quantities = purchases.map((purchase) => ({
-                product: {
-                    productId: createdProduct.productId,
-                },
-                color: {
-                    colorId: colorMapping[purchase.color] || null,
-                },
-                size: {
-                    sizeId: sizeMapping[purchase.size] || null,
-                },
-                quantity: purchase.quantity,
-            }));
-
-            console.log('Quantities:', quantities);
-
-            // Send each quantity to the API separately
-            for (const quantity of quantities) {
+    
+            const productId = createdProduct;
+            const inventoryIds = [];
+    
+            for (const purchase of purchases) {
+                const quantityDto = 
+                {
+                    product: productId,
+                    color: purchase.color,
+                    size: purchase.size,
+                    quantity: purchase.quantity,
+                };
+    
                 try {
-                    const quantityResponse = await Api_AddProduct.createQuantity(quantity);
-                    console.log('Quantity Response:', quantityResponse);
+                    const quantityResponse = await Api_AddProduct.createQuantity(quantityDto);
+                    console.log('Quantity created:', quantityResponse);
+                    inventoryIds.push(quantityResponse._id);
                 } catch (quantityError) {
-                    console.error('Error creating quantity:', quantityError);
+                    console.error(' Error creating quantity:', quantityError);
                 }
             }
-
+    
+            // Step 3: Attach inventory IDs back to the product
+            try {
+                await Api_AddProduct.attachInventoryToProduct({
+                    _id: productId,
+                    inventoryIds,
+                });
+                console.log('📦 Inventory attached to product.');
+            } catch (attachError) {
+                console.error('❌ Error attaching inventory:', attachError);
+            }
+    
             alert('Product and quantities submitted successfully!');
+            navigate(config.routes.AllProduct);
         } catch (error) {
             console.error('Error submitting product:', error);
             if (error.response) {
@@ -165,41 +321,29 @@ const AddNewProduct = () => {
             }
             alert('There was an error submitting the product. Please try again.');
         }
-        navigate(config.routes.AllProduct);
+    
+        console.log('Giá gốc:', formData.originalPrice);
+        console.log('Giá bán:', formData.sellingPrice);
     };
-
+    
     const handleAddPurchase = () => {
         if (!newPurchase.color || !newPurchase.size) {
             alert('Please select both color and size before adding.');
             return;
         }
 
-        const colorId = colorMapping[newPurchase.color]; // Get colorId from mapping
-        const sizeId = sizeMapping[newPurchase.size]; // Get sizeId from mapping
-
-        const existingPurchase = purchases.find(
-            (purchase) => purchase.color === newPurchase.color && purchase.size === newPurchase.size,
-        );
+        const existingPurchase = purchases.find((p) => p.color === newPurchase.color && p.size === newPurchase.size);
 
         if (existingPurchase) {
-            setPurchases((prevPurchases) =>
-                prevPurchases.map((purchase) =>
-                    purchase.color === existingPurchase.color && purchase.size === existingPurchase.size
-                        ? { ...purchase, quantity: purchase.quantity + newPurchase.quantity }
-                        : purchase,
+            setPurchases((prev) =>
+                prev.map((p) =>
+                    p.color === newPurchase.color && p.size === newPurchase.size
+                        ? { ...p, quantity: p.quantity + newPurchase.quantity }
+                        : p,
                 ),
             );
         } else {
-            setPurchases((prevPurchases) => [
-                ...prevPurchases,
-                {
-                    color: newPurchase.color,
-                    size: newPurchase.size,
-                    quantity: newPurchase.quantity,
-                    colorId: colorId, // Set colorId here
-                    sizeId: sizeId, // Set sizeId here
-                },
-            ]);
+            setPurchases((prev) => [...prev, { ...newPurchase }]);
         }
 
         setNewPurchase({ color: null, size: null, quantity: 1 });
@@ -218,11 +362,17 @@ const AddNewProduct = () => {
         }));
     };
 
+    // const handleDeletePurchase = (color, size) => {
+    //     setPurchases((prevPurchases) =>
+    //         prevPurchases.filter((purchase) => !(purchase.color === color && purchase.size === size)),
+    //     );
+    // };
     const handleDeletePurchase = (color, size) => {
-        setPurchases((prevPurchases) =>
-            prevPurchases.filter((purchase) => !(purchase.color === color && purchase.size === size)),
-        );
+        setPurchases((prev) => prev.filter((p) => !(p.color === color && p.size === size)));
     };
+
+    const getColorName = (id) => colors.find((c) => c._id === id)?.colorName || id;
+    const getSizeName = (id) => sizes.find((s) => s._id === id)?.sizeName || id;
 
     return (
         <form className={cx('formContainer')} onSubmit={handleSubmit}>
@@ -368,8 +518,8 @@ const AddNewProduct = () => {
                                         id="originalPrice"
                                         type="number"
                                         className={cx('textInput')}
-                                        value={formData.regularPrice}
-                                        onChange={(e) => handleInputChange('regularPrice', parseFloat(e.target.value))}
+                                        value={formData.originalPrice}
+                                        onChange={(e) => handleInputChange('originalPrice', parseFloat(e.target.value))}
                                     />
                                 </div>
                             </div>
@@ -382,8 +532,8 @@ const AddNewProduct = () => {
                                         id="salePrice"
                                         type="number"
                                         className={cx('textInput')}
-                                        value={formData.salePrice}
-                                        onChange={(e) => handleInputChange('salePrice', parseFloat(e.target.value))}
+                                        value={formData.sellingPrice}
+                                        onChange={(e) => handleInputChange('sellingPrice', parseFloat(e.target.value))}
                                     />
                                 </div>
                             </div>
@@ -429,19 +579,15 @@ const AddNewProduct = () => {
                                     <option value="" disabled>
                                         Select a color
                                     </option>
-                                    <option value="Red">Red</option>
-                                    <option value="Blue">Blue</option>
-                                    <option value="Green">Green</option>
-                                    <option value="Black">Black</option>
-                                    <option value="White">White</option>
-                                    <option value="Gray">Gray</option>
-                                    <option value="Yellow">Yellow</option>
-                                    <option value="Pink">Pink</option>
-                                    <option value="Brown">Brown</option>
-                                    <option value="Purple">Purple</option>
+                                    {colors.map((c) => (
+                                        <option key={c._id} value={c.colorName}>
+                                            {c.colorName}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
+
                         <div className={cx('columnField')}>
                             <label htmlFor="size" className={cx('fieldLabel')}>
                                 Size
@@ -456,21 +602,11 @@ const AddNewProduct = () => {
                                     <option value="" disabled>
                                         Select a size
                                     </option>
-                                    <option value="S">S</option>
-                                    <option value="M">M</option>
-                                    <option value="L">L</option>
-                                    <option value="XL">XL</option>
-                                    <option value="XXL">XXL</option>
-                                    <option value="36">36</option>
-                                    <option value="37">37</option>
-                                    <option value="38">38</option>
-                                    <option value="39">39</option>
-                                    <option value="40">40</option>
-                                    <option value="41">41</option>
-                                    <option value="42">42</option>
-                                    <option value="43">43</option>
-                                    <option value="44">44</option>
-                                    <option value="45">45</option>
+                                    {sizes.map((s) => (
+                                        <option key={s._id} value={s.nameSize}>
+                                            {s.nameSize}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
