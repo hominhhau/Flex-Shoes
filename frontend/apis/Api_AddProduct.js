@@ -25,25 +25,7 @@ export const Api_AddProduct = {
             throw error;
         }
     },
-    createQuantity: async (quantityDto) => {
-        try {
-            console.log('Creating quantity with quantity data:', quantityDto);
 
-            // Gửi request đến API
-            const response = await ApiManager.post('/inventory/createQuantity', quantityDto);
-            console.log('Raw API Response:', response);
-
-            // Kiểm tra phản hồi từ API (đảm bảo có `quantityId`)
-
-
-            // Trả về dữ liệu nhận được từ API
-            //return response;
-            return response.data.numberOfProduct;
-        } catch (error) {
-            console.error('Error creating quantity:', error);
-            throw error;
-        }
-    },
     attachInventoryToProduct: async (payload) => {
         try {
             const response = await ApiManager.patch('/inventory/attachInventoryToProduct', payload);
