@@ -18,14 +18,14 @@ const PurchasedProductsList = () => {
   // Tính tổng chi tiêu dựa trên chi tiết hóa đơn
   const totalSpent = Array.isArray(purchasedProducts)
     ? purchasedProducts.reduce((sum, invoice) => {
-        const invoiceTotal = invoice.invoiceDetails.reduce((detailSum, detail) => {
-          const unitPrice = detail.product ? detail.product.sellingPrice : 0;
-          const discount = detail.product ? detail.product.discount / 100 : 0;
-          const discountedPrice = unitPrice * (1 - discount);
-          return detailSum + discountedPrice * detail.quantity;
-        }, 0);
-        return sum + invoiceTotal;
-      }, 0)
+      const invoiceTotal = invoice.invoiceDetails.reduce((detailSum, detail) => {
+        const unitPrice = detail.product ? detail.product.sellingPrice : 0;
+        const discount = detail.product ? detail.product.discount / 100 : 0;
+        const discountedPrice = unitPrice * (1 - discount);
+        return detailSum + discountedPrice * detail.quantity;
+      }, 0);
+      return sum + invoiceTotal;
+    }, 0)
     : 0;
 
   useEffect(() => {
@@ -87,45 +87,45 @@ const PurchasedProductsList = () => {
             </tr>
           </thead>
           <tbody>
-          {purchasedProducts.flatMap((invoice) =>
-  invoice.invoiceDetails.map((detail) => {
-    const productId = detail.product ? detail.product.productId : 'N/A';
-    const productName = detail.product ? detail.product.productName : 'Thông tin sản phẩm không có';
-    const firstImageURL = detail.product && detail.product.image && detail.product.image.length > 0
-      ? detail.product.image[0].imageID.URL // Truy cập đúng cấu trúc
-      : null;
-    const unitPrice = detail.product ? detail.product.sellingPrice : 0;
-    const discountedPrice = unitPrice * (1 - (detail.product ? detail.product.discount / 100 : 0));
-    const totalPricePerDetail = discountedPrice * detail.quantity;
+            {purchasedProducts.flatMap((invoice) =>
+              invoice.invoiceDetails.map((detail) => {
+                const productId = detail.product ? detail.product.productId : 'N/A';
+                const productName = detail.product ? detail.product.productName : 'Thông tin sản phẩm không có';
+                const firstImageURL = detail.product && detail.product.image && detail.product.image.length > 0
+                  ? detail.product.image[0].imageID.URL // Truy cập đúng cấu trúc
+                  : null;
+                const unitPrice = detail.product ? detail.product.sellingPrice : 0;
+                const discountedPrice = unitPrice * (1 - (detail.product ? detail.product.discount / 100 : 0));
+                const totalPricePerDetail = discountedPrice * detail.quantity;
 
-    return (
-      <tr key={detail.detailId || `${invoice.invoiceId}-${productId}`} className={cx('tableRow')}>
-        <td className={cx('tableCell')}>
-          {firstImageURL ? (
-            <img
-              src={firstImageURL}
-              alt={productName}
-              width={80}
-              height={80}
-              className={cx('productImage')}
-            />
-          ) : (
-            <span>No Image</span>
-          )}
-        </td>
-        <td className={cx('tableCell')}>{productName}</td>
-        <td className={cx('tableCell')}>{detail.quantity}</td>
-        <td className={cx('tableCell')}>
-          {new Date(invoice.issueDate).toLocaleDateString('vi-VN')}
-        </td>
-        <td className={cx('tableCell')}>{invoice.orderStatus}</td>
-        <td className={cx('tableCell')}>
-          {totalPricePerDetail.toLocaleString('vi-VN')} ₫
-        </td>
-      </tr>
-    );
-  })
-)}
+                return (
+                  <tr key={detail.detailId || `${invoice.invoiceId}-${productId}`} className={cx('tableRow')}>
+                    <td className={cx('tableCell')}>
+                      {firstImageURL ? (
+                        <img
+                          src={firstImageURL}
+                          alt={productName}
+                          width={80}
+                          height={80}
+                          className={cx('productImage')}
+                        />
+                      ) : (
+                        <span>No Image</span>
+                      )}
+                    </td>
+                    <td className={cx('tableCell')}>{productName}</td>
+                    <td className={cx('tableCell')}>{detail.quantity}</td>
+                    <td className={cx('tableCell')}>
+                      {new Date(invoice.issueDate).toLocaleDateString('vi-VN')}
+                    </td>
+                    <td className={cx('tableCell')}>{invoice.orderStatus}</td>
+                    <td className={cx('tableCell')}>
+                      {totalPricePerDetail.toLocaleString('vi-VN')} ₫
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
