@@ -8,27 +8,27 @@ const initialState = {
 };
 
 export const getMessages = createAsyncThunk('auth/getMessages', async (senderId, thunkAPI) => {
-    let response = await ApiManager.post(`http://localhost:8080/show`, { senderId });
+    let response = await ApiManager.post(`http://localhost:8089/show`, { senderId });
     return response.DT;
 });
 
 export const sendMessages = createAsyncThunk('auth/sendMessages', async ({ clientId, senderId, message }, thunkAPI) => {
-    let response = await ApiManager.post('http://localhost:8080/send', { clientId, senderId, message });
+    let response = await ApiManager.post('http://localhost:8089/send', { clientId, senderId, message });
     return response.DT;
 });
 
 export const getAllSender = createAsyncThunk('auth/getAllSender', async (thunkAPI) => {
-    let response = await ApiManager.get('http://localhost:8080/getAllSender');
+    let response = await ApiManager.get('http://localhost:8089/getAllSender');
     return response;
 });
 
 export const getLastMessage = createAsyncThunk('auth/getLastMessage', async (senderIds, thunkAPI) => {
-    let response = await ApiManager.get(`http://localhost:8080/getLastMessage?senderIds=${senderIds}`);
+    let response = await ApiManager.get(`http://localhost:8089/getLastMessage?senderIds=${senderIds}`);
     return response;
 });
 
 export const updateMessageStatus = createAsyncThunk('auth/updateMessageStatus', async (senderId, thunkAPI) => {
-    let response = await ApiManager.post(`http://localhost:8080/updateMessageStatus`, senderId);
+    let response = await ApiManager.post(`http://localhost:8089/updateMessageStatus`, senderId);
     return response;
 });
 
