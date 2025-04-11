@@ -2,12 +2,14 @@ import axios from 'axios';
 
 // http://192.168.1.100:6002
 const BASE_URL = 'http://localhost:8888/api/v1';
+const authToken = localStorage.getItem('token');
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
+        'Authorization': authToken ? `Bearer ${authToken}` : undefined, // Thêm token vào header Authorization
     },
     responseType: 'json',
 });

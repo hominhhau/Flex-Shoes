@@ -292,8 +292,8 @@ function Register() {
                         </div>
                         <div className={cx('form-group')}>
                             <button type="submit" className={cx('custom-button') }>
-                                <span class="text">REGISTER</span>
-                                <span class="icon"><WiDirectionRight size={50} /></span>
+                                <span className={cx("text")}>REGISTER</span>
+                                <span className={cx("icon")}><WiDirectionRight size={50} /></span>
                             </button>
                         </div>
                     </form>

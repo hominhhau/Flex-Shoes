@@ -6,25 +6,24 @@ import styles from './Listing.module.scss';
 import ProductListPage from '../../components/ProductListingPage';
 import SlideShow from '../../components/SlideShow';
 import { Api_Product } from '../../../apis/Api_Product';
-import Button from '../../components/Button';
-import routes from '../../config/routes';
 const cx = classNames.bind(styles);
 
 function Listing() {
     const [filteredProducts, setFilteredProducts] = useState([]);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await Api_Product.getAll();
-                setFilteredProducts(response.data);
-            } catch (error) {
-                console.error('Failed to fetch products', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //         try {
+    //             // 🔧 Chọn hàm đúng:
+    //             const response = await Api_Product.getProducts(); // Hoặc getAllProducts() nếu là admin
+    //             setFilteredProducts(response.data);
+    //         } catch (error) {
+    //             console.error('Failed to fetch products', error);
+    //         }
+    //     };
 
-        fetchProducts();
-    }, []);
+    //     fetchProducts();
+    // }, []);
 
     const handleFilteredProducts = (products) => {
         setFilteredProducts(products);
@@ -39,7 +38,6 @@ function Listing() {
             <div className={cx('container-listproduct')}>
                 <ProductListPage products={filteredProducts} />
             </div>
-            {/* <Button onClick={getAllProducts}>Get all products</Button> */}
         </div>
     );
 }
