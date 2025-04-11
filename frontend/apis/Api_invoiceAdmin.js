@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8888/api/v1';
+// const BASE_URL = 'http://localhost:8888/api/v1';
 
+const BASE_URL = 'http://localhost:8083';
 // Lấy token từ localStorage (hoặc nơi bạn lưu trữ nó)
 const authToken = localStorage.getItem('token');
-console.log('Token:', authToken); // Kiểm tra xem token có được lấy đúng không
 
 export const ApiManager = axios.create({
     baseURL: BASE_URL,
@@ -14,6 +14,7 @@ export const ApiManager = axios.create({
     },
 });
 
+// import { ApiManager } from './ApiManager';
 
 export const Api_InvoiceAdmin = {
     // Lấy danh sách 10 hóa đơn gần nhất
