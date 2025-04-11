@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const BASE_URL = 'http://192.168.1.2:8085';
+const BASE_URL = 'http://localhost:8888/api/v1';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -9,6 +9,7 @@ const axiosInstance = axios.create({
     responseType: 'json',
     // Bỏ 'Content-Type' mặc định ở đây để linh hoạt hơn
 });
+
 
 const request = async (method, url, data = null, params = null, customHeaders = {}) => {
     try {
