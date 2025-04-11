@@ -53,59 +53,18 @@ const CheckoutForm = () => {
         setSelectedPaymentMethod(paymentMethod);
     };
 
-    // const handlePlaceOrder = () => {
-    //     alert('Order placed successfully!');
-    // };
-
-    // Hàm xử lý khi bấm nút "REVIEW AND PAY"
-    // const handlePlaceOrder = async () => {
-    //     try{
-    //         // Chuyển đổi tổng số tiền từ USD sang VND
-    //         const totalInVND = Math.round(totalAmount * 23000);
-
-    //         const invoiceData = {
-    //             invoiceId: '30',
-    //             // issueDate: new Date().toISOString().split('T')[0],
-    //             // receiverNumber: phone,  // Giá trị số điện thoại
-    //             // receiverName: `${firstName} ${lastName}`,  // Họ và tên
-    //             // receiverAddress: address,  // Địa chỉ
-    //             // paymentMethod: 'VNPay',  // Phương thức thanh toán (giả sử)
-    //             // deliveryMethod: 'Express',  // Phương thức giao hàng (giả sử)
-    //             // orderStatus: paymentStatus === 'paid' ?  'Paid' : 'Pending',  // Trạng thái đơn hàng
-    //             total: totalInVND,  // Tổng giá trị
-    //             //cartData: cartData,  // Dữ liệu giỏ hàng
-    //         };
-
-    //         console.log('Đang gửi yêu cầu thanh toán:', invoiceData);
-    //         // Gọi API tạo thanh toán qua VNPay
-    //     const paymentResponse = await Api_Payment.createPayment(invoiceData);
-
-    //     if (paymentResponse?.URL) {
-    //         // Điều hướng đến VNPay
-    //         window.location.href = paymentResponse.URL;
-    //     } else {
-    //         throw new Error('Không nhận được URL thanh toán');
-    //     }
-    //     }catch (error) {
-    //         console.error('Lỗi trong quá trình thanh toán:', error);
-    //         alert('Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.');
-    //     }
-
-    //     // try {
-    //     //     const response = await axios.post('http://localhost:8080/api/invoices', invoiceData);
-    //     //     alert('Order placed successfully!');
-    //     //     console.log(response.data);
-    //     // } catch (error) {
-    //     //     console.error('Error placing order:', error.response || error.message || error);
-    //     //     alert('Failed to place order. Please try again.');
-    //     // }
-    // };
-
+    console.log('Kiểm tra cartData trước khi tạo invoiceData:', cartData);
+    cartData.forEach(product => {
+        console.log(`Sản phẩm ID: ${product.id}, Tên: ${product.name}`);
+        if (!product.id) {
+            console.error('Sản phẩm này không có ID:', product);
+        }
+    });
     const isAllChecked = billingSameAsDelivery && isOver13;
 
     const handlePlaceOrder = async () => {
         try {
-            console.log('cartData:', cartData);
+            console.log('cartData handlePlaceOrder:', cartData);
             // Chuyển đổi tổng tiền sang VND
             const totalInVND = Math.round(totalAmount * 23000);
             const customerID = localStorage.getItem('customerId');
@@ -117,7 +76,7 @@ const CheckoutForm = () => {
                     quantity: product.quantity,
                 })),
 
-                issueDate: new Date().toISOString().split('T')[0], //YYYY-MM-DD lấy ptu đầu tiên của mảng [0]
+                issueDate: new Date().toISOString().split('T')[0],
                 receiverNumber: phone,
                 receiverName: `${firstName} ${lastName}`,
                 receiverAddress: address,
@@ -128,22 +87,30 @@ const CheckoutForm = () => {
                 total: totalInVND,
             };
 
+            console.log('ProductID khi thanh toán:', invoiceData.invoiceDetails.map((item) => item.productId));
             console.log('Sending invoice data to server:', invoiceData);
 
             // Gửi dữ liệu đơn hàng lên server
 
             const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
             console.log('Received Invoice:', invoiceResponse);
+
+
+            
             //Update quantity after checkout
             const handleCartData = cartData.map((product) => ({
-                productId: product.productId || product.id,
+                productId:  product.id ||product.productId,
                 quantity: product.quantity,
                 colorName: product.color,
                 sizeName: product.size,
             }));
             console.log('handleCartData:', handleCartData);
-            const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
-            console.log('Updated quantity:', updateQuantity);
+
+
+            /// NHỚ UPDATE LẠI - HIỆN TẠI CHƯA CÓ API
+            
+            // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
+            // console.log('Updated quantity:', updateQuantity);
 
 
             if (!(selectedPaymentMethod === 'Cash on Delivery')) {
