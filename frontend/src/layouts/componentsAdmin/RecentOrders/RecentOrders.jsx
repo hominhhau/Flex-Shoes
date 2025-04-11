@@ -23,8 +23,8 @@ function RecentOrders() {
         try {
             setLoading(true);
             const recentOrders = await Api_InvoiceAdmin.getRecentInvoices();
-            setOrders(recentOrders); // Lưu danh sách đơn hàng vào orders
-            setAllOrders(recentOrders); // Lưu danh sách đơn hàng vào allOrders
+            setOrders(recentOrders.data); // <-- lấy đúng mảng
+            setAllOrders(recentOrders.data);
         } catch (error) {
             console.error('Lỗi khi tải hóa đơn gần đây:', error);
         } finally {
@@ -42,8 +42,8 @@ function RecentOrders() {
             console.log('====================================');
             console.log('id', filters.id);
             console.log('====================================');
-            const filteredOrders = await Api_InvoiceAdmin.searchInvoices(filters); // Gọi API tìm kiếm theo ID
-            setOrders(filteredOrders); // Cập nhật state với kết quả tìm kiếm
+            const filteredOrders = await Api_InvoiceAdmin.searchInvoices(filters);
+            setOrders(filteredOrders.data);
         } catch (error) {
             console.error('Lỗi khi tìm kiếm hóa đơn theo ID:', error);
         } finally {
@@ -186,7 +186,7 @@ function RecentOrders() {
                                         {order.orderStatus}
                                     </span>
                                 </td>
-                                <td className="py-4 whitespace-nowrap text-gray-900">${order.total?.toFixed(2)}</td>
+                                <td className="py-4 whitespace-nowrap text-gray-900"> ${Number(order.total).toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>
