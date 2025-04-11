@@ -7,7 +7,7 @@ import DeliveryOptionsButton from './DelivelyOptions';
 import PaymentOptionsButton from './PaymentOptionsButton';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
-import  Modal  from '../../components/Modal';
+import Modal from '../../components/Modal';
 
 import { Api_Payment } from '../../../apis/Api_Payment';
 import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
@@ -25,19 +25,20 @@ const CheckoutForm = () => {
     const [lastName, setLastName] = useState('');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
+    const [errors, setErrors] = useState({});
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
     const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('unpaid');
     const [isCompleted, setIsCompleted] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const location = useLocation();
-    console.log(location.state);
+   
     const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
     console.log('Checkout data:', cartData);
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee);
 
     const handleDeliveryChange = (newDeliveryFee) => {
-        console.log('New delivery fee:', newDeliveryFee);
+    
         setSelectedDeliveryFee(newDeliveryFee);
         setSelectedDeliveryMethod(newDeliveryFee === 0 ? 'Collect in store' : 'Standard Delivery');
     };
@@ -53,9 +54,8 @@ const CheckoutForm = () => {
         setSelectedPaymentMethod(paymentMethod);
     };
 
-    console.log('Kiểm tra cartData trước khi tạo invoiceData:', cartData);
     cartData.forEach(product => {
-        console.log(`Sản phẩm ID: ${product.id}, Tên: ${product.name}`);
+     
         if (!product.id) {
             console.error('Sản phẩm này không có ID:', product);
         }
@@ -96,10 +96,10 @@ const CheckoutForm = () => {
             console.log('Received Invoice:', invoiceResponse);
 
 
-            
+
             //Update quantity after checkout
             const handleCartData = cartData.map((product) => ({
-                productId:  product.id ||product.productId,
+                productId: product.id || product.productId,
                 quantity: product.quantity,
                 colorName: product.color,
                 sizeName: product.size,
@@ -108,7 +108,7 @@ const CheckoutForm = () => {
 
 
             /// NHỚ UPDATE LẠI - HIỆN TẠI CHƯA CÓ API
-            
+
             // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
             // console.log('Updated quantity:', updateQuantity);
 
@@ -142,12 +142,91 @@ const CheckoutForm = () => {
 
         } catch (error) {
             console.error('Lỗi khi xử lý thanh toán:', error);
-            setIsFailed(true);
+            if (error.response && error.response.data && error.response.data.status === 'fail') {
+                // Lấy lỗi validation từ BE
+                const validationErrors = error.response.data.result || {};
+                setErrors(validationErrors);
+            } else {
+                setIsFailed(true);
+            }
         }
     };
 
     const handlePaymentStatusChange = (newStatus) => {
         setPaymentStatus(newStatus); //paid or unpaid
+    };
+
+    const validate = () => {
+        const newErrors = {};
+
+        // Email
+        if (!email.trim()) {
+            newErrors.email = "Email là bắt buộc";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            newErrors.email = "Email không hợp lệ";
+        }
+
+        // First Name
+        if (!firstName.trim()) {
+            newErrors.firstName = "First Name là bắt buộc";
+        } else if (firstName.length > 105) {
+            newErrors.firstName = "First Name không được vượt quá 105 ký tự";
+        }
+
+        // Last Name
+        if (!lastName.trim()) {
+            newErrors.lastName = "Last Name là bắt buộc";
+        } else if (lastName.length > 105) {
+            newErrors.lastName = "Last Name không được vượt quá 105 ký tự";
+        }
+
+        // Address
+        if (!address.trim()) {
+            newErrors.address = "Receiver address là bắt buộc";
+        } else if (address.length > 105) {
+            newErrors.address = "Receiver address không được vượt quá 105 ký tự";
+        }
+
+        // Phone
+        if (!phone.trim()) {
+            newErrors.phone = "Receiver number là bắt buộc";
+        } else if (!/^\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})$/.test(phone)) {
+            newErrors.phone = "Số điện thoại không hợp lệ";
+        }
+
+        // Payment Method
+        if (!selectedPaymentMethod) {
+            newErrors.paymentMethod = "Payment method là bắt buộc";
+        } else if (selectedPaymentMethod.length > 50) {
+            newErrors.paymentMethod = "Payment method không được vượt quá 50 ký tự";
+        }
+
+        // Delivery Method
+        if (!selectedDeliveryMethod) {
+            newErrors.deliveryMethod = "Delivery method là bắt buộc";
+        } else if (selectedDeliveryMethod.length > 50) {
+            newErrors.deliveryMethod = "Delivery method không được vượt quá 50 ký tự";
+        }
+
+        // Total
+        const totalInVND = totalAmount ? Math.round(totalAmount * 23000) : 0;
+        if (!totalAmount) {
+            newErrors.total = "Total là bắt buộc";
+        } else if (totalInVND < 0) {
+            newErrors.total = "Total phải lớn hơn hoặc bằng 0";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (validate()) {
+            handlePlaceOrder();
+        } else {
+            console.log("Form không hợp lệ.");
+        }
     };
 
     return (
@@ -271,7 +350,11 @@ const CheckoutForm = () => {
                     </div>
                 </section>
 
-                <button onClick={handlePlaceOrder} className={cx('placeOrderButton')} disabled={!isAllChecked}>
+                <button
+                    type="submit"
+                    className={cx('placeOrderButton')}
+                    disabled={!isAllChecked}
+                >
                     REVIEW AND PAY
                 </button>
             </div>
@@ -306,35 +389,36 @@ const CheckoutForm = () => {
                     ) : (
                         <p>No items in the cart.</p>
                     )}
-                  
+
                 </div>
             </div>
             {
-                    isCompleted &&
-                   <Modal
-                        valid={true}
-                        title="Order placed successfully!"
-                        message="Thank you for shopping with us."
-                        onConfirm={() => navigator(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
-                        isConfirm={true}
-                        contentConfirm="OK"
-                        isCancel={false}
+                isCompleted &&
+                <Modal
+                    valid={true}
+                    title="Order placed successfully!"
+                    message="Thank you for shopping with us."
+                    onConfirm={() => navigator(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
+                    isConfirm={true}
+                    contentConfirm="OK"
+                    isCancel={false}
 
-                    />
-                   }
-                   {
-                    isFailed &&
-                    <Modal
-                        valid={false}
-                        title="Order failed!"
-                        message="Please try again."
-                        onConfirm={() => navigator(`/cart`)}
-                        isConfirm={true}
-                        contentConfirm="OK"
-                    />
-                   }
+                />
+            }
+            {
+                isFailed &&
+                <Modal
+                    valid={false}
+                    title="Order failed!"
+                    message="Please try again."
+                    onConfirm={() => navigator(`/cart`)}
+                    isConfirm={true}
+                    contentConfirm="OK"
+                />
+            }
         </main>
     );
+
 };
 
 export default CheckoutForm;
