@@ -1,23 +1,24 @@
 import { ApiManager } from "./ApiManager";
 
 export const Api_AddProduct = {
-    createProduct: async (addProductDto) => {
+    createProduct: async (formData) => {
         try {
-            console.log('Creating product with product data:', addProductDto);
+            console.log('Creating product with form data:', formData); // Log FormData (không thể log trực tiếp)
 
-            // Gửi request đến API
-            //const response = await ApiManager.post('/api/product/create', addProductDto);
-            const response = await ApiManager.post('/inventory/createProduct', addProductDto);
+            // Gửi request đến API với FormData
+            const response = await ApiManager.post('/inventory/createProduct', formData, {
+                headers: {
+                    // Không đặt 'Content-Type' ở đây, để axios tự xử lý với FormData
+                },
+            });
             console.log('Raw API Response:', response);
 
-           // Sửa chỗ này: kiểm tra tồn tại của response.product thay vì productId
-        if (!response || !response.product) {
-            console.error("Unexpected API response format:", response);
-            throw new Error('Invalid product response received');
-        }
+            if (!response || !response.product) {
+                console.error('Unexpected API response format:', response);
+                throw new Error('Invalid product response received');
+            }
 
-        const createdProduct = response.data;
-            // Trả về dữ liệu nhận được từ API
+            const createdProduct = response; // response đã là dữ liệu từ ApiManager
             return createdProduct;
         } catch (error) {
             console.error('Error creating product:', error);
@@ -56,7 +57,7 @@ export const Api_AddProduct = {
         return ApiManager.get(`/api/product/findById/${productId}`);
     },
     getBrand: async () => {
-        return ApiManager.get('/api/product/getBrand');
+        return ApiManager.get('/inventory/getAllBrandTypes');
     },
     getColor: async () => {
         return ApiManager.get('/inventory/getAllColors');
@@ -65,7 +66,7 @@ export const Api_AddProduct = {
         return ApiManager.get('/inventory/getAllSizes');
     },
     getCategory: async () => {
-        return ApiManager.get('/api/product/getCategory');
+        return ApiManager.get('/inventory/getAllProductTypes');
     },
     updateProduct: async (product) => {
         return ApiManager.put('/api/product/update', product);
@@ -82,4 +83,5 @@ export const Api_AddProduct = {
     deleteQuantity: async (quantityId) => {
         return ApiManager.delete(`/api/product/deleteQuantity/${quantityId}`);
     },
+
 }
