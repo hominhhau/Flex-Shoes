@@ -1,23 +1,29 @@
 import axios from 'axios';
 
-// http://192.168.1.100:6002
-const BASE_URL = 'http://localhost:8888/api/v1';
-const authToken = localStorage.getItem('token');
+
+const BASE_URL = 'http://192.168.1.2:8085';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
     withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': authToken ? `Bearer ${authToken}` : undefined, // Thêm token vào header Authorization
-    },
     responseType: 'json',
+    // Bỏ 'Content-Type' mặc định ở đây để linh hoạt hơn
 });
 
-const request = async (method, url, data = null, params = null) => {
+const request = async (method, url, data = null, params = null, customHeaders = {}) => {
     try {
         console.log(`Making ${method.toUpperCase()} request to ${url}`);
-        if (data) console.log('Request data:', data);
+        if (data) {
+            if (data instanceof FormData) {
+                console.log('Request is FormData');
+                // Không log trực tiếp FormData, log các entries
+                for (let [key, value] of data.entries()) {
+                    console.log(`FormData - ${key}:`, value);
+                }
+            } else {
+                console.log('Request data:', data);
+            }
+        }
         if (params) console.log('Request params:', params);
 
         const response = await axiosInstance({
@@ -25,6 +31,10 @@ const request = async (method, url, data = null, params = null) => {
             url,
             data,
             params,
+            headers: {
+                ...(data instanceof FormData ? {} : { 'Content-Type': 'application/json' }), // Chỉ đặt Content-Type cho JSON
+                ...customHeaders, // Cho phép override header nếu cần
+            },
         });
 
         console.log('Response:', response.data);
@@ -37,7 +47,7 @@ const request = async (method, url, data = null, params = null) => {
 
 export const ApiManager = {
     get: async (url, { params } = {}) => request('get', url, null, params),
-    post: async (url, data) => request('post', url, data),
+    post: async (url, data, headers = {}) => request('post', url, data, null, headers),
     put: async (url, data) => request('put', url, data),
     delete: async (url) => request('delete', url),
 };

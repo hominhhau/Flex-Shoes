@@ -1,41 +1,37 @@
 import { ApiManager } from "./ApiManager";
 
 export const Api_AddProduct = {
-    createProduct: async (addProductDto) => {
+    createProduct: async (formData) => {
         try {
-            console.log('Creating product with product data:', addProductDto);
+            console.log('Creating product with form data:', formData); // Log FormData (không thể log trực tiếp)
 
-            // Gửi request đến API
-            const response = await ApiManager.post('/api/product/create', addProductDto);
+            // Gửi request đến API với FormData
+            const response = await ApiManager.post('/inventory/createProduct', formData, {
+                headers: {
+                    // Không đặt 'Content-Type' ở đây, để axios tự xử lý với FormData
+                },
+            });
             console.log('Raw API Response:', response);
 
-            // Kiểm tra phản hồi từ API (đảm bảo có `productId`)
-            if (!response || !response.productId) {
+            if (!response || !response.product) {
+                console.error('Unexpected API response format:', response);
                 throw new Error('Invalid product response received');
             }
 
-            // Trả về dữ liệu nhận được từ API
-            return response;
+            const createdProduct = response; // response đã là dữ liệu từ ApiManager
+            return createdProduct;
         } catch (error) {
             console.error('Error creating product:', error);
             throw error;
         }
     },
-    createQuantity: async (quantityDto) => {
+
+    attachInventoryToProduct: async (payload) => {
         try {
-            console.log('Creating quantity with quantity data:', quantityDto);
-
-            // Gửi request đến API
-            const response = await ApiManager.post('/api/product/createQuantity', quantityDto);
-            console.log('Raw API Response:', response);
-
-            // Kiểm tra phản hồi từ API (đảm bảo có `quantityId`)
-
-
-            // Trả về dữ liệu nhận được từ API
-            return response;
+            const response = await ApiManager.patch('/inventory/attachInventoryToProduct', payload);
+            return response.data;
         } catch (error) {
-            console.error('Error creating quantity:', error);
+            console.error("Error attaching inventory:", error);
             throw error;
         }
     },
@@ -43,13 +39,16 @@ export const Api_AddProduct = {
         return ApiManager.get(`/api/product/findById/${productId}`);
     },
     getBrand: async () => {
-        return ApiManager.get('/api/product/getBrand');
+        return ApiManager.get('/inventory/getAllBrandTypes');
     },
     getColor: async () => {
-        return ApiManager.get('/api/product/getColor');
+        return ApiManager.get('/inventory/getAllColors');
+    },
+    getSize: async () => {
+        return ApiManager.get('/inventory/getAllSizes');
     },
     getCategory: async () => {
-        return ApiManager.get('/api/product/getCategory');
+        return ApiManager.get('/inventory/getAllProductTypes');
     },
     updateProduct: async (product) => {
         return ApiManager.put('/api/product/update', product);
@@ -66,4 +65,5 @@ export const Api_AddProduct = {
     deleteQuantity: async (quantityId) => {
         return ApiManager.delete(`/api/product/deleteQuantity/${quantityId}`);
     },
+
 }
