@@ -56,7 +56,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             {state: {cartData, itemCount, totalAmount, deliveryFee}}
         );
     }
-
+console.log("order summary", cartData, itemCount, totalAmount, deliveryFee);
     return (
         <section className={cx('orderSummary')}>
             <h2 className={cx('title')}>Order Summary</h2>
