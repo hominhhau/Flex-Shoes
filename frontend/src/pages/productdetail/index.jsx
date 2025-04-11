@@ -100,6 +100,10 @@ const ProductDetail = () => {
   // Extract images
   const images = product.image?.map(img => img?.imageID?.URL) || [];
 
+  // const images = product.image[0].imageID.URL
+
+  
+
   // Add to cart handler
   const handleAddToCart = () => {
     console.log('Before adding to cart, selectedSize:', selectedSize);
