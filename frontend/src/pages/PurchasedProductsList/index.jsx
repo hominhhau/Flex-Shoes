@@ -14,7 +14,6 @@ const PurchasedProductsList = () => {
   // Lấy customerId từ URL
   const { id } = useParams();
   console.log('Customer ID from URL:', id);
-  console.log('Customer ID from URL:', id);
 
   // Tính tổng chi tiêu dựa trên chi tiết hóa đơn
   const totalSpent = Array.isArray(purchasedProducts)
