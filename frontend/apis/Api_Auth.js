@@ -1,25 +1,38 @@
-import { ApiManager } from "./ApiManager";
+// export const Api_Auth = {
+//     login: async (username, password) => {
+//         return ApiManager.post('/login', {
+//             username,
+//             password,
+//         });
+//     },
+//     addCustomer: async (userInfor) => {
+//         return ApiManager.post('/customers/add', userInfor);
+//     },
+//     registerAccount: async (loginDetails) => {
+//         return ApiManager.post('/account/register', loginDetails);
+//     },
+//     logout: async (token) => {
+//         return ApiManager.post('/auth/logout', token);
+//     },
+//     getMyInfor: async () => {
+//         return ApiManager.get('/account/getMyInfor');
+//     }
+// };
+
+import { ApiManager } from './ApiManager';
 
 export const Api_Auth = {
-
-    login: async (username, password) => {
-        return ApiManager.post('api/auth/login', {
-            username: username,
-            password: password,
-        });
-    },
-    addCustomer: async (userInfor) => {
-        return ApiManager.post('api/customers/add', userInfor);
+    login: async (userName, password) => {
+        return ApiManager.post('/users/sign-in', { userName, password });
     },
     registerAccount: async (loginDetails) => {
-        return ApiManager.post('api/account/register', loginDetails);
+        return ApiManager.post('/users/sign-up', loginDetails);
     },
-    logout: async (token) => {
-        return ApiManager.post('api/auth/logout', token);
+    refreshToken: async (token) => {
+        return ApiManager.post('/users/refresh-token', { token });
     },
-    getMyInfor: async () => {
-        return ApiManager.get('api/account/getMyInfor');
+    introspect: async (token) => {
+        return ApiManager.post('/users/introspect', { token });
     }
-
-
 };
+

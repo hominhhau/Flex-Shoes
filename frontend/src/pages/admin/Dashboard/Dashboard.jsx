@@ -21,25 +21,23 @@ function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Lấy tổng số đơn hàng
                 const totalOrdersResponse = await Api_InvoiceAdmin.getTotalOrders();
-                setTotalOrders(totalOrdersResponse);
-
-                // Lấy tổng số đơn hàng đang vận chuyển
+                setTotalOrders(totalOrdersResponse.data.total); // ✅ Lấy đúng field cần
+    
                 const totalShippingResponse = await Api_InvoiceAdmin.getTotalShipping();
-                setTotalShipping(totalShippingResponse);
-
-                // Lấy tổng doanh thu
+                setTotalShipping(totalShippingResponse.data.total); // ✅ Nếu trả về giống vậy
+    
                 const totalRevenueResponse = await Api_InvoiceAdmin.getTotalRevenue();
-                setTotalRevenue(totalRevenueResponse);
+                setTotalRevenue(totalRevenueResponse.data.total); // ✅
+    
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
             }
         };
-
+    
         fetchData();
-    }, []); // Empty array ensures this runs only once after the initial render
-
+    }, []);
+    
     return (
         <div className="w-full pl-[260px] mt-[96px]">
             <div className="p-[24px]">

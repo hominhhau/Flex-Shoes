@@ -6,13 +6,12 @@ import { useLocation } from 'react-router-dom';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
-    const [scrollPosition, setScrollPosition] = useState(0);
     const containerRef = useRef(null);
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const genderFilter = query.get('gender');
 
-    const [selectedFilters, setSelectedFilters] = useState({
+    const [selectedFilters] = useState({
         refineBy: [],
         size: [],
         color: [],
@@ -34,10 +33,15 @@ const ProductList = () => {
                     minPrice: selectedFilters.price[0],
                     maxPrice: selectedFilters.price[1],
                 });
-                const uniqueProducts = Array.from(new Map(response.map(product => [product.productId, product])).values());
+
+                // Gộp theo _id để loại trùng
+                const uniqueProducts = Array.from(
+                    new Map(response.map(product => [product._id, product])).values()
+                );
+
                 setProducts(uniqueProducts);
             } catch (error) {
-                console.error('Error fetching products:', error);
+                console.error('Failed to fetch products', error);
             }
         };
 
@@ -52,56 +56,35 @@ const ProductList = () => {
         }
     };
 
-    useEffect(() => {
-        const container = containerRef.current;
-        if (container) {
-            const handleScrollEvent = () => {
-                setScrollPosition(container.scrollLeft);
-            };
-            container.addEventListener('scroll', handleScrollEvent);
-            return () => container.removeEventListener('scroll', handleScrollEvent);
-        }
-    }, []);
-
     return (
         <div className="product-list relative">
             <div className="flex justify-end mb-4 space-x-2">
-                <Button
-                    className="bg-white shadow-md rounded-full p-2"
-                    onClick={() => handleScroll('left')}
-                    aria-label="Scroll left"
-                >
-                    &lsaquo;
-                </Button>
-                <Button
-                    className="bg-white shadow-md rounded-full p-2"
-                    onClick={() => handleScroll('right')}
-                    aria-label="Scroll right"
-                >
-                    &rsaquo;
-                </Button>
+                <Button onClick={() => handleScroll('left')}>&lsaquo;</Button>
+                <Button onClick={() => handleScroll('right')}>&rsaquo;</Button>
             </div>
+
             <div
                 ref={containerRef}
                 className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-                style={{
-                    scrollSnapType: 'x mandatory',
-                }}
+                style={{ scrollSnapType: 'x mandatory' }}
             >
-                {products.map((product) => (
-                    <div key={product.productId} className="flex-none w-full sm:w-1/2 lg:w-1/4 p-2 snap-start">
-                        <ProductItem
-                            src={product.images[0]}
-                            name={product.productName}
-                            price={product.finalPrice}
-                            originalPrice={product.originalPrice}
-                            brand={product.brandName}
-                            size={product.sizeName}
-                            productId={product.productId}
-                        />
-                    </div>
-                ))}
+                {products.map((product) => {
+                    const imageUrl = product?.image?.[0]?.imageID?.URL || 'https://via.placeholder.com/300x300?text=No+Image';
+
+                    return (
+                        <div key={product._id} className="flex-none w-full sm:w-1/2 lg:w-1/4 p-2 snap-start">
+                            <ProductItem
+                                key={product._id}
+                                productId={product._id}
+                                src={imageUrl}
+                                name={product.productName}
+                                price={product.sellingPrice}
+                            />
+                        </div>
+                    );
+                })}
             </div>
+
             <style jsx="true">{`
                 .scrollbar-hide::-webkit-scrollbar {
                     display: none;

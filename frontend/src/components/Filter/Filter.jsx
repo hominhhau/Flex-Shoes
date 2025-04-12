@@ -285,32 +285,42 @@ const Filter = ({ onFilterChange }) => {
                         min={0}
                         max={1000}
                         onChange={handlePriceChange}
-                        renderTrack={({ props, children }) => (
-                            <div
-                                {...props}
-                                style={{
-                                    ...props.style,
-                                    height: '6px',
-                                    width: '100%',
-                                    backgroundColor: '#ddd',
-                                    marginTop: '10px',
-                                }}
-                            >
-                                {children}
-                            </div>
-                        )}
-                        renderThumb={({ props }) => (
-                            <div
-                                {...props}
-                                style={{
-                                    ...props.style,
-                                    height: '20px',
-                                    width: '20px',
-                                    borderRadius: '50%',
-                                    backgroundColor: 'red',
-                                }}
-                            />
-                        )}
+                        renderTrack={({ props, children }) => {
+                            const { key, ...rest } = props;
+                            return (
+                                <div
+                                    key={key}
+                                    {...rest}
+                                    style={{
+                                        ...props.style,
+                                        height: '6px',
+                                        width: '100%',
+                                        backgroundColor: '#ddd',
+                                        marginTop: '10px',
+                                    }}
+                                >
+                                    {children}
+                                </div>
+                            );
+                        }}
+                        
+                        renderThumb={({ props }) => {
+                            const { key, ...rest } = props;
+                            return (
+                                <div
+                                    key={key}
+                                    {...rest}
+                                    style={{
+                                        ...props.style,
+                                        height: '20px',
+                                        width: '20px',
+                                        borderRadius: '50%',
+                                        backgroundColor: 'red',
+                                    }}
+                                />
+                            );
+                        }}
+                        
                     />
                     <div className={cx('price-values')}>
                         <span>${selectedFilters.price[0]}</span>

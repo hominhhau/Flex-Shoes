@@ -24,22 +24,28 @@ function Login() {
     const { setIsLoggedIn } = useAuth();
     const [isError, setIsError] = useState(false);
 
+    const [messageError, setMessageError] = useState("");
+
     const onChangeUserName = (e) => {
         setUsername(e.target.value);
     };
     const handleLogin = async () => {
         try {
-            const response = await Api_Auth.login(username, password); // Gọi API login
+            console.log(username)
+            console.log(password)
+            const data = await Api_Auth.login(username, password); // Gọi API login
             // Lưu token và role vào localStorage
-            localStorage.setItem('token', response.result.token);
-            localStorage.setItem('role', response.result.role);
-            if (response.result.role === 'USER') {
-                localStorage.setItem('customerId', response.result.customerId);
+            localStorage.setItem('token', data.response.token);
+            localStorage.setItem('role', JSON.stringify(data.response.roles));
+            // Nếu có điều kiện phân quyền
+            if (data.response.roles.some(role => role.authority === 'ROLE_USER')) {
+                localStorage.setItem('customerId', data.response.id); // hoặc data.customerId nếu có
             }
             setIsLoggedIn(true);
             navigate(config.routes.home);
 
         } catch (err) {
+            setMessageError(err.response.data.message)
             console.error('Login failed:', err.message);
             setIsError(true);
         }
@@ -155,8 +161,8 @@ function Login() {
                 isError && (
                     <Modal
                         valid={false}
-                        title="Registration Failed!"
-                        message="Please check your information again!"
+                        title="Login Failed!"
+                        message={messageError}
                         isConfirm={true}                      
                         onConfirm={handleTryAgain}
                         contentConfirm={'Try again'}

@@ -1,278 +1,338 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './productdetail.module.scss';
 import { Api_Product } from '../../../apis/Api_Product';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
-// Map color names to hex color codes
-const colors = {
-    Red: '#FF0000',
-    Blue: '#0000FF',
-    Green: '#008000',
-    Black: '#000000',
-    White: '#FFFFFF',
-    Gray: '#808080',
-    Yellow: '#FFFF00',
-    Pink: '#FFC0CB',
-    Brown: '#A52A2A',
-    Purple: '#800080',
-};
+const ProductDetail = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
-export default function ProductDetail() {
-    const navigate = useNavigate();
-    const { id } = useParams();
-    const { isLoggedIn, role } = useAuth();
+  const [product, setProduct] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [availableQuantities, setAvailableQuantities] = useState({});
+  const [uniqueColors, setUniqueColors] = useState([]);
+  const [uniqueSizes, setUniqueSizes] = useState([]);
 
-    const [productDetail, setProductDetail] = useState(null);
-    const [selectedImage, setSelectedImage] = useState(0);
-    const [selectedColor, setSelectedColor] = useState(null);
-    const [selectedSize, setSelectedSize] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  
 
-    useEffect(() => {
-        const fetchProductDetail = async () => {
-            setLoading(true);
-            setError(null);
+  // Fetch product details
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      setError(null);
 
-            try {
-                const response = await Api_Product.getProductDetail(id);
-                if (response) {
-                    setProductDetail(response);
-                    if (response.colors && response.colors.length > 0) {
-                        setSelectedColor(response.colors[0]);
-                    }
-                    if (response.sizes && response.sizes.length > 0) {
-                        setSelectedSize(response.sizes[0]);
-                    }
-                } else {
-                    setError('Product data not found.');
-                }
-            } catch (error) {
-                setError('Error fetching product details.');
-            } finally {
-                setLoading(false);
-            }
-        };
+      try {
+        const response = await Api_Product.getProductDetail(id);
+        const data = response.data;
 
-        fetchProductDetail();
-    }, [id]);
+        if (!data) throw new Error('Product not found');
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+        setProduct(data);
+        console.log('Product data:', data);
 
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
+        // Initialize available quantities
+        const initialQuantities = {};
+        data.inventory.forEach(item => {
+          const colorId = item?.numberOfProduct?.color?._id;
+          const sizeId = item?.numberOfProduct?.size?._id;
+          if (colorId && sizeId) {
+            initialQuantities[`${colorId}-${sizeId}`] = item?.numberOfProduct?.quantity || 0;
+          }
+        });
+        setAvailableQuantities(initialQuantities);
 
-    // No product data available
-    if (!productDetail) {
-        return <div>No product details available.</div>;
-    }
+        // Extract unique colors and sizes
+        const colors = new Map();
+        const sizes = new Map();
+        data.inventory.forEach(item => {
+          const color = item?.numberOfProduct?.color;
+          if (color && !colors.has(color._id)) {
+            colors.set(color._id, color);
+          }
+          const size = item?.numberOfProduct?.size;
+          if (size && !sizes.has(size._id)) {
+            sizes.set(size._id, size);
+          }
+        });
+        setUniqueColors([...colors.values()]);
+        setUniqueSizes([...sizes.values()]);
 
-    //
-    // Remove duplicate colors and sizes
-    const uniqueColors = Array.from(new Set(productDetail.colors.map((color) => color.colorId))).map((id) =>
-        productDetail.colors.find((color) => color.colorId === id),
-    );
-    const uniqueSizes = Array.from(new Set(productDetail.sizes.map((size) => size.sizeId))).map((id) =>
-        productDetail.sizes.find((size) => size.sizeId === id),
-    );
-
-    const handleAddToCart = () => {
-        if (!isLoggedIn) {
-            alert('Please login to add product to cart');
-            navigate('/login');
+        // Set initial selected color and size if available
+        if (data.inventory.length > 0) {
+          setSelectedColor(data.inventory[0]?.numberOfProduct?.color || null);
+          setSelectedSize(data.inventory[0]?.numberOfProduct?.size || null);
         }
 
-        if (!selectedSize || !selectedColor) {
-            alert('Please select both size and color before adding to the cart.');
-            return;
-        }
-
-        const newProduct = {
-            productId: productDetail.productId,
-            name: productDetail.productName,
-            size: selectedSize.sizeName,
-            color: selectedColor.colorName,
-            price: productDetail.finalPrice,
-            image: productDetail.images[0],
-            quantity: 1,
-        };
-
-        //tôi muốn in console để kiểm tra
-        console.log('Product added to cart:', newProduct);
-        console.log('Trước khi truyền: ', newProduct.size);
-
-        // // Lấy giỏ hàng hiện tại từ sessionStorage
-        const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-
-        // // Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
-        const existingProductIndex = currentCart.findIndex(
-            (item) =>
-                item.productId === newProduct.productId &&
-                item.size === newProduct.size &&
-                item.color === newProduct.color,
-        );
-
-        if (existingProductIndex !== -1) {
-            // Nếu sản phẩm đã tồn tại, tăng số lượng
-            currentCart[existingProductIndex].quantity += newProduct.quantity;
-        } else {
-            // Nếu sản phẩm chưa tồn tại, thêm vào giỏ
-            currentCart.push(newProduct);
-        }
-
-        // sessionStorage.setItem('cart', JSON.stringify(currentCart));
-
-        // // Lấy giỏ hàng hiện tại từ sessionStorage
-        // const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-        // //Kiểm tra xem sản phẩm đã tồn tại trong giỏ chưa
-        // const updatedCart = [...existingCart, newProduct];
-
-        // Cập nhật giỏ hàng trong sessionStorage
-        sessionStorage.setItem('cart', JSON.stringify(currentCart));
-        alert('Product added to cart!');
-
-        // // Điều hướng đến trang giỏ hàng
-        // navigate('/cart', {
-        //     state: newProduct,
-        // });
+      } catch (err) {
+        console.error('Failed to fetch product:', err);
+        setError(err.message || 'Error fetching product details');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    return (
-        <div className={cx('wrapper')}>
-            <div className={cx('content-header')}>
-                <div className={cx('product-images')}>
-                    <img
-                        src={productDetail.images[selectedImage]}
-                        alt={productDetail.productName}
-                        className={cx('main-image')}
-                    />
-                    <div className={cx('thumbnail-container')}>
-                        {productDetail.images.map((src, index) => (
-                            <img
-                                key={index}
-                                src={src}
-                                alt={`${productDetail.productName} thumbnail ${index + 1}`}
-                                className={cx('thumbnail', {
-                                    active: selectedImage === index,
-                                })}
-                                onClick={() => setSelectedImage(index)}
-                            />
-                        ))}
-                    </div>
-                </div>
+    if (id) fetchProduct();
+  }, [id]);
 
-                <div className={cx('product-info')}>
-                    <span className={cx('status')}>{productDetail.status}</span>
-                    <h1 className={cx('product-name')}>{productDetail.productName}</h1>
-                    <p className={cx('product-price')}>${productDetail.finalPrice.toFixed(2)}</p>
-                    <div className={cx('color-selection')}>
-                        <p>COLOR</p>
-                        <div className={cx('color-options')}>
-                            {uniqueColors.map((color) => (
-                                <button
-                                    key={color.colorId}
-                                    className={cx('color-option', { active: selectedColor === color })}
-                                    style={{ backgroundColor: colors[color.colorName] || '#000' }}
-                                    onClick={() => setSelectedColor(color)}
-                                ></button>
-                            ))}
-                        </div>
-                    </div>
+  // Update available quantity when color or size changes
+  useEffect(() => {
+    if (product && selectedColor && selectedSize) {
+      const key = `${selectedColor._id}-${selectedSize._id}`;
+      const quantity = availableQuantities[key] || 0;
+      console.log(`Available quantity for color ${selectedColor?.colorName}, size ${selectedSize?.nameSize}: ${quantity}`);
+    }
+  }, [selectedColor, selectedSize, availableQuantities, product]);
 
-                    <div className={cx('size-selection')}>
-                        <p>SIZE</p>
-                        <div className={cx('size-options')}>
-                            {uniqueSizes.map((size) => (
-                                <button
-                                    key={size.sizeId}
-                                    className={cx('size-option', { active: selectedSize === size })}
-                                    onClick={() => setSelectedSize(size)}
-                                >
-                                    {size.sizeName}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+  // Loading and error states
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (error) return <div className="text-center text-red-500 py-10">Error: {error}</div>;
+  if (!product) return <div className="text-center py-10">No product details available.</div>;
 
-                    <div className={cx('product-actions')}>
-                        <button className={cx('add-to-cart')} onClick={handleAddToCart}>
-                            ADD TO CART
-                        </button>
-                        <button className={cx('add-to-wishlist')}>♡</button>
-                        <button
-                            className={cx('buy-now')}
-                            onClick={() => {
-                                if (!selectedSize || !selectedColor) {
-                                    alert('Please select both size and color before proceeding.');
-                                    return;
-                                }
+  // Extract images
+  const images = product.image?.map(img => img?.imageID?.URL) || [];
 
-                                // Tạo đối tượng sản phẩm cho Buy It Now
-                                const newProduct = {
-                                    productId: productDetail.productId,
-                                    name: productDetail.productName,
-                                    size: selectedSize.sizeName,
-                                    color: selectedColor.colorName,
-                                    price: productDetail.finalPrice,
-                                    image: productDetail.images[0],
-                                    quantity: 1,
-                                };
+  // const images = product.image[0].imageID.URL
 
-                                console.log('Product added to cart buy', newProduct);
+  
 
-                                // Lấy giỏ hàng hiện tại từ sessionStorage
-                                const currentCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  // Add to cart handler
+  const handleAddToCart = () => {
+    console.log('Before adding to cart, selectedSize:', selectedSize);
+    if (!isLoggedIn) {
+      alert('Please login to add product to cart');
+      return navigate('/login');
+    }
 
-                                // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-                                const existingProductIndex = currentCart.findIndex(
-                                    (item) =>
-                                        item.productId === newProduct.productId &&
-                                        item.size === newProduct.size &&
-                                        item.color === newProduct.color,
-                                );
+    if (!selectedColor || !selectedSize) {
+      alert('Please select a color and size');
+      return;
+    }
 
-                                if (existingProductIndex !== -1) {
-                                    // Nếu sản phẩm đã có, tăng số lượng
-                                    currentCart[existingProductIndex].quantity += 1;
-                                } else {
-                                    // Nếu sản phẩm chưa có, thêm vào giỏ
-                                    currentCart.push(newProduct);
-                                }
+    const key = `${selectedColor._id}-${selectedSize._id}`;
+    const currentQuantity = availableQuantities[key] || 0;
+    if (currentQuantity <= 0) {
+      alert(`This color and size is currently out of stock.`);
+      return;
+    }
 
-                                // Lưu giỏ hàng vào sessionStorage
-                                sessionStorage.setItem('cart', JSON.stringify(currentCart));
+    const cartItem = {
+      id: product._id, // Sử dụng _id từ product
+      name: product.productName,
+      color: selectedColor.colorName,
+      size: selectedSize.nameSize,
+      price: product.sellingPrice,
+      image: images[0],
+      quantity: 1,
+    };
 
-                                // Điều hướng đến trang giỏ hàng
-                                navigate('/cart', {
-                                    state: {
-                                        productId: productDetail.productId,
-                                        name: productDetail.productName,
-                                        size: selectedSize.sizeName,
-                                        color: selectedColor.colorName,
-                                        price: productDetail.finalPrice,
-                                        image: productDetail.images[0],
-                                    },
-                                });
-                            }}
-                        >
-                            BUY IT NOW
-                        </button>
-                    </div>
+    console.log('Adding to cart:', cartItem);
 
-                    <div className={cx('product-description')}>
-                        <h2>ABOUT THE PRODUCT</h2>
-                        <p>{productDetail.description}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const existingIndex = cart.findIndex(
+      item =>
+        item.id === cartItem.id &&
+        item.color === cartItem.color &&
+        item.size === cartItem.size
     );
-}
+
+    if (existingIndex >= 0) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push(cartItem);
+    }
+
+    sessionStorage.setItem('cart', JSON.stringify(cart));
+    alert('Product added to cart!');
+  };
+
+  // Buy now handler
+  const handleBuyNow = () => {
+    console.log('Before buying now, selectedSize:', selectedSize);
+    if (!selectedColor || !selectedSize) {
+      alert('Please select a color and size');
+      return;
+    }
+
+    const key = `${selectedColor._id}-${selectedSize._id}`;
+    const currentQuantity = availableQuantities[key] || 0;
+    if (currentQuantity <= 0) {
+      alert(`This color and size is currently out of stock.`);
+      return;
+    }
+
+    const cartItem = {
+      id: product._id, // Sử dụng _id từ product
+      name: product.productName,
+      color: selectedColor.colorName,
+      size: selectedSize.nameSize,
+      price: product.sellingPrice,
+      image: images[0],
+      quantity: 1,
+    };
+
+    console.log('Buying now:', cartItem);
+
+    const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const existingIndex = cart.findIndex(
+      item =>
+        item.id === cartItem.id &&
+        item.color === cartItem.color &&
+        item.size === cartItem.size
+    );
+
+    if (existingIndex >= 0) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push(cartItem);
+    }
+
+    sessionStorage.setItem('cart', JSON.stringify(cart));
+    navigate('/cart', { state: cartItem });
+  };
+
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    // Optionally reset selected size if the new color doesn't have the previously selected size
+    if (selectedSize && !product.inventory.some(item => item?.numberOfProduct?.color?._id === color._id && item?.numberOfProduct?.size?._id === selectedSize._id)) {
+      setSelectedSize(null);
+    }
+  };
+
+  const handleSizeSelect = (size) => {
+    console.log('handleSizeSelect called with:', size); // Log khi chọn size
+    setSelectedSize(size);
+    // Optionally reset selected color if the new size doesn't have the previously selected color
+    if (selectedColor && !product.inventory.some(item => item?.numberOfProduct?.color?._id === selectedColor._id && item?.numberOfProduct?.size?._id === size._id)) {
+      setSelectedColor(null);
+    }
+  };
+
+  const getAvailableQuantity = () => {
+    if (selectedColor && selectedSize) {
+      const key = `${selectedColor._id}-${selectedSize._id}`;
+      return availableQuantities[key] || 0;
+    }
+    return 0;
+  };
+
+  return (
+    <div className={cx('wrapper')}>
+      <div className={cx('content-header')}>
+        {/* Product Images */}
+        <div className={cx('product-images')}>
+          {images.length > 0 && (
+            <img
+              src={images[selectedImageIndex]}
+              alt={product.productName}
+              className={cx('main-image')}
+            />
+          )}
+          <div className={cx('thumbnail-container')}>
+            {images.map((src, index) => (
+              <img
+                key={index}
+                src={src}
+                alt={`${product.productName} thumbnail ${index + 1}`}
+                className={cx('thumbnail', { active: selectedImageIndex === index })}
+                onClick={() => setSelectedImageIndex(index)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Product Info */}
+        <div className={cx('product-info')}>
+          <span className={cx('status')}>
+            {product.status ? 'In Stock' : 'Out of Stock'}
+          </span>
+          <h1 className={cx('product-name')}>{product.productName}</h1>
+          <p className={cx('product-price')}>
+            {(product.sellingPrice).toFixed(2)}
+          </p>
+
+          {/* Color Selection */}
+          {uniqueColors.length > 0 && (
+            <div className={cx('color-selection')}>
+              <p>COLOR</p>
+              <div className={cx('color-options')}>
+                {uniqueColors.map(color => (
+                  <button
+                    key={color._id}
+                    className={cx('color-option', {
+                      active: selectedColor?._id === color._id,
+                    })}
+                    style={{ backgroundColor: color.hex || '#000' }}
+                    onClick={() => handleColorSelect(color)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Size Selection */}
+          {uniqueSizes.length > 0 && (
+            <div className={cx('size-selection')}>
+              <p>SIZE</p>
+              <div className={cx('size-options')}>
+                {uniqueSizes.map(size => (
+                  <button
+                    key={size._id}
+                    className={cx('size-option', {
+                      active: selectedSize?._id === size._id,
+                    })}
+                    onClick={() => handleSizeSelect(size)}
+                  >
+                    {size.nameSize}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Available Quantity */}
+          {(selectedColor && selectedSize) && (
+            <p className={cx('available-quantity')}>
+              Available: {getAvailableQuantity()}
+            </p>
+          )}
+
+          {/* Actions */}
+          <div className={cx('product-actions')}>
+            <button
+              className={cx('add-to-cart')}
+              onClick={handleAddToCart}
+              disabled={!selectedColor || !selectedSize || getAvailableQuantity() <= 0}
+            >
+              ADD TO CART
+            </button>
+            <button className={cx('add-to-wishlist')}>♡</button>
+            <button
+              className={cx('buy-now')}
+              onClick={handleBuyNow}
+              disabled={!selectedColor || !selectedSize || getAvailableQuantity() <= 0}
+            >
+              BUY IT NOW
+            </button>
+          </div>
+
+          {/* Description */}
+          <div className={cx('product-description')}>
+            <h2>ABOUT THE PRODUCT</h2>
+            <p>{product.description || 'No description available'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProductDetail;

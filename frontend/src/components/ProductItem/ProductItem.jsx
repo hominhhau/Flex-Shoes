@@ -7,9 +7,9 @@ import styles from './ProductItem.module.scss';
 
 const cx = classNames.bind(styles);
 
-function ProductItem({ key, src, name, price, productId, ...props }) {
+function ProductItem({ src, name, price, productId, ...props }) {
     return (
-        <div key={key} className={cx('product-item')}>
+        <div className={cx('product-item')}>
             <div className={cx('inner')}>
                 <div className="relative">
                     <Image src={src} alt={name} className={cx('product-image')} />

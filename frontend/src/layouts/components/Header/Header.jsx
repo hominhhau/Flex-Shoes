@@ -12,6 +12,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Api_Auth } from '../../../../apis/Api_Auth';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 import config from '../../../config';
 import styles from './Header.module.scss';
@@ -29,6 +31,7 @@ import { useAuth } from '../../../hooks/useAuth';
 const cx = classNames.bind(styles);
 
 function Header({ user }) {
+    const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
     
     const customerID = localStorage.getItem('customerId');
@@ -49,15 +52,27 @@ function Header({ user }) {
     const handleLogout = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await Api_Auth.logout(token); // Gọi API login
-            // Xóa token và role vào localStorage
+            const response = await axios.post(
+                "http://localhost:8888/api/v1/users/logout",
+                {}, // hoặc data nếu có payload logout
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            );
+    
+            // Xóa token và role khỏi localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('role');
             localStorage.removeItem('customerId');
             setIsLoggedIn(false);
             setRole(false);
+            navigate(config.routes.home);
         } catch (err) {
-            console.error('Logout failed:', err.message);
+            console.log('Logout failed:', err.message);
             setError('Logout failed');
         }
     };

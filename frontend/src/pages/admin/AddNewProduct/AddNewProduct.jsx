@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 
 import styles from './AddNewProduct.module.scss';
@@ -6,7 +6,6 @@ import { ImageUploader } from './ImageUpload';
 import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
-
 
 const cx = classNames.bind(styles);
 
@@ -18,51 +17,47 @@ const AddNewProduct = () => {
         category: null,
         brandName: null,
         status: 'Available',
-        salePrice: 0,
-        regularPrice: 0,
+        discount: 0,
+        originalPrice: 0,
         vat: 10,
         images: [],
         gender: null,
+        purchases: [],
     });
+
+    console.log('Form data trước khi gửi:', formData);
 
     const [newPurchase, setNewPurchase] = useState({
         color: null,
         size: null,
         quantity: 1,
     });
+    console.log('New purchase:', newPurchase);
 
     const [purchases, setPurchases] = useState([]);
+    const [colors, setColors] = useState([]);
+    const [sizes, setSizes] = useState([]);
+    const [categorys, setCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
+    console.log('Purchases:', purchases);
 
-    const sizeMapping = {
-        S: 1,
-        M: 2,
-        L: 3,
-        XL: 4,
-        XXL: 5,
-        36: 6,
-        37: 7,
-        38: 8,
-        39: 9,
-        40: 10,
-        41: 11,
-        42: 12,
-        43: 13,
-        44: 14,
-        45: 15,
-    };
-
-    const colorMapping = {
-        Red: 1,
-        Blue: 2,
-        Green: 3,
-        Black: 4,
-        White: 5,
-        Gray: 6,
-        Yellow: 7,
-        Pink: 8,
-        Brown: 9,
-        Purple: 10,
-    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const categoryRes = await Api_AddProduct.getCategory();
+                const brandRes = await Api_AddProduct.getBrand();
+                const colorRes = await Api_AddProduct.getColor();
+                const sizeRes = await Api_AddProduct.getSize();
+                setCategories(categoryRes);
+                setBrands(brandRes);
+                setColors(colorRes);
+                setSizes(sizeRes);
+            } catch (error) {
+                console.error('Lỗi khi load Color/Size:', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({
@@ -88,84 +83,70 @@ const AddNewProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validation checks
+        //   Validation checks (bỏ comment nếu cần)
         if (
             !formData.productName ||
             !formData.description ||
             !formData.images.length ||
             !formData.category ||
             !formData.brandName ||
-            formData.salePrice <= 0 ||
-            formData.regularPrice <= 0
+            !formData.gender ||
+            formData.discount <= 0 ||
+            formData.originalPrice <= 0
         ) {
             alert(
                 'Please fill in all required fields: Product Name, Description, Images, Category, Brand Name, Sale Price, and Regular Price.',
             );
-            
+            return;
         }
 
-        const addProductDto = {
-            productName: formData.productName,
-            description: formData.description,
-            originalPrice: parseFloat(formData.regularPrice),
-            status: formData.status,
-            salePrice: parseFloat(formData.salePrice),
-            vat: formData.vat,
-            images: formData.images,
-            gender: formData.gender ? formData.gender.toUpperCase() : null,
-            brand: {
-                brandId: formData.brandName,
-            },
-            productCategory: {
-                categoryId: formData.category,
-            },
-        };
+        // Tạo FormData để gửi dữ liệu
+        const formDataToSend = new FormData();
+        formDataToSend.append('productName', formData.productName);
+        formDataToSend.append('description', formData.description);
+        formDataToSend.append('originalPrice', formData.originalPrice);
+        formDataToSend.append('discount', formData.discount);
+        formDataToSend.append('vat', formData.vat);
+        formDataToSend.append('status', formData.status);
+        formDataToSend.append('gender', formData.gender ? formData.gender.toUpperCase() : '');
+        formDataToSend.append('brandId', formData.brandName);
+        formDataToSend.append('categoryId', formData.category);
 
-        console.log('Product data:', addProductDto);
+        // Thêm file ảnh
+        formData.images.forEach((image, index) => {
+            console.log(`Adding image ${index}:`, image.file); // Log để kiểm tra
+            formDataToSend.append('images', image.file); // Field name phải là 'images'
+        });
+
+        formDataToSend.append(
+            'inventory',
+            JSON.stringify(
+                purchases.map((purchase) => ({
+                    color: purchase.color._id,
+                    size: purchase.size._id,
+                    quantity: purchase.quantity,
+                })),
+            ),
+        );
+
+        // Log toàn bộ FormData
+        for (let [key, value] of formDataToSend.entries()) {
+            console.log(`${key}:`, value);
+        }
 
         try {
-            // Create the product
-            const response = await Api_AddProduct.createProduct(addProductDto);
-            console.log('API Response:', response);
-
-            const createdProduct = response; // Adjust based on your API response structure
+            const createdProduct = await Api_AddProduct.createProduct(formDataToSend);
             console.log('Created product:', createdProduct);
-
-            // Iterate through purchases to construct quantities array
-            const quantities = purchases.map((purchase) => ({
-                product: {
-                    productId: createdProduct.productId,
-                },
-                color: {
-                    colorId: colorMapping[purchase.color] || null,
-                },
-                size: {
-                    sizeId: sizeMapping[purchase.size] || null,
-                },
-                quantity: purchase.quantity,
-            }));
-
-            console.log('Quantities:', quantities);
-
-            // Send each quantity to the API separately
-            for (const quantity of quantities) {
-                try {
-                    const quantityResponse = await Api_AddProduct.createQuantity(quantity);
-                    console.log('Quantity Response:', quantityResponse);
-                } catch (quantityError) {
-                    console.error('Error creating quantity:', quantityError);
-                }
+            if (createdProduct) {
+                alert('Product created successfully!');
+                // navigate(config.routes.admin.products);
+            } else {
+                alert('Failed to create product. Please try again.');
             }
-
-            alert('Product and quantities submitted successfully!');
         } catch (error) {
-            console.error('Error submitting product:', error);
-            if (error.response) {
-                console.error('Error response data:', error.response.data);
-            }
-            alert('There was an error submitting the product. Please try again.');
+            console.error('Error creating product:', error);
+            alert('An error occurred while creating the product. Please try again later.');
         }
-        navigate(config.routes.AllProduct);
     };
 
     const handleAddPurchase = () => {
@@ -174,55 +155,53 @@ const AddNewProduct = () => {
             return;
         }
 
-        const colorId = colorMapping[newPurchase.color]; // Get colorId from mapping
-        const sizeId = sizeMapping[newPurchase.size]; // Get sizeId from mapping
-
         const existingPurchase = purchases.find(
-            (purchase) => purchase.color === newPurchase.color && purchase.size === newPurchase.size,
+            (p) => p.color._id === newPurchase.color._id && p.size._id === newPurchase.size._id,
         );
 
         if (existingPurchase) {
-            setPurchases((prevPurchases) =>
-                prevPurchases.map((purchase) =>
-                    purchase.color === existingPurchase.color && purchase.size === existingPurchase.size
-                        ? { ...purchase, quantity: purchase.quantity + newPurchase.quantity }
-                        : purchase,
+            setPurchases((prev) =>
+                prev.map((p) =>
+                    p.color._id === newPurchase.color._id && p.size._id === newPurchase.size._id
+                        ? { ...p, quantity: p.quantity + newPurchase.quantity }
+                        : p,
                 ),
             );
         } else {
-            setPurchases((prevPurchases) => [
-                ...prevPurchases,
-                {
-                    color: newPurchase.color,
-                    size: newPurchase.size,
-                    quantity: newPurchase.quantity,
-                    colorId: colorId, // Set colorId here
-                    sizeId: sizeId, // Set sizeId here
-                },
-            ]);
+            setPurchases((prev) => [...prev, { ...newPurchase }]);
         }
 
         setNewPurchase({ color: null, size: null, quantity: 1 });
     };
 
-    const handleQuantityChange = (id, newQuantity) => {
+    const handleQuantityChange = (colorId, sizeId, newQuantity) => {
+        // Chuyển đổi newQuantity thành số nguyên, mặc định là 0 nếu không hợp lệ
+        const quantity = Math.max(0, parseInt(newQuantity, 10) || 0);
+
         setPurchases((prevPurchases) =>
-            prevPurchases.map((purchase) => (purchase.id === id ? { ...purchase, quantity: newQuantity } : purchase)),
+            prevPurchases.map((purchase) =>
+                purchase.color._id === colorId && purchase.size._id === sizeId ? { ...purchase, quantity } : purchase,
+            ),
         );
     };
 
     const handleImagesChange = (newImages) => {
         setFormData((prev) => ({
             ...prev,
-            images: newImages,
+            images: newImages.map((image) => ({
+                file: image.file,
+                name: image.name,
+                url: image.url,
+            })),
         }));
     };
 
-    const handleDeletePurchase = (color, size) => {
-        setPurchases((prevPurchases) =>
-            prevPurchases.filter((purchase) => !(purchase.color === color && purchase.size === size)),
-        );
+    const handleDeletePurchase = (colorId, sizeId) => {
+        setPurchases((prev) => prev.filter((p) => !(p.color._id === colorId && p.size._id === sizeId)));
     };
+
+    const getColorName = (id) => colors.find((c) => c._id === id)?.colorName || id;
+    const getSizeName = (id) => sizes.find((s) => s._id === id)?.sizeName || id;
 
     return (
         <form className={cx('formContainer')} onSubmit={handleSubmit}>
@@ -281,11 +260,11 @@ const AddNewProduct = () => {
                                         <option value="" disabled>
                                             Select a category
                                         </option>
-                                        <option value="CT001">Men Shoes</option>
-                                        <option value="CT002">Women Shoes</option>
-                                        <option value="CT003">Kids Shoes</option>
-                                        <option value="CT004">Sports Shoes</option>
-                                        <option value="CT005">Casual Shoes</option>
+                                        {categorys.map((category) => (
+                                            <option key={category._id} value={category._id}>
+                                                {category.productTypeName}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
@@ -304,16 +283,11 @@ const AddNewProduct = () => {
                                         <option value="" disabled>
                                             Select a brand
                                         </option>
-                                        <option value="BR001">Nike</option>
-                                        <option value="BR002">Adidas</option>
-                                        <option value="BR003">Puma</option>
-                                        <option value="BR004">NewBalance</option>
-                                        <option value="BR005">Reebok</option>
-                                        <option value="BR006">Converse</option>
-                                        <option value="BR007">Vans</option>
-                                        <option value="BR008">UnderArmour</option>
-                                        <option value="BR009">ASICS</option>
-                                        <option value="BR010">Fila</option>
+                                        {brands.map((brand) => (
+                                            <option key={brand._id} value={brand._id}>
+                                                {brand.brandTypeName}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
@@ -368,8 +342,8 @@ const AddNewProduct = () => {
                                         id="originalPrice"
                                         type="number"
                                         className={cx('textInput')}
-                                        value={formData.regularPrice}
-                                        onChange={(e) => handleInputChange('regularPrice', parseFloat(e.target.value))}
+                                        value={formData.originalPrice}
+                                        onChange={(e) => handleInputChange('originalPrice', parseFloat(e.target.value))}
                                     />
                                 </div>
                             </div>
@@ -382,23 +356,13 @@ const AddNewProduct = () => {
                                         id="salePrice"
                                         type="number"
                                         className={cx('textInput')}
-                                        value={formData.salePrice}
-                                        onChange={(e) => handleInputChange('salePrice', parseFloat(e.target.value))}
+                                        value={formData.discount}
+                                        onChange={(e) => handleInputChange('discount', parseFloat(e.target.value))}
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    {/* VAT */}
-                    {/* <div className={cx('fieldGroup')}>
-                <label htmlFor="vat" className={cx('fieldLabel')}>
-                    VAT (%)
-                </label>
-                <div className={cx('inputWrapper')}>
-                    <input id="vat" type="number" className={cx('textInput')} defaultValue="10" />
-                </div>
-            </div> */}
 
                     {/* Status */}
                     <div className={cx('fieldGroup')}>
@@ -423,25 +387,24 @@ const AddNewProduct = () => {
                                 <select
                                     id="color"
                                     className={cx('selectInput')}
-                                    value={newPurchase.color || ''}
-                                    onChange={(e) => setNewPurchase({ ...newPurchase, color: e.target.value })}
+                                    value={newPurchase.color?._id || ''}
+                                    onChange={(e) => {
+                                        const selectedColor = colors.find((c) => c._id === e.target.value);
+                                        setNewPurchase({ ...newPurchase, color: selectedColor });
+                                    }}
                                 >
                                     <option value="" disabled>
                                         Select a color
                                     </option>
-                                    <option value="Red">Red</option>
-                                    <option value="Blue">Blue</option>
-                                    <option value="Green">Green</option>
-                                    <option value="Black">Black</option>
-                                    <option value="White">White</option>
-                                    <option value="Gray">Gray</option>
-                                    <option value="Yellow">Yellow</option>
-                                    <option value="Pink">Pink</option>
-                                    <option value="Brown">Brown</option>
-                                    <option value="Purple">Purple</option>
+                                    {colors.map((c) => (
+                                        <option key={c._id} value={c._id}>
+                                            {c.colorName}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
+
                         <div className={cx('columnField')}>
                             <label htmlFor="size" className={cx('fieldLabel')}>
                                 Size
@@ -450,27 +413,20 @@ const AddNewProduct = () => {
                                 <select
                                     id="size"
                                     className={cx('selectInput')}
-                                    value={newPurchase.size || ''}
-                                    onChange={(e) => setNewPurchase({ ...newPurchase, size: e.target.value })}
+                                    value={newPurchase.size?._id || ''}
+                                    onChange={(e) => {
+                                        const selectedSize = sizes.find((s) => s._id === e.target.value);
+                                        setNewPurchase({ ...newPurchase, size: selectedSize });
+                                    }}
                                 >
                                     <option value="" disabled>
                                         Select a size
                                     </option>
-                                    <option value="S">S</option>
-                                    <option value="M">M</option>
-                                    <option value="L">L</option>
-                                    <option value="XL">XL</option>
-                                    <option value="XXL">XXL</option>
-                                    <option value="36">36</option>
-                                    <option value="37">37</option>
-                                    <option value="38">38</option>
-                                    <option value="39">39</option>
-                                    <option value="40">40</option>
-                                    <option value="41">41</option>
-                                    <option value="42">42</option>
-                                    <option value="43">43</option>
-                                    <option value="44">44</option>
-                                    <option value="45">45</option>
+                                    {sizes.map((s) => (
+                                        <option key={s._id} value={s._id}>
+                                            {s.nameSize}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -511,9 +467,9 @@ const AddNewProduct = () => {
                     </header>
                     <main className={cx('tableContainer')}>
                         {purchases.map((purchase) => (
-                            <div className={cx('tableRow')} key={`${purchase.color}-${purchase.size}`}>
-                                <div className={cx('cell')}>{purchase.color}</div>
-                                <div className={cx('cell')}>{purchase.size}</div>
+                            <div className={cx('tableRow')} key={`${purchase.color._id}-${purchase.size._id}`}>
+                                <div className={cx('cell')}>{purchase.color.colorName}</div>
+                                <div className={cx('cell')}>{purchase.size.nameSize}</div>
                                 <div className={cx('cell')}>
                                     <input
                                         type="number"
@@ -521,7 +477,11 @@ const AddNewProduct = () => {
                                         value={purchase.quantity}
                                         min="0"
                                         onChange={(e) =>
-                                            handleQuantityChange(purchase.id, parseInt(e.target.value, 10))
+                                            handleQuantityChange(
+                                                purchase.color._id,
+                                                purchase.size._id,
+                                                parseInt(e.target.value, 10),
+                                            )
                                         }
                                     />
                                 </div>
@@ -529,9 +489,9 @@ const AddNewProduct = () => {
                                     <button
                                         type="button"
                                         className={cx('deleteButton')}
-                                        onClick={() => handleDeletePurchase(purchase.color, purchase.size)}
+                                        onClick={() => handleDeletePurchase(purchase.color._id, purchase.size._id)}
                                     >
-                                        &times;
+                                        ×
                                     </button>
                                 </div>
                             </div>
