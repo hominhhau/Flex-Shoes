@@ -30,6 +30,7 @@ const cx = classNames.bind(styles);
 
 function Header({ user }) {
     const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
+    
     const customerID = localStorage.getItem('customerId');
     const userMenu = [
         {
