@@ -65,8 +65,6 @@ const CheckoutForm = () => {
     const handlePlaceOrder = async () => {
         try {
             console.log('cartData handlePlaceOrder:', cartData);
-            // Chuyển đổi tổng tiền sang VND
-            const totalInVND = Math.round(totalAmount * 23000);
             const customerID = localStorage.getItem('customerId');
             console.log('customerID:', customerID);
             console.log('invoiceData:', cartData);
@@ -84,7 +82,7 @@ const CheckoutForm = () => {
                 deliveryMethod: selectedDeliveryMethod.toString(),
                 customerId: customerID,
                 orderStatus: 'Processing',
-                total: totalInVND,
+                total: totalAmount + selectedDeliveryFee,
             };
 
             console.log('ProductID khi thanh toán:', invoiceData.invoiceDetails.map((item) => item.productId));
@@ -115,7 +113,7 @@ const CheckoutForm = () => {
 
             if (!(selectedPaymentMethod === 'Cash on Delivery')) {
                 const paymentResponse = await Api_Payment.createPayment({
-                    total: totalInVND,
+                    total: invoiceData.total,
                     // invoiceId: invoiceResponse.invoiceId,
                     invoiceId: Math.floor(Math.random() * 100000)
                 });

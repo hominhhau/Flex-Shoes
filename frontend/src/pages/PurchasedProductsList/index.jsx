@@ -67,31 +67,31 @@ const PurchasedProductsList = () => {
   }
 
   if (!Array.isArray(purchasedProducts) || purchasedProducts.length === 0) {
-    return <div>Không có sản phẩm nào đã mua.</div>;
+    return <div>No products purchased.</div>;
   }
 
   return (
     <div className={cx('card')}>
       <div className={cx('cardHeader')}>
-        <h2 className={cx('cardTitle')}>Danh sách sản phẩm đã mua</h2>
+        <h2 className={cx('cardTitle')}>List of products purchased</h2>
       </div>
       <div className={cx('cardContent')}>
         <table className={cx('table')}>
           <thead>
             <tr>
-              <th className={cx('tableHead')}>Hình ảnh</th>
-              <th className={cx('tableHead')}>Tên sản phẩm</th>
-              <th className={cx('tableHead')}>Số lượng</th>
-              <th className={cx('tableHead')}>Ngày mua</th>
-              <th className={cx('tableHead')}>Trạng thái</th>
-              <th className={cx('tableHead')}>Giá</th>
+              <th className={cx('tableHead')}>Image</th>
+              <th className={cx('tableHead')}>Name</th>
+              <th className={cx('tableHead')}>Quantity</th>
+              <th className={cx('tableHead')}>Date</th>
+              <th className={cx('tableHead')}>Status</th>
+              <th className={cx('tableHead')}>Price</th>
             </tr>
           </thead>
           <tbody>
             {purchasedProducts.flatMap((invoice) =>
               invoice.invoiceDetails.map((detail) => {
                 const productId = detail.product ? detail.product.productId : 'N/A';
-                const productName = detail.product ? detail.product.productName : 'Thông tin sản phẩm không có';
+                const productName = detail.product ? detail.product.productName : 'N/A';
                 const firstImageURL = detail.product && detail.product.image && detail.product.image.length > 0
                   ? detail.product.image[0].imageID.URL // Truy cập đúng cấu trúc
                   : null;
@@ -121,7 +121,7 @@ const PurchasedProductsList = () => {
                     </td>
                     <td className={cx('tableCell')}>{invoice.orderStatus}</td>
                     <td className={cx('tableCell')}>
-                      {totalPricePerDetail.toLocaleString('vi-VN')} ₫
+                      {totalPricePerDetail.toFixed(2)} $
                     </td>
                   </tr>
                 );
