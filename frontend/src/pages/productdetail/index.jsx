@@ -167,6 +167,8 @@ const ProductDetail = () => {
       return;
     }
   
+    const key = `${selectedColor._id}-${selectedSize._id}`;
+    const currentQuantity = availableQuantities[key] || 0;
     if (currentQuantity <= 0) {
       alert(`This color and size is currently out of stock.`);
       return;
@@ -178,8 +180,7 @@ const ProductDetail = () => {
       return;
     }
 
-    const key = `${selectedColor._id}-${selectedSize._id}`;
-    const currentQuantity = availableQuantities[key] || 0;
+
     if (currentQuantity <= 0) {
       alert(`This color and size is currently out of stock.`);
       return;

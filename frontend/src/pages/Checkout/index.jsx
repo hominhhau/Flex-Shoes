@@ -71,6 +71,7 @@ const CheckoutForm = () => {
             const invoiceData = {
                 invoiceDetails: cartData.map((product) => ({
                     productId: product.id || product.productId,
+                    id: product.id || product.productId, // Thêm id để nhất quán với cartData
                     quantity: product.quantity,
                 })),
 
@@ -130,7 +131,7 @@ const CheckoutForm = () => {
             }
             // Xóa product da mua trong giỏ hàng sau khi đặt hàng
             const newCartData = cartData.filter(
-                (product) => !invoiceData.invoiceDetails.some((item) => item.productId === product.productId),
+                (product) => !invoiceData.invoiceDetails.some((item) => item.id === product.id),
             );
             sessionStorage.setItem('cart', JSON.stringify(newCartData));
 

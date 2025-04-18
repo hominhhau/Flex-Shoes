@@ -132,7 +132,7 @@ const PurchasedProductsList = () => {
       </div>
       <div className={cx('cardFooter')}>
         <div className={cx('totalSpent')}>
-          Tổng chi tiêu: {totalSpent.toLocaleString('vi-VN')} ₫
+          Tổng chi tiêu: {totalSpent.toFixed(2)} $
         </div>
       </div>
     </div>
