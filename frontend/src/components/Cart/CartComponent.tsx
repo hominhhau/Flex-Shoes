@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './CartComponent.module.scss';
@@ -15,8 +15,10 @@ type CartComponentProps = {
   removeIcon: any;
   onRemove: () => void;
   onQuantityChange: (quantity: number) => void;
-  onCheckboxChange: (isChecked: boolean) => void;
+  onCheckboxChange: (isChecked: boolean, product: any) => void;
   allowQuantityChange?: boolean;
+  product: any;
+  isChecked?: boolean; // Thêm prop để đồng bộ với checkedItems từ Cart
 };
 
 const ShoppingBag: React.FC<CartComponentProps> = ({
@@ -31,9 +33,14 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   onQuantityChange,
   onCheckboxChange,
   allowQuantityChange = true,
+  product,
+  isChecked = false,
 }) => {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
-  const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    setQuantity(initialQuantity);
+  }, [initialQuantity]);
 
   const totalPrice = (price * quantity).toFixed(2);
 
@@ -54,9 +61,8 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   };
 
   const handleCheckboxChange = () => {
-    const newCheckedState = !isChecked;
-    setIsChecked(newCheckedState);
-    onCheckboxChange(newCheckedState);
+    console.log("Checkbox changed for product:", product, "New state:", !isChecked);
+    onCheckboxChange(!isChecked, product);
   };
 
   return (
