@@ -156,6 +156,22 @@ const ProductDetail = () => {
 
   // Buy now handler
   const handleBuyNow = () => {
+    console.log('Before adding to cart, selectedSize:', selectedSize);
+    if (!isLoggedIn) {
+      alert('Please login to Buy');
+      return navigate('/login');
+    }
+
+    if (!selectedColor || !selectedSize) {
+      alert('Please select a color and size');
+      return;
+    }
+  
+    if (currentQuantity <= 0) {
+      alert(`This color and size is currently out of stock.`);
+      return;
+    }
+
     console.log('Before buying now, selectedSize:', selectedSize);
     if (!selectedColor || !selectedSize) {
       alert('Please select a color and size');
