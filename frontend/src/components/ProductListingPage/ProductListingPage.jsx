@@ -24,7 +24,7 @@ function ProductListPage({ products }) {
                         <ProductItem
                             key={product._id} // Ensure key is unique for each product
                             productId={product._id} // Pass productId here
-                            src={product.image[0].imageID.URL}
+                            src={product.image[0]?.imageID?.URL || ''} // Safely access the image URL
                             name={product.productName}
                             price={product.sellingPrice}
                         />

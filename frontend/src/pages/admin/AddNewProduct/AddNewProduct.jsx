@@ -6,6 +6,7 @@ import { ImageUploader } from './ImageUpload';
 import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
+import { Api_ChatGPT } from '../../../../apis/Api_ChatGPT';
 
 const cx = classNames.bind(styles);
 
@@ -24,6 +25,7 @@ const AddNewProduct = () => {
         gender: null,
         purchases: [],
     });
+    const [loadingAI, setLoadingAI] = useState(false);
 
     console.log('Form data trước khi gửi:', formData);
 
@@ -78,6 +80,31 @@ const AddNewProduct = () => {
             ...prev,
             tags: prev.tags.filter((tag) => tag !== tagToRemove),
         }));
+    };
+    const handleImproveDescription = async () => {
+        if (!formData.description.trim()) {
+            alert('Please enter a description before using AI to improve it.');
+            return;
+        }
+        const trimmedDescription = formData.description.trim();
+
+        setLoadingAI(true);
+        try {
+            const response = await Api_ChatGPT.chatgpt(trimmedDescription);
+
+            if (response && response.improvedDescription) {
+                setFormData((prev) => ({
+                    ...prev,
+                    description: response.improvedDescription,
+                }));
+            } else {
+                alert('Failed to improve description. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error fetching AI description:', error);
+        } finally {
+            setLoadingAI(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -232,7 +259,20 @@ const AddNewProduct = () => {
                         <label htmlFor="description" className={cx('fieldLabel')}>
                             Description
                         </label>
+
                         <div className={cx('inputWrapper')}>
+                            {/* Nút AI nằm trên textarea */}
+                            {formData.description.trim() !== '' && (
+                                <button
+                                    className={cx('aiButton')}
+                                    type="button"
+                                    onClick={handleImproveDescription}
+                                    disabled={loadingAI}
+                                >
+                                    {loadingAI ? 'Đang tạo mô tả...' : '✨ Tạo mô tả với chuyên gia Marketing AI'}
+                                </button>
+                            )}
+
                             <textarea
                                 id="description"
                                 className={cx('textArea')}
