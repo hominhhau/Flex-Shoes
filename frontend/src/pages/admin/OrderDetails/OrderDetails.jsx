@@ -36,11 +36,12 @@ const OrderDetails = () => {
             try {
                 console.log('invoiceId = ', invoiceId);
                 const response = await Api_InvoiceAdmin.getInvoiceById(invoiceId);
+                console.log('response = ', response);
                 if (response) {
-                    setInvoice(response.result);
-                    setDetails(response.result.invoiceDetails);
-                    console.log('invoice = ', response.result);
-                    console.log('details = ', responseDetail.result.invoiceDetails);
+                    setInvoice(response.data.result);
+                    setDetails(response.data.result.invoiceDetails);
+                    console.log('invoice = ', response.data.result);
+                    console.log('details = ', response.data.result.invoiceDetails);
                 }
             } catch (error) {
                 setError(error.message);
@@ -119,13 +120,12 @@ const OrderDetails = () => {
                             <b>Order ID: {invoice.invoiceId}</b>
 
                             <div
-                                className={`w-40 h-50 ml-20 rounded-lg text-center ${
-                                    invoice.orderStatus === 'Delivered'
+                                className={`w-40 h-50 ml-20 rounded-lg text-center ${invoice.orderStatus === 'Delivered'
                                         ? 'bg-green-500'
                                         : invoice.orderStatus === 'Canceled'
-                                          ? 'bg-red-500'
-                                          : 'bg-yellow-500'
-                                }`}
+                                            ? 'bg-red-500'
+                                            : 'bg-yellow-500'
+                                    }`}
                             >
                                 <p>{invoice.orderStatus} </p>
                             </div>
