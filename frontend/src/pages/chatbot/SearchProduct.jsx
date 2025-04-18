@@ -1,29 +1,15 @@
 import { Modal, Button, Form, Card } from 'react-bootstrap';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getAllProducts } from "../../redux/chatSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 export const SearchProductModal = ({ show, handleClose }) => {
+  // const messages = useSelector((state) => state.chat.message);
+  const allProducts = useSelector((state) => state.chat.allProducts);
+  const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const products = [
-    {
-      name: "Áo thun basic",
-      price: "250.000 VND",
-      sizes: ["S", "M", "L"],
-      colors: ["Đen", "Trắng", "Xám"]
-    },
-    {
-      name: "Quần jeans slim",
-      price: "450.000 VND",
-      sizes: ["28", "30", "32"],
-      colors: ["Xanh đậm", "Xanh nhạt"]
-    },
-    {
-      name: "Giày sneaker",
-      price: "750.000 VND",
-      sizes: ["39", "40", "41"],
-      colors: ["Trắng", "Đen"]
-    }
-  ];
+  const [products, setProduct] = useState([]);
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -31,8 +17,45 @@ export const SearchProductModal = ({ show, handleClose }) => {
   };
 
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    product.productName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const fetchAllProduct = async () => {
+    let res = await dispatch(getAllProducts())
+    if (res.payload) {
+      const enrichedProducts = res.payload
+        .filter(product => product.status === "Available")
+        .map(product => {
+          const sizes = [];
+          const colors = [];
+
+          product.inventory.forEach(inv => {
+            const sizeName = inv.numberOfProduct?.size?.nameSize;
+            const colorName = inv.numberOfProduct?.color?.colorName;
+
+            if (sizeName && !sizes.includes(sizeName)) {
+              sizes.push(sizeName);
+            }
+            if (colorName && !colors.includes(colorName)) {
+              colors.push(colorName);
+            }
+          });
+
+          return {
+            ...product,
+            sizes,
+            colors,
+          };
+        });
+
+      setProduct(enrichedProducts);
+    }
+
+  }
+
+  useEffect(() => {
+    fetchAllProduct()
+  }, [])
 
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>
@@ -50,7 +73,7 @@ export const SearchProductModal = ({ show, handleClose }) => {
         <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => {
-              const productText = `Tên: ${product.name}\nGiá: ${product.price}\nSize: ${product.sizes.join(', ')}\nMàu: ${product.colors.join(', ')}`;
+              const productText = `Tên: ${product.productName}\nGiá: ${product.sellingPrice}\nSize: ${product.sizes.join(', ')}\nMàu: ${product.colors.join(', ')}`;
               return (
                 <Card key={index} className="mb-2">
                   <Card.Body className="d-flex justify-content-between align-items-center">

@@ -3,7 +3,7 @@ import { Search, Smile, Paperclip, Send } from "lucide-react";
 import "./SidebarChat.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessages } from "../../redux/chatSlice";
-import {SearchProductModal} from './SearchProduct'
+import { SearchProductModal } from './SearchProduct'
 
 export default function ChatAdmin(props) {
     const senderID = props.info.clientId;
@@ -93,7 +93,7 @@ export default function ChatAdmin(props) {
                         <Smile size={20} />
                     </button>
                     <button className="btn btn-light me-2" onClick={() => setShowModal(true)}>
-                        <Paperclip size={20}/>
+                        <Paperclip size={20} />
                     </button>
 
 
@@ -110,10 +110,10 @@ export default function ChatAdmin(props) {
                     </button>
                 </div>
             </div>
-           
-            <SearchProductModal 
-              show={showModal}
-              handleClose={() => setShowModal(false)}/>
+
+            <SearchProductModal
+                show={showModal}
+                handleClose={() => setShowModal(false)} />
 
         </div>
 

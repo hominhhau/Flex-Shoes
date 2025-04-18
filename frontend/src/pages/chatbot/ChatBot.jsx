@@ -4,7 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessages } from "../../redux/chatSlice";
 
 const ChatBot = () => {
-  const senderID = 3;  // khi login sẽ lấy từ user => chưa sửa
+  // const senderID = localStorage.getItem('customerId') ? localStorage.getItem('customerId') : 1;  // khi login sẽ lấy từ user
+  const senderID = 1;  // khi login sẽ lấy từ user
   const [isOpen, setIsOpen] = useState(false);
   const messages = useSelector((state) => state.chat.message);
   const [input, setInput] = useState("");

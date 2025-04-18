@@ -1,6 +1,3 @@
-import { ApiManager } from '../../apis/ApiManager';
-
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ApiManager } from '../../apis/ApiManager';
 
@@ -8,30 +5,41 @@ const initialState = {
     message: [],
     senders: [],
     lastMessages: [],
+    allProducts: [],
 };
 
-export const getMessages = createAsyncThunk('auth/getMessages', async (senderId, thunkAPI) => {
+export const getMessages = createAsyncThunk('chat/getMessages', async (senderId, thunkAPI) => {
     let response = await ApiManager.post(`http://localhost:8089/show`, { senderId });
     return response.DT;
 });
 
-export const sendMessages = createAsyncThunk('auth/sendMessages', async ({ clientId, senderId, message }, thunkAPI) => {
+export const sendMessages = createAsyncThunk('chat/sendMessages', async ({ clientId, senderId, message }, thunkAPI) => {
     let response = await ApiManager.post('http://localhost:8089/send', { clientId, senderId, message });
     return response.DT;
 });
 
-export const getAllSender = createAsyncThunk('auth/getAllSender', async (thunkAPI) => {
+export const getAllSender = createAsyncThunk('chat/getAllSender', async (thunkAPI) => {
     let response = await ApiManager.get('http://localhost:8089/getAllSender');
     return response;
 });
 
-export const getLastMessage = createAsyncThunk('auth/getLastMessage', async (senderIds, thunkAPI) => {
+export const getLastMessage = createAsyncThunk('chat/getLastMessage', async (senderIds, thunkAPI) => {
     let response = await ApiManager.get(`http://localhost:8089/getLastMessage?senderIds=${senderIds}`);
     return response;
 });
 
-export const updateMessageStatus = createAsyncThunk('auth/updateMessageStatus', async (senderId, thunkAPI) => {
+export const updateMessageStatus = createAsyncThunk('chat/updateMessageStatus', async (senderId, thunkAPI) => {
     let response = await ApiManager.post(`http://localhost:8089/updateMessageStatus`, senderId);
+    return response;
+});
+
+export const getAllProducts = createAsyncThunk('chat/getAllProducts', async (thunkAPI) => {
+    let response = await ApiManager.get(`/inventory/getAllProducts`);
+    return response;
+});
+
+export const getNumberOfProductsById = createAsyncThunk('chat/getNumberOfProductsById', async (id, thunkAPI) => {
+    let response = await ApiManager.get(`/inventory/getNumberOfProductsById/${id}`);
     return response;
 });
 
@@ -79,6 +87,21 @@ const chatSlice = createSlice({
                 state.lastMessages = action.payload || [];
             })
             .addCase(updateMessageStatus.rejected, (state, action) => {});
+
+        // getAllProducts
+        builder
+            .addCase(getAllProducts.pending, (state) => {})
+            .addCase(getAllProducts.fulfilled, (state, action) => {
+                state.allProducts = action.payload || [];
+            })
+            .addCase(getAllProducts.rejected, (state, action) => {});
+
+        // getNumberOfProductsById
+        builder
+            .addCase(getNumberOfProductsById.pending, (state) => {})
+            .addCase(getNumberOfProductsById.fulfilled, (state, action) => {
+            })
+            .addCase(getNumberOfProductsById.rejected, (state, action) => {});
     },
 });
 
