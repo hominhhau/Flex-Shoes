@@ -39,7 +39,7 @@ const ProfileForm = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white shadow-md rounded-lg mt-10 text-lg" style={{ maxWidth: '700px' }}>
+    <div className="container mx-auto p-6 bg-white shadow-md rounded-lg mt-10 text-lg" style={{ maxWidth: '800px' }}>
       <h2 className="text-black text-3xl font-semibold mb-6">Hồ Sơ Của Tôi</h2>
       <p className="text-gray-700 text-xl mb-6">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
 
@@ -178,12 +178,7 @@ const ProfileForm = () => {
         >
           Cập Nhật
         </button>
-        <button
-          onClick={handleSave}
-          className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-xl"
-        >
-          Lưu
-        </button>
+  
       </div>
     </div>
   );
