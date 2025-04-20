@@ -41,7 +41,7 @@ const ChatBot = () => {
   }, [messages]);
 
   return (
-    <div className="fixed bottom-5 right-5 flex flex-col items-end">
+    <div className="fixed bottom-5 right-5 flex flex-col items-end z-50">
       {/* Nút mở chat */}
       <button
         className="p-4 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition"
@@ -49,16 +49,16 @@ const ChatBot = () => {
       >
         <MessageCircle size={24} />
       </button>
-
-      {/* Cửa sổ chat */}
+  
+      {/* Cửa sổ chat mở bên trái nút */}
       {isOpen && (
-        <div className="w-80 h-96 bg-white shadow-lg rounded-lg flex flex-col mt-3 border">
+        <div className="absolute bottom-0 right-full mr-3 w-80 h-96 bg-white shadow-lg rounded-lg flex flex-col border">
           {/* Header chat */}
-          <div className="bg-blue-500 text-white p-3 font-semibold flex justify-between">
+          <div className="bg-blue-500 text-white p-3 font-semibold flex justify-between items-center">
             Chatbot
             <button onClick={toggleChat} className="text-white">✖</button>
           </div>
-
+  
           {/* Nội dung tin nhắn */}
           <div className="flex-1 p-3 overflow-y-auto">
             {messages.map((msg, index) => (
@@ -71,7 +71,7 @@ const ChatBot = () => {
             ))}
             <div ref={messagesEndRef} />
           </div>
-
+  
           {/* Ô nhập tin nhắn */}
           <div className="p-3 border-t flex">
             <input

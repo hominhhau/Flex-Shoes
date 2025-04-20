@@ -12,6 +12,7 @@ import CategoriesShow from '../../layouts/components/CategoriesShow';
 
 import styles from './Home.module.scss';
 import ChatBot from '../chatbot/ChatBot';
+import ChatAiGpt from '../chatbot/ChatAiGpt'
 
 const cx = classNames.bind(styles);
 
@@ -54,7 +55,8 @@ function Home() {
             </div>
         
         <ChatBot />
-        
+        <ChatAiGpt />
+
         </div>
     );
 }
