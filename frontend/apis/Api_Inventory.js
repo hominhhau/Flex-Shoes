@@ -1,6 +1,6 @@
 import { ApiManager } from "./ApiManager";
 
-export const Api_AddProduct = {
+export const Api_Inventory = {
     createProduct: async (formData) => {
         try {
             console.log('Creating product with form data:', formData); // Log FormData (không thể log trực tiếp)
@@ -25,6 +25,15 @@ export const Api_AddProduct = {
             throw error;
         }
     },
+    getAllProducts: async () => {
+        try {
+            const response = await ApiManager.get('/inventory/getAllProducts');
+            return response;
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            throw error;
+        }
+    },
 
     attachInventoryToProduct: async (payload) => {
         try {
@@ -36,7 +45,7 @@ export const Api_AddProduct = {
         }
     },
     getProductById: async (productId) => {
-        return ApiManager.get(`/api/product/findById/${productId}`);
+        return ApiManager.get(`/inventory/getAllProducts/${productId}`);
     },
     getBrand: async () => {
         return ApiManager.get('/inventory/getAllBrandTypes');

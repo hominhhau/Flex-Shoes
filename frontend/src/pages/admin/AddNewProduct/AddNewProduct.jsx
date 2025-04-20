@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 
 import styles from './AddNewProduct.module.scss';
 import { ImageUploader } from './ImageUpload';
-import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
+import { Api_Inventory } from '../../../../apis/Api_Inventory';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
 import { Api_ChatGPT } from '../../../../apis/Api_ChatGPT';
@@ -46,10 +46,10 @@ const AddNewProduct = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const categoryRes = await Api_AddProduct.getCategory();
-                const brandRes = await Api_AddProduct.getBrand();
-                const colorRes = await Api_AddProduct.getColor();
-                const sizeRes = await Api_AddProduct.getSize();
+                const categoryRes = await Api_Inventory.getCategory();
+                const brandRes = await Api_Inventory.getBrand();
+                const colorRes = await Api_Inventory.getColor();
+                const sizeRes = await Api_Inventory.getSize();
                 setCategories(categoryRes);
                 setBrands(brandRes);
                 setColors(colorRes);
@@ -162,7 +162,7 @@ const AddNewProduct = () => {
         }
 
         try {
-            const createdProduct = await Api_AddProduct.createProduct(formDataToSend);
+            const createdProduct = await Api_Inventory.createProduct(formDataToSend);
             console.log('Created product:', createdProduct);
             if (createdProduct) {
                 alert('Product created successfully!');

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './RecentPurchases.module.scss';
-import { Api_AddProduct } from '../../../../apis/Api_AddProduct';
+import { Api_Inventory } from '../../../../apis/Api_Inventory';
 
 const cx = classNames.bind(styles);
 
@@ -72,8 +72,7 @@ PurchaseTableRow.propTypes = {
     onDelete: PropTypes.func.isRequired,
 };
 
-const RecentPurchases = ( { quantities, setQuantities}) => {
-    
+const RecentPurchases = ({ quantities, setQuantities }) => {
     const handleQuantityChange = (id, newQuantity) => {
         setQuantities((prevQuantities) => {
             const updatedQuantities = prevQuantities.map((purchase) => {
@@ -88,33 +87,30 @@ const RecentPurchases = ( { quantities, setQuantities}) => {
     };
 
     const handleUpdateOne = (id, data) => {
-      try {
-        //Xu ly tim quantity theo id
+        try {
+            //Xu ly tim quantity theo id
 
-        data = quantities.find((quantity) => quantity.id === id);
-        console.log('Data:', data);
-        const response = Api_AddProduct.updateQuantity(id, data);
-        console.log('Quantity updated:', response);
-      } catch (error) {
-        console.error('Error updating quantity:', error);
-        alert('Failed to update quantity');
-        
-      }
+            data = quantities.find((quantity) => quantity.id === id);
+            console.log('Data:', data);
+            const response = Api_Inventory.updateQuantity(id, data);
+            console.log('Quantity updated:', response);
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+            alert('Failed to update quantity');
+        }
     };
 
     const handleDeleteOne = (id) => {
-       try {
-        const response = Api_AddProduct.deleteQuantity(id);
-        // console.log('Quantity deleted:', response);
-        const updatedQuantities = quantities.filter((purchase) => purchase.id !== id);
-        setQuantities(updatedQuantities);
-       } catch (error) {
-        console.error('Error deleting quantity:', error);
-        alert('Failed to delete quantity');
-        
-       }
+        try {
+            const response = Api_Inventory.deleteQuantity(id);
+            // console.log('Quantity deleted:', response);
+            const updatedQuantities = quantities.filter((purchase) => purchase.id !== id);
+            setQuantities(updatedQuantities);
+        } catch (error) {
+            console.error('Error deleting quantity:', error);
+            alert('Failed to delete quantity');
+        }
     };
-
 
     return (
         <section className={cx('container')}>
@@ -123,7 +119,7 @@ const RecentPurchases = ( { quantities, setQuantities}) => {
             <main className={cx('tableContainer')}>
                 <PurchaseTableHeader />
                 {quantities.map((purchase) => (
-                    <PurchaseTableRow 
+                    <PurchaseTableRow
                         key={purchase.id}
                         purchase={purchase}
                         onQuantityChange={handleQuantityChange}

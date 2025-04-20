@@ -7,7 +7,7 @@ import DeliveryOptionsButton from './DelivelyOptions';
 import PaymentOptionsButton from './PaymentOptionsButton';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
-import  Modal  from '../../components/Modal';
+import Modal from '../../components/Modal';
 
 import { Api_Payment } from '../../../apis/Api_Payment';
 import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
@@ -27,7 +27,7 @@ const CheckoutForm = () => {
     const [phone, setPhone] = useState('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
     const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
-    const [paymentStatus, setPaymentStatus] = useState('unpaid');
+    const [paymentStatus, setPaymentStatus] = useState('PENDING');
     const [isCompleted, setIsCompleted] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const location = useLocation();
@@ -54,7 +54,7 @@ const CheckoutForm = () => {
     };
 
     console.log('Kiểm tra cartData trước khi tạo invoiceData:', cartData);
-    cartData.forEach(product => {
+    cartData.forEach((product) => {
         console.log(`Sản phẩm ID: ${product.id}, Tên: ${product.name}`);
         if (!product.id) {
             console.error('Sản phẩm này không có ID:', product);
@@ -87,7 +87,10 @@ const CheckoutForm = () => {
                 total: totalInVND,
             };
 
-            console.log('ProductID khi thanh toán:', invoiceData.invoiceDetails.map((item) => item.productId));
+            console.log(
+                'ProductID khi thanh toán:',
+                invoiceData.invoiceDetails.map((item) => item.productId),
+            );
             console.log('Sending invoice data to server:', invoiceData);
 
             // Gửi dữ liệu đơn hàng lên server
@@ -95,41 +98,49 @@ const CheckoutForm = () => {
             const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
             console.log('Received Invoice:', invoiceResponse);
 
-
-            
             //Update quantity after checkout
             const handleCartData = cartData.map((product) => ({
-                productId:  product.id ||product.productId,
+                productId: product.id || product.productId,
                 quantity: product.quantity,
                 colorName: product.color,
                 sizeName: product.size,
             }));
             console.log('handleCartData:', handleCartData);
 
-
             /// NHỚ UPDATE LẠI - HIỆN TẠI CHƯA CÓ API
-            
+
             // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
             // console.log('Updated quantity:', updateQuantity);
 
+            // if (!(selectedPaymentMethod === 'Cash on Delivery')) {
+            const paymentResponse = await Api_Payment.createPayment({
+                // total: totalInVND,
+                // // invoiceId: invoiceResponse.invoiceId,
+                // invoiceId: Math.floor(Math.random() * 100000)
+                /*
+                    {
+  "paymentId": 0,
+  "orderId": 0,
+  "paymentMethod": "string",
+  "status": "string"
+}
+                    */
 
-            if (!(selectedPaymentMethod === 'Cash on Delivery')) {
-                const paymentResponse = await Api_Payment.createPayment({
-                    total: totalInVND,
-                    // invoiceId: invoiceResponse.invoiceId,
-                    invoiceId: Math.floor(Math.random() * 100000)
-                });
-                console.log('====================================');
-                console.log('invoiceId', invoiceResponse.invoiceId);
-                console.log('====================================');
+                orderId: invoiceResponse.data.invoiceId,
+                paymentMethod: selectedPaymentMethod,
+                status: paymentStatus,
+            });
+            console.log('====================================');
+            console.log('invoiceId', invoiceResponse.invoiceId);
+            console.log('====================================');
 
-                if (paymentResponse?.URL) {
-                    window.location.href = paymentResponse.URL;
-                } else {
-                    alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
-                    throw new Error('Không nhận được URL thanh toán từ VNPay.');
-                }
+            if (paymentResponse?.URL) {
+                window.location.href = paymentResponse.URL;
+            } else {
+                alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+                throw new Error('Không nhận được URL thanh toán từ VNPay.');
             }
+            // }
             // Xóa product da mua trong giỏ hàng sau khi đặt hàng
             const newCartData = cartData.filter(
                 (product) => !invoiceData.invoiceDetails.some((item) => item.productId === product.productId),
@@ -138,8 +149,6 @@ const CheckoutForm = () => {
 
             // Hiển thị thông báo đặt hàng thành công
             setIsCompleted(true);
-
-
         } catch (error) {
             console.error('Lỗi khi xử lý thanh toán:', error);
             setIsFailed(true);
@@ -306,33 +315,29 @@ const CheckoutForm = () => {
                     ) : (
                         <p>No items in the cart.</p>
                     )}
-                  
                 </div>
             </div>
-            {
-                    isCompleted &&
-                   <Modal
-                        valid={true}
-                        title="Order placed successfully!"
-                        message="Thank you for shopping with us."
-                        onConfirm={() => navigator(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
-                        isConfirm={true}
-                        contentConfirm="OK"
-                        isCancel={false}
-
-                    />
-                   }
-                   {
-                    isFailed &&
-                    <Modal
-                        valid={false}
-                        title="Order failed!"
-                        message="Please try again."
-                        onConfirm={() => navigator(`/cart`)}
-                        isConfirm={true}
-                        contentConfirm="OK"
-                    />
-                   }
+            {isCompleted && (
+                <Modal
+                    valid={true}
+                    title="Order placed successfully!"
+                    message="Thank you for shopping with us."
+                    onConfirm={() => navigator(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
+                    isConfirm={true}
+                    contentConfirm="OK"
+                    isCancel={false}
+                />
+            )}
+            {isFailed && (
+                <Modal
+                    valid={false}
+                    title="Order failed!"
+                    message="Please try again."
+                    onConfirm={() => navigator(`/cart`)}
+                    isConfirm={true}
+                    contentConfirm="OK"
+                />
+            )}
         </main>
     );
 };

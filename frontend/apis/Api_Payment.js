@@ -4,7 +4,7 @@ export const Api_Payment = {
     createPayment: async (invoiceDto) => {
         try {
             console.log('Creating payment with invoice data:', invoiceDto);
-            const response = await ApiManager.post('/api/payment/create_payment', invoiceDto);
+            const response = await ApiManager.post('/create_payment', invoiceDto);
 
             if (!response || !response.URL) {
                 throw new Error('Invalid payment response received');
@@ -35,7 +35,7 @@ export const Api_Payment = {
         return response.data;
     },
 
-    getOrderDetails: async () =>{
+    getOrderDetails: async () => {
         const response = await ApiManager.get('/api/order/order_details');
         return response.data;
     }
