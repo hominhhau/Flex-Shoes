@@ -11,6 +11,7 @@ import Modal from '../../components/Modal';
 
 import { Api_Payment } from '../../../apis/Api_Payment';
 import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
+import { Api_Inventory } from '../../../apis/Api_Inventory';
 
 const cx = classNames.bind(styles);
 
@@ -63,13 +64,16 @@ const CheckoutForm = () => {
     const isAllChecked = billingSameAsDelivery && isOver13;
 
     const handlePlaceOrder = async () => {
+        console.log('Starting handlePlaceOrder...');
+        console.log('cartData:', cartData);
         try {
-            console.log('cartData handlePlaceOrder:', cartData);
+            console.log('Check tại thời điểm này cartData handlePlaceOrder:', cartData);
             // Chuyển đổi tổng tiền sang VND
             const totalInVND = Math.round(totalAmount * 23000);
             const customerID = localStorage.getItem('customerId');
             console.log('customerID:', customerID);
             console.log('invoiceData:', cartData);
+
             const invoiceData = {
                 invoiceDetails: cartData.map((product) => ({
                     productId: product.id || product.productId,
@@ -97,20 +101,23 @@ const CheckoutForm = () => {
 
             const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
             console.log('Received Invoice:', invoiceResponse);
-
-            //Update quantity after checkout
+            
             const handleCartData = cartData.map((product) => ({
                 productId: product.id || product.productId,
                 quantity: product.quantity,
                 colorName: product.color,
                 sizeName: product.size,
             }));
-            console.log('handleCartData:', handleCartData);
+            console.log('handleCartDataaaaaaaaa:', handleCartData);
 
             /// NHỚ UPDATE LẠI - HIỆN TẠI CHƯA CÓ API
 
             // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
             // console.log('Updated quantity:', updateQuantity);
+
+             // Cập nhật số lượng sản phẩm trong kho (gọi API backend)
+        const updateQuantityResponse = await Api_Inventory.purchase({ items: handleCartData });
+        console.log('Updated Inventory:', updateQuantityResponse);
 
             // if (!(selectedPaymentMethod === 'Cash on Delivery')) {
             const paymentResponse = await Api_Payment.createPayment({
