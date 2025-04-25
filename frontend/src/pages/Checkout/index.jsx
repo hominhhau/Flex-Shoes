@@ -107,39 +107,23 @@ const CheckoutForm = () => {
             }));
             console.log('handleCartData:', handleCartData);
 
-            /// NHỚ UPDATE LẠI - HIỆN TẠI CHƯA CÓ API
-
-            // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
-            // console.log('Updated quantity:', updateQuantity);
-
-            // if (!(selectedPaymentMethod === 'Cash on Delivery')) {
             const paymentResponse = await Api_Payment.createPayment({
-                // total: totalInVND,
-                // // invoiceId: invoiceResponse.invoiceId,
-                // invoiceId: Math.floor(Math.random() * 100000)
-                /*
-                    {
-  "paymentId": 0,
-  "orderId": 0,
-  "paymentMethod": "string",
-  "status": "string"
-}
-                    */
-
-                orderId: invoiceResponse.data.invoiceId,
-                paymentMethod: selectedPaymentMethod,
-                status: paymentStatus,
+                order: invoiceResponse,
             });
-            console.log('====================================');
-            console.log('invoiceId', invoiceResponse.invoiceId);
-            console.log('====================================');
 
-            if (paymentResponse?.URL) {
-                window.location.href = paymentResponse.URL;
-            } else {
-                alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
-                throw new Error('Không nhận được URL thanh toán từ VNPay.');
+            if (selectedPaymentMethod == 'Bank Transfer') {
+                if (paymentResponse?.URL) {
+                    window.location.href = paymentResponse.URL;
+                } else {
+                    alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+                    throw new Error('Không nhận được URL thanh toán từ VNPay.');
+                }
             }
+            if (selectedPaymentMethod == 'Cash on Delivery') {
+                console.log('Payment response:', paymentResponse);
+                setPaymentStatus(paymentResponse.status);
+            }
+
             // }
             // Xóa product da mua trong giỏ hàng sau khi đặt hàng
             const newCartData = cartData.filter(

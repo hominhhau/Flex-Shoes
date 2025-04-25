@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './productdetail.module.scss';
-import { Api_Inventory } from '../../../apis/Api_Inventory';
+import { Api_Product } from '../../../apis/Api_Product';
 import { useAuth } from '../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
@@ -29,7 +29,7 @@ const ProductDetail = () => {
             setError(null);
 
             try {
-                const response = await Api_Inventory.getProductDetail(id);
+                const response = await Api_Product.getProductDetail(id);
                 const data = response.data;
 
                 if (!data) throw new Error('Product not found');
