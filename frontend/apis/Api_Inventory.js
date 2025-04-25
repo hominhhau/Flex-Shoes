@@ -44,6 +44,16 @@ export const Api_Inventory = {
             throw error;
         }
     },
+    updateProduct: async (product) => {
+        try {
+            const response = await ApiManager.post('/inventory/update', product);
+            return response
+        } catch (error) {
+            console.error("Error updating product:", error);
+            throw error;
+        }
+    },
+
     getProductById: async (productId) => {
         return ApiManager.get(`/inventory/getAllProducts/${productId}`);
     },
@@ -59,9 +69,7 @@ export const Api_Inventory = {
     getCategory: async () => {
         return ApiManager.get('/inventory/getAllProductTypes');
     },
-    updateProduct: async (product) => {
-        return ApiManager.put('/api/product/update', product);
-    },
+
     deleteProduct: async (productId) => {
         return ApiManager.delete(`/api/product/delete/${productId}`);
     },

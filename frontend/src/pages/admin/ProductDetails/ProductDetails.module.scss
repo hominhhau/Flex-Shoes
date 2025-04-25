@@ -1,20 +1,17 @@
 .formContainer {
-    // align-items: end;
     border-radius: 16px;
     background: #fff;
     display: flex;
     flex-direction: column;
     justify-content: start;
-    padding-top: 120px;
-    padding-left: 400px;
-    height: 10000px;
-
+    padding: 40px 20px;
+    min-height: 100vh;
 }
 
 .formContent {
     display: flex;
     align-items: start;
-    gap: 40px 47px;
+    gap: 40px;
     justify-content: start;
     flex-wrap: wrap;
 }
@@ -25,8 +22,27 @@
     display: flex;
     min-width: 200px;
     flex-direction: column;
-    justify-content: start;
-    width: 500px;
+    width: 600px;
+    padding: 20px;
+}
+
+.breadcrumb {
+    color: #70706e;
+    font: 14px 'Open Sans', sans-serif;
+    margin-bottom: 16px;
+
+    span {
+        margin-right: 8px;
+
+        &:after {
+            content: '>';
+            margin-left: 8px;
+        }
+
+        &:last-child:after {
+            content: '';
+        }
+    }
 }
 
 .fieldGroup {
@@ -34,15 +50,15 @@
     width: 100%;
     flex-direction: column;
     margin-top: 24px;
-}
 
-.fieldGroup:first-child {
-    margin-top: 0;
+    &:first-child {
+        margin-top: 0;
+    }
 }
 
 .fieldLabel {
     color: #232321;
-    font: 600 20px Rubik, sans-serif;
+    font: 600 20px 'Rubik', sans-serif;
 }
 
 .inputWrapper {
@@ -58,6 +74,7 @@
     min-height: 48px;
     width: 100%;
     padding: 15px 16px;
+    font: 16px 'Open Sans', sans-serif;
 }
 
 .selectInput {
@@ -66,6 +83,9 @@
     min-height: 48px;
     width: 100%;
     padding: 15px 16px;
+    font: 16px 'Open Sans', sans-serif;
+    appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="#232321" d="M6 9L2 5h8z"/></svg>') no-repeat right 16px center;
 }
 
 .textArea {
@@ -75,6 +95,7 @@
     height: 100px;
     padding: 10px 16px;
     resize: none;
+    font: 16px 'Open Sans', sans-serif;
 }
 
 .twoColumnGroup {
@@ -94,27 +115,6 @@
 .columnField {
     flex: 1;
     min-width: 120px;
-}
-
-.tagInput {
-    border-radius: 8px;
-    border: 1px solid #232321;
-    min-height: 80px;
-    width: 100%;
-    padding: 12px;
-}
-
-.tagList {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.tag {
-    border-radius: 20px;
-    background: #36323b;
-    color: #fff;
-    padding: 6px 12px;
 }
 
 .imageSection {
@@ -212,130 +212,88 @@
     cursor: pointer;
 }
 
-.actionButtons {
-    display: flex;
-    margin-top: 40px;
-    gap: 16px;
-    width: 100%;
-    max-width: 457px;
-    // center
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.button {
-    flex: 1;
-    border-radius: 8px;
-    min-height: 48px;
-    border: none;
-    font: 500 14px Rubik, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.25px;
-    cursor: pointer;
-}
-
-.updateButton {
-    background: #232321;
-    color: #fff;
-}
-
-.buttonContainer {
-    display: flex;
-    gap: 16px;
-    margin-top: 40px;
-    width: 100%;
-    max-width: 457px;
-    // center
-    margin-left: auto;
-    margin-right: auto;
-
-}
-
 .addButton {
     background: #232321;
     color: #fff;
     padding: 10px 16px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    border: none;
+    font: 500 14px 'Rubik', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+    cursor: pointer;
+    margin-top: 10px;
+}
 
+.errorMessage {
+    color: red;
+    margin-bottom: 10px;
+    font: 14px 'Open Sans', sans-serif;
+}
+
+.buttonContainer {
+    display: flex;
+    margin-top: 40px;
+    gap: 16px;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.updateButton {
+    flex: 1;
+    border-radius: 8px;
+    min-height: 48px;
+    border: none;
+    background-color: #4caf50;
+    color: #fff;
+    font: 500 14px 'Rubik', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+    cursor: pointer;
 }
 
 .deleteButton {
-    background: #d00000;
-    color: #fff;
-}
-
-.cancelButton {
-    background: transparent;
-    border: 1px solid #232321;
-    color: #232321;
-}
-
-@media (max-width: 991px) {
-    .formContainer {
-        padding: 0 20px;
-    }
-
-    .formContent,
-    .inputSection,
-    .fieldGroup,
-    .inputWrapper,
-    .textInput,
-    .textArea,
-    .tagInput,
-    .imageSection,
-    .thumbnailItem {
-        max-width: 100%;
-    }
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-}
-
-.submitButton {
-    composes: button;
-    background-color: rgb(0, 208, 111);
-    color: #fff;
+    flex: 1;
+    border-radius: 8px;
+    min-height: 48px;
     border: none;
+    background-color: #f44336;
+    color: #fff;
+    font: 500 14px 'Rubik', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+    cursor: pointer;
 }
 
 .cancelButton {
-    composes: button;
-    background: transparent;
+    flex: 1;
+    border-radius: 8px;
+    min-height: 48px;
     border: 1px solid #232321;
+    background: transparent;
     color: #232321;
+    font: 500 14px 'Rubik', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+    cursor: pointer;
 }
 
-.container {
-    width: 100%;
-    padding: 16px;
-    background-color: #f9f9f9;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-
-}
-
-.title {
-    font-size: 24px;
+.tableHeader {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
     font-weight: bold;
+    background-color: #eaeaea;
+    padding: 8px;
+    margin-top: 16px;
 }
 
-.divider {
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 16px;
+.headerCell {
+    padding: 8px;
+    text-align: center;
+    font: 600 16px 'Rubik', sans-serif;
+    color: #232321;
 }
 
 .tableContainer {
@@ -343,31 +301,20 @@
     gap: 8px;
 }
 
-.tableHeader {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    font-weight: bold;
-    background-color: #eaeaea;
-    padding: 8px;
-}
-
-.headerCell {
-    padding: 8px;
-    text-align: center;
-}
-
 .tableRow {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
     background-color: #fff;
     padding: 8px;
     align-items: center;
+    border-bottom: 1px solid #ddd;
 }
 
 .cell {
     padding: 8px;
     text-align: center;
-    gap: 8px;
+    font: 16px 'Open Sans', sans-serif;
+    color: #232321;
 }
 
 .quantityInput {
@@ -375,63 +322,50 @@
     padding: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
-}
-
-.actionCell {
-    display: flex;
-    gap: 8px;
-}
-
-.actionButton {
-    padding: 4px 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.updateButton {
-    background-color: #4caf50;
-    color: white;
+    font: 14px 'Open Sans', sans-serif;
+    text-align: center;
 }
 
 .deleteButton {
     background-color: #f44336;
     color: white;
-}
-
-.aiButton {
-    display: inline-block;
-    margin-bottom: 8px;
-    padding: 8px 16px;
     border: none;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, #a855f7, #3b82f6);
-    color: #fff;
-    font-weight: 600;
-    font-size: 14px;
+    border-radius: 4px;
+    padding: 4px 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
-    animation: glow 2s ease-in-out infinite alternate;
+    font: 500 14px 'Rubik', sans-serif;
 }
 
-.aiButton:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
-}
-
-.aiButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    animation: none;
-}
-
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+@media (max-width: 991px) {
+    .formContainer {
+        padding: 20px;
     }
 
-    100% {
-        box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
+    .inputSection {
+        width: 100%;
+    }
+
+    .twoColumnGroup,
+    .threeColumnGroup {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .tableHeader,
+    .tableRow {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .quantityInput {
+        width: 40px;
+    }
+
+    .deleteButton {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+
+    .buttonContainer {
+        flex-direction: column;
     }
 }
