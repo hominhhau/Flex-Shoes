@@ -72,3 +72,36 @@
 .totalSpent {
     color: #333;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  
+  .paginationButton {
+    padding: 8px 12px;
+    border: 1px solid #232321;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #232321;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .paginationButton:hover:not(.disabled) {
+    background-color: #f5f5f5;
+  }
+  
+  .paginationButton.active {
+    background-color: #232321;
+    color: #fff;
+  }
+  
+  .paginationButton.disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+  }

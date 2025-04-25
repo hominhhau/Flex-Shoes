@@ -36,11 +36,12 @@ const OrderDetails = () => {
             try {
                 console.log('invoiceId = ', invoiceId);
                 const response = await Api_InvoiceAdmin.getInvoiceById(invoiceId);
+                console.log('response = ', response);
                 if (response) {
-                    setInvoice(response.result);
-                    setDetails(response.result.invoiceDetails);
-                    console.log('invoice = ', response.result);
-                    console.log('details = ', responseDetail.result.invoiceDetails);
+                    setInvoice(response.data.result);
+                    setDetails(response.data.result.invoiceDetails);
+                    console.log('invoice = ', response.data.result);
+                    console.log('details = ', response.data.result.invoiceDetails);
                 }
             } catch (error) {
                 setError(error.message);
@@ -51,39 +52,55 @@ const OrderDetails = () => {
 
         fetchInvoice();
     }, []);
+
     useEffect(() => {
-        const newSubtotal = details.reduce(
-            (total, product) =>
-                total + product.quantity * (product.originalPrice - product.originalPrice * (product.salePrice / 100)),
-            0,
-        );
-        const newDiscount = details.reduce(
-            (total, product) => total + product.originalPrice * (product.salePrice / 100),
-            0,
-        );
+        const newSubtotal = details.reduce((total, detail) => {
+          const sellingPrice = detail.product?.sellingPrice || 0;
+          const discount = detail.product?.discount || 0;
+          const discountedPrice = sellingPrice * (1 - discount / 100);
+          return total + discountedPrice * detail.quantity;
+        }, 0);
+    
+        const newDiscount = details.reduce((total, detail) => {
+          const sellingPrice = detail.product?.sellingPrice || 0;
+          const discount = detail.product?.discount || 0;
+          return total + sellingPrice * (discount / 100) * detail.quantity;
+        }, 0);
+    
         const newTax = newSubtotal * 0.1; // 10% tax
         const newTotal = newSubtotal + newTax;
-
+    
         setSubtotal(newSubtotal);
         setDiscount(newDiscount);
         setTax(newTax);
         setTotal(newTotal);
-    }, [details]);
-
+      }, [details]);
     const handleChange = (event) => {
         setInvoice({ ...invoice, orderStatus: event.target.value }); // Cập nhật giá trị khi thay đổi
     };
-    const handleDeteleProduct = (detail) => {
-        try {
-            const updatedDetails = details.filter((product) => product.productId !== detail.productId);
-            setDetails(updatedDetails);
-            //them product da xoa vao mang productDelete
-            setProductDelete([...productDelete, detail]);
-            console.log('size = ', productDelete.length);
-        } catch (error) {
-            console.error('Error deleting product:', error);
-        }
-    };
+    // const handleDeteleProduct = (detail) => {
+    //     try {
+    //         const updatedDetails = details.filter((product) => product.productId !== detail.productId);
+    //         setDetails(updatedDetails);
+    //         //them product da xoa vao mang productDelete
+    //         setProductDelete([...productDelete, detail]);
+    //         console.log('size = ', productDelete.length);
+    //     } catch (error) {
+    //         console.error('Error deleting product:', error);
+    //     }
+    // };
+
+    
+  const handleDeleteProduct = (detail) => {
+    try {
+      const updatedDetails = details.filter((item) => item.detailId !== detail.detailId);
+      setDetails(updatedDetails);
+      setProductDelete([...productDelete, detail]);
+      console.log('Deleted product:', detail, 'Current deleted products:', productDelete.length + 1);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
     const handleUpdateInvoice = async () => {
         try {
             productDelete.forEach(async (item) => {
@@ -119,13 +136,12 @@ const OrderDetails = () => {
                             <b>Order ID: {invoice.invoiceId}</b>
 
                             <div
-                                className={`w-40 h-50 ml-20 rounded-lg text-center ${
-                                    invoice.orderStatus === 'Delivered'
-                                        ? 'bg-green-500'
-                                        : invoice.orderStatus === 'Canceled'
-                                          ? 'bg-red-500'
-                                          : 'bg-yellow-500'
-                                }`}
+                                className={`w-40 h-50 ml-20 rounded-lg text-center ${invoice.orderStatus === 'Delivered'
+                                    ? 'bg-green-500'
+                                    : invoice.orderStatus === 'Canceled'
+                                        ? 'bg-red-500'
+                                        : 'bg-yellow-500'
+                                    }`}
                             >
                                 <p>{invoice.orderStatus} </p>
                             </div>
@@ -198,51 +214,62 @@ const OrderDetails = () => {
                 </div>
                 <div className={cx('totalProduct')}>
                     <table>
-                        <tr>
-                            <th>Product</th>
-                            <th>OrderID</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                        </tr>
-                        {details.map((detail, index) => (
-                            <tr key={index}>
-                                <td>
-                                    <div className="flex justify-start items-center">
-                                        <MdOutlineCancel
-                                            size={20}
-                                            className="ml-10 mr-10 text-red-600"
-                                            onClick={() => handleDeteleProduct(detail)}
-                                        />
-                                        {detail.productId} - {detail.productName}
-                                    </div>
-                                </td>
-                                <td>#{detail.invoiceId}</td>
-                                <td>{detail.quantity}</td>
-                                <td>{detail.quantity * detail.originalPrice}</td>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Order ID</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
                             </tr>
-                        ))}
+                        </thead>
+                        <tbody>
+                            {details.map((detail) => {
+                                const sellingPrice = detail.product?.sellingPrice || 0;
+                                const discount = detail.product?.discount || 0;
+                                const discountedPrice = sellingPrice * (1 - discount / 100);
+                                const totalPrice = discountedPrice * detail.quantity;
+
+                                return (
+                                    <tr key={detail.detailId}>
+                                        <td>
+                                            <div className={cx('productCell')}>
+                                                <MdOutlineCancel
+                                                    size={20}
+                                                    className={cx('deleteIcon')}
+                                                    onClick={() => handleDeleteProduct(detail)}
+                                                />
+                                                {detail.product?.productName || 'N/A'} (ID: {detail.productId})
+                                            </div>
+                                        </td>
+                                        <td>#{detail.invoiceId}</td>
+                                        <td>{detail.quantity}</td>
+                                        <td>${totalPrice.toFixed(2)}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
                     </table>
                 </div>
                 <div className={cx('totalPayment')}>
                     <table>
                         <tr>
                             <td>Subtotal</td>
-                            <td>{subtotal.toFixed(2)}</td>
+                            <td>${subtotal.toFixed(2)}</td>
                         </tr>
                         <tr>
                             <td>Tax</td>
-                            <td>10%</td>
+                            <td>10% (${tax.toFixed(2)})</td>
                         </tr>
                         <tr>
                             <td>Discount</td>
-                            <td>{discount.toFixed(2)}</td>
+                            <td>${discount.toFixed(2)}</td>
                         </tr>
                         <tr>
                             <td>
                                 <b>Total</b>
                             </td>
                             <td>
-                                <b>{total.toFixed(2)}</b>
+                                <b>${total.toFixed(2)}</b>
                             </td>
                         </tr>
                     </table>

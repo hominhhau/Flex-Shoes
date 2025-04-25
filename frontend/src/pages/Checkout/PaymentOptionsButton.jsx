@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import styles from './PaymentOption.module.scss';
+import checkoutStyles from './Checkout.module.scss';
+import classNames from 'classnames/bind';
 import PaymentOption from './PaymentOption';
+
+const cx = classNames.bind(checkoutStyles);
 
 const paymentOptionsData = [
   {
@@ -10,16 +14,15 @@ const paymentOptionsData = [
   {
     title: 'Bank Transfer',
     description: 'Transfer payment directly to our bank account.',
-  }
+  },
 ];
 
-const PaymentOptionsButton = ({ onPaymentChange }) => {
+const PaymentOptionsButton = ({ onPaymentChange, error }) => {
   const [selectedOption, setSelectedOption] = useState(paymentOptionsData[0].title);
 
   const handleSelectOption = (option) => {
     console.log('Selected payment method:', option.title);
     setSelectedOption(option.title);
-    // Truyền giá trị phương thức thanh toán lên component cha
     onPaymentChange(option.title);
   };
 
@@ -37,6 +40,7 @@ const PaymentOptionsButton = ({ onPaymentChange }) => {
           />
         ))}
       </div>
+      {error && <p className={cx('errorText')}>{error}</p>}
     </section>
   );
 };

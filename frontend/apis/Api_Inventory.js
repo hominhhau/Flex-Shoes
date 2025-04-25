@@ -1,6 +1,40 @@
-import { ApiManager } from "./ApiManager";
+import axios from 'axios';
 
-export const Api_AddProduct = {
+const BASE_URL = 'http://localhost:8888/api/v1';
+
+// Tạo một instance của axios
+export const ApiManager = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Interceptor để tự động gắn token vào mỗi request
+ApiManager.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
+// Interceptor để bắt lỗi 401 và xử lý tự động
+ApiManager.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            console.warn('Token hết hạn hoặc không hợp lệ!');
+            localStorage.removeItem('token');
+            window.location.href = '/login'; // hoặc navigate đến trang login
+        }
+        return Promise.reject(error);
+    }
+);
+
+export const Api_Inventory = {
     createProduct: async (formData) => {
         try {
             console.log('Creating product with form data:', formData); // Log FormData (không thể log trực tiếp)
@@ -25,6 +59,15 @@ export const Api_AddProduct = {
             throw error;
         }
     },
+    getAllProducts: async () => {
+        try {
+            const response = await ApiManager.get('/inventory/getAllProducts');
+            return response;
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            throw error;
+        }
+    },
 
     attachInventoryToProduct: async (payload) => {
         try {
@@ -35,8 +78,18 @@ export const Api_AddProduct = {
             throw error;
         }
     },
+    updateProduct: async (product) => {
+        try {
+            const response = await ApiManager.post('/inventory/update', product);
+            return response
+        } catch (error) {
+            console.error("Error updating product:", error);
+            throw error;
+        }
+    },
+
     getProductById: async (productId) => {
-        return ApiManager.get(`/api/product/findById/${productId}`);
+        return ApiManager.get(`/inventory/getAllProducts/${productId}`);
     },
     getBrand: async () => {
         return ApiManager.get('/inventory/getAllBrandTypes');
@@ -50,9 +103,7 @@ export const Api_AddProduct = {
     getCategory: async () => {
         return ApiManager.get('/inventory/getAllProductTypes');
     },
-    updateProduct: async (product) => {
-        return ApiManager.put('/api/product/update', product);
-    },
+
     deleteProduct: async (productId) => {
         return ApiManager.delete(`/api/product/delete/${productId}`);
     },
@@ -64,6 +115,10 @@ export const Api_AddProduct = {
     },
     deleteQuantity: async (quantityId) => {
         return ApiManager.delete(`/api/product/deleteQuantity/${quantityId}`);
+    },
+    purchase: async (data) => {
+        console.log("Dữ liệu gửi đi từ frontend: ", data); 
+        return ApiManager.post('/inventory/purchase', data);
     },
 
 }

@@ -3,14 +3,14 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Api_Payment } from '../../../apis/Api_Payment';
 
 const PaymentReturn = () => {
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
+    const [searchParams] = useSearchParams(); // Lấy tham số từ URL
+    const navigate = useNavigate(); // Dùng để điều hướng
+    const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
 
     useEffect(() => {
         const processPaymentReturn = async () => {
             try {
-                // Get all parameters from URL
+                // Lấy tất cả tham số từ URL
                 const params = {
                     vnp_Amount: searchParams.get('vnp_Amount'),
                     vnp_BankCode: searchParams.get('vnp_BankCode'),
@@ -19,16 +19,18 @@ const PaymentReturn = () => {
                     vnp_TxnRef: searchParams.get('vnp_TxnRef'),
                     vnp_PayDate: searchParams.get('vnp_PayDate'),
                     vnp_TransactionNo: searchParams.get('vnp_TransactionNo'),
+                    vnp_SecureHash: searchParams.get('vnp_SecureHash'),
                 };
 
-                const response = await Api_Payment.getPaymentInfo(params);
+                // Gọi API để xử lý thông tin trả về từ VNPAY
+                const response = await Api_Payment.payment_return(params);
 
                 if (response.status === 'ok') {
-                    // Navigate to confirmation page with payment details
+                    // Nếu thanh toán thành công, điều hướng đến trang xác nhận
                     navigate('/order-confirmation', {
                         state: {
                             invoiceId: params.vnp_TxnRef,
-                            amount: parseInt(params.vnp_Amount) / 100, // Convert from VNP amount format
+                            amount: parseInt(params.vnp_Amount) / 100, // Chuyển từ định dạng tiền VNP
                             bankCode: params.vnp_BankCode,
                             orderInfo: params.vnp_OrderInfo,
                             transactionNo: params.vnp_TransactionNo,
@@ -36,18 +38,19 @@ const PaymentReturn = () => {
                         },
                     });
                 } else {
-                    // Handle payment failure
+                    // Nếu thanh toán không thành công, điều hướng đến trang lỗi
                     navigate('/payment-failed');
                 }
             } catch (error) {
                 console.error('Error processing payment return:', error);
+                // Nếu có lỗi, điều hướng đến trang lỗi
                 navigate('/payment-failed');
             } finally {
-                setLoading(false);
+                setLoading(false); // Kết thúc trạng thái loading
             }
         };
 
-        processPaymentReturn();
+        processPaymentReturn(); // Gọi hàm xử lý thanh toán khi component mount
     }, [searchParams, navigate]);
 
     if (loading) {
@@ -61,7 +64,7 @@ const PaymentReturn = () => {
         );
     }
 
-    return null;
+    return null; // Không hiển thị gì nếu không cần
 };
 
 export default PaymentReturn;

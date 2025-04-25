@@ -3,23 +3,80 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
 import InputField from './InputField';
-import DeliveryOptionsButton from './DelivelyOptions';
+import DeliveryOptionsButton from './DeliveryOptionsButton';
 import PaymentOptionsButton from './PaymentOptionsButton';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
-import  Modal  from '../../components/Modal';
-
+import Modal from '../../components/Modal';
 import { Api_Payment } from '../../../apis/Api_Payment';
 import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
+import { Api_Inventory } from '../../../apis/Api_Inventory';
 
 const cx = classNames.bind(styles);
+
+const errorFieldMapping = {
+    receiverNumber: {
+        frontendField: 'phone',
+        translate: (message) => (message.includes('bắt buộc') ? 'Phone number is required' : message),
+    },
+    receiverName: {
+        frontendField: 'name',
+        translate: (message) =>
+            message.includes('bắt buộc')
+                ? 'Full name is required'
+                : message.includes('105')
+                  ? 'Full name cannot exceed 105 characters'
+                  : message,
+    },
+    receiverAddress: {
+        frontendField: 'address',
+        translate: (message) =>
+            message.includes('bắt buộc')
+                ? 'Address is required'
+                : message.includes('105')
+                  ? 'Address cannot exceed 105 characters'
+                  : message,
+    },
+    paymentMethod: {
+        frontendField: 'paymentMethod',
+        translate: (message) =>
+            message.includes('bắt buộc')
+                ? 'Payment method is required'
+                : message.includes('50')
+                  ? 'Payment method cannot exceed 50 characters'
+                  : message,
+    },
+    deliveryMethod: {
+        frontendField: 'deliveryMethod',
+        translate: (message) =>
+            message.includes('bắt buộc')
+                ? 'Delivery method is required'
+                : message.includes('50')
+                  ? 'Delivery method cannot exceed 50 characters'
+                  : message,
+    },
+    issueDate: {
+        frontendField: 'issueDate',
+        translate: (message) => (message.includes('bắt buộc') ? 'Issue date is required' : message),
+    },
+    total: {
+        frontendField: 'total',
+        translate: (message) =>
+            message.includes('bắt buộc')
+                ? 'Total is required'
+                : message.includes('lớn hơn hoặc bằng 0')
+                  ? 'Total must be greater than or equal to 0'
+                  : message,
+    },
+};
 
 const CheckoutForm = () => {
     const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(false);
     const [isOver13, setIsOver13] = useState(false);
     const [newsletterSubscription, setNewsletterSubscription] = useState(false);
-    const navigator = useNavigate();
-    //State user enter
+    const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -27,55 +84,73 @@ const CheckoutForm = () => {
     const [phone, setPhone] = useState('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
     const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
-    const [paymentStatus, setPaymentStatus] = useState('unpaid');
     const [isCompleted, setIsCompleted] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const location = useLocation();
-    console.log(location.state);
-    const { cartData, itemCount, totalAmount, deliveryFee } = location.state || {};
-    console.log('Checkout data:', cartData);
-    const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee);
+    const { cartData, itemCount, totalAmount, deliveryFee, checkedItems } = location.state || {};
+    console.log('Checkout data:', { cartData, checkedItems, itemCount, totalAmount });
+    const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee || 0);
+
+    if (!location.state || !checkedItems || checkedItems.length === 0) {
+        return (
+            <div className={cx('container')}>
+                <p>No items selected. Please go back to your cart to select products.</p>
+                <button onClick={() => navigate('/cart')} className={cx('backButton')}>
+                    Back to Cart
+                </button>
+            </div>
+        );
+    }
 
     const handleDeliveryChange = (newDeliveryFee) => {
         console.log('New delivery fee:', newDeliveryFee);
         setSelectedDeliveryFee(newDeliveryFee);
         setSelectedDeliveryMethod(newDeliveryFee === 0 ? 'Collect in store' : 'Standard Delivery');
+        setErrors((prev) => ({ ...prev, deliveryMethod: '' }));
     };
 
-    const handleQuantityChange = (productId, newQuantity) => {
-        const updatedCartData = cartData.map((product) =>
-            product.productId === productId ? { ...product, quantity: newQuantity } : product,
-        );
-        console.log('Updated cart data:', updatedCartData);
-    };
     const handlePaymentChange = (paymentMethod) => {
         console.log('Selected payment method:', paymentMethod);
         setSelectedPaymentMethod(paymentMethod);
+        setErrors((prev) => ({ ...prev, paymentMethod: '' }));
     };
 
-    console.log('Kiểm tra cartData trước khi tạo invoiceData:', cartData);
-    cartData.forEach(product => {
-        console.log(`Sản phẩm ID: ${product.id}, Tên: ${product.name}`);
-        if (!product.id) {
-            console.error('Sản phẩm này không có ID:', product);
-        }
-    });
     const isAllChecked = billingSameAsDelivery && isOver13;
 
     const handlePlaceOrder = async () => {
+        // Client-side validation
+        const newErrors = {};
+        if (!email) {
+            newErrors.email = 'Email is required';
+        } else if (!email.includes('@')) {
+            newErrors.email = 'Invalid email format';
+        }
+        if (!firstName) newErrors.firstName = 'First name is required';
+        if (!lastName) newErrors.lastName = 'Last name is required';
+        if (!address) newErrors.address = 'Address is required';
+        if (!phone) newErrors.phone = 'Phone number is required';
+        if (!selectedPaymentMethod) newErrors.paymentMethod = 'Payment method is required';
+        if (!selectedDeliveryMethod) newErrors.deliveryMethod = 'Delivery method is required';
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            console.log('Validation errors:', newErrors);
+            return;
+        }
+
+        setIsLoading(true);
+        setErrors({});
+
         try {
-            console.log('cartData handlePlaceOrder:', cartData);
-            // Chuyển đổi tổng tiền sang VND
-            const totalInVND = Math.round(totalAmount * 23000);
             const customerID = localStorage.getItem('customerId');
             console.log('customerID:', customerID);
-            console.log('invoiceData:', cartData);
+
             const invoiceData = {
-                invoiceDetails: cartData.map((product) => ({
-                    productId: product.id || product.productId,
+                invoiceDetails: checkedItems.map((product) => ({
+                    productId: product.id,
+                    id: product.id,
                     quantity: product.quantity,
                 })),
-
                 issueDate: new Date().toISOString().split('T')[0],
                 receiverNumber: phone,
                 receiverName: `${firstName} ${lastName}`,
@@ -84,45 +159,50 @@ const CheckoutForm = () => {
                 deliveryMethod: selectedDeliveryMethod.toString(),
                 customerId: customerID,
                 orderStatus: 'Processing',
-                total: totalInVND,
+                total: totalAmount + selectedDeliveryFee,
             };
 
-            console.log('ProductID khi thanh toán:', invoiceData.invoiceDetails.map((item) => item.productId));
             console.log('Sending invoice data to server:', invoiceData);
-
-            // Gửi dữ liệu đơn hàng lên server
 
             const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
             console.log('Received Invoice:', invoiceResponse);
 
-
-            
-            //Update quantity after checkout
-            const handleCartData = cartData.map((product) => ({
-                productId:  product.id ||product.productId,
+            const handleCartData = checkedItems.map((product) => ({
+                productId: product.id,
                 quantity: product.quantity,
                 colorName: product.color,
                 sizeName: product.size,
             }));
             console.log('handleCartData:', handleCartData);
 
-
-            /// NHỚ UPDATE LẠI - HIỆN TẠI CHƯA CÓ API
-            
+            // NHỚ THÊM VÀO API ĐỂ CẬP NHẬT SỐ LƯỢNG SAU KHI CHECKOUT
             // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
             // console.log('Updated quantity:', updateQuantity);
 
+            // Cập nhật số lượng sản phẩm trong kho (gọi API backend)
+            const updateQuantityResponse = await Api_Inventory.purchase({ items: handleCartData });
+            console.log('Updated Inventory:', updateQuantityResponse);
 
-            if (!(selectedPaymentMethod === 'Cash on Delivery')) {
+            if (selectedPaymentMethod !== 'Cash on Delivery') {
                 const paymentResponse = await Api_Payment.createPayment({
-                    total: totalInVND,
-                    // invoiceId: invoiceResponse.invoiceId,
-                    invoiceId: Math.floor(Math.random() * 100000)
+                    total: invoiceData.total,
+                    invoiceId: invoiceResponse.invoiceId || Math.floor(Math.random() * 100000),
                 });
-                console.log('====================================');
-                console.log('invoiceId', invoiceResponse.invoiceId);
-                console.log('====================================');
+                console.log('Payment response:', paymentResponse);
 
+                if (paymentResponse?.URL) {
+                    window.location.href = paymentResponse.URL;
+                    return;
+                } else {
+                    throw new Error('Không nhận được URL thanh toán từ VNPay.');
+                }
+            }
+
+            const paymentResponse = await Api_Payment.createPayment({
+                order: invoiceResponse,
+            });
+
+            if (selectedPaymentMethod == 'Bank Transfer') {
                 if (paymentResponse?.URL) {
                     window.location.href = paymentResponse.URL;
                 } else {
@@ -130,25 +210,55 @@ const CheckoutForm = () => {
                     throw new Error('Không nhận được URL thanh toán từ VNPay.');
                 }
             }
+            if (selectedPaymentMethod == 'Cash on Delivery') {
+                console.log('Payment response:', paymentResponse);
+                setPaymentStatus(paymentResponse.status);
+            }
+
+            // }
             // Xóa product da mua trong giỏ hàng sau khi đặt hàng
             const newCartData = cartData.filter(
-                (product) => !invoiceData.invoiceDetails.some((item) => item.productId === product.productId),
+                (product) =>
+                    !checkedItems.some(
+                        (item) => item.id === product.id && item.size === product.size && item.color === product.color,
+                    ),
             );
             sessionStorage.setItem('cart', JSON.stringify(newCartData));
+            console.log('Updated cart after purchase:', newCartData);
 
-            // Hiển thị thông báo đặt hàng thành công
             setIsCompleted(true);
-
-
         } catch (error) {
             console.error('Lỗi khi xử lý thanh toán:', error);
-            setIsFailed(true);
+            if (error.response?.data?.status === 'fail' && error.response?.data?.result) {
+                const backendErrors = error.response.data.result;
+                const newErrors = {};
+
+                Object.keys(backendErrors).forEach((field) => {
+                    const mapping = errorFieldMapping[field];
+                    if (mapping) {
+                        newErrors[mapping.frontendField] = mapping.translate(backendErrors[field]);
+                    } else {
+                        newErrors[field] = backendErrors[field];
+                    }
+                });
+
+                if (newErrors.name) {
+                    newErrors.firstName = newErrors.name;
+                    newErrors.lastName = newErrors.name;
+                    delete newErrors.name;
+                }
+
+                setErrors(newErrors);
+                console.log('Backend validation errors:', newErrors);
+            } else {
+                setIsFailed(true);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const handlePaymentStatusChange = (newStatus) => {
-        setPaymentStatus(newStatus); //paid or unpaid
-    };
+    const selectedCartData = checkedItems || [];
 
     return (
         <main className={cx('container')}>
@@ -171,8 +281,12 @@ const CheckoutForm = () => {
                             id="email"
                             placeholder="Email"
                             width={300}
-                            value={email} //bind với giá trị state
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={email}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                setErrors((prev) => ({ ...prev, email: '' }));
+                            }}
+                            error={errors.email}
                         />
                     </form>
                 </section>
@@ -188,7 +302,11 @@ const CheckoutForm = () => {
                                 placeholder="First Name*"
                                 width={300}
                                 value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
+                                onChange={(e) => {
+                                    setFirstName(e.target.value);
+                                    setErrors((prev) => ({ ...prev, firstName: '' }));
+                                }}
+                                error={errors.firstName}
                             />
                             <InputField
                                 label="Last Name"
@@ -196,7 +314,11 @@ const CheckoutForm = () => {
                                 placeholder="Last Name*"
                                 width={300}
                                 value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
+                                onChange={(e) => {
+                                    setLastName(e.target.value);
+                                    setErrors((prev) => ({ ...prev, lastName: '' }));
+                                }}
+                                error={errors.lastName}
                             />
                         </div>
 
@@ -208,7 +330,11 @@ const CheckoutForm = () => {
                                 helperText="Start typing your street address or zip code for suggestion"
                                 width={665}
                                 value={address}
-                                onChange={(e) => setAddress(e.target.value)}
+                                onChange={(e) => {
+                                    setAddress(e.target.value);
+                                    setErrors((prev) => ({ ...prev, address: '' }));
+                                }}
+                                error={errors.address}
                             />
                         </div>
 
@@ -221,19 +347,20 @@ const CheckoutForm = () => {
                                 helperText="E.g. (123) 456-7890"
                                 width={300}
                                 value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                onChange={(e) => {
+                                    setPhone(e.target.value);
+                                    setErrors((prev) => ({ ...prev, phone: '' }));
+                                }}
+                                error={errors.phone}
                             />
                         </div>
                     </form>
                 </section>
 
                 <br />
-                {/* Delivery */}
-                <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} />
+                <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} error={errors.deliveryMethod} />
                 <br />
-                {/* Payment */}
-                <PaymentOptionsButton onPaymentChange={handlePaymentChange} />
-                {/* Checkbox */}
+                <PaymentOptionsButton onPaymentChange={handlePaymentChange} error={errors.paymentMethod} />
                 <section className={cx('checkoutOptions')}>
                     <div className={cx('option')}>
                         <input
@@ -271,9 +398,14 @@ const CheckoutForm = () => {
                     </div>
                 </section>
 
-                <button onClick={handlePlaceOrder} className={cx('placeOrderButton')} disabled={!isAllChecked}>
-                    REVIEW AND PAY
-                </button>
+                <div className={cx('actionButtons')}>
+                    <button onClick={() => navigate('/cart')} className={cx('backButton')}>
+                        Back to Cart
+                    </button>
+                    <button onClick={handlePlaceOrder} className={cx('placeOrderButton')} disabled={isLoading}>
+                        {isLoading ? 'Processing...' : 'REVIEW AND PAY'}
+                    </button>
+                </div>
             </div>
             <div className={cx('rightContainer')}>
                 <div className={cx('orderSummary')}>
@@ -282,57 +414,62 @@ const CheckoutForm = () => {
                         totalAmount={totalAmount}
                         deliveryFee={selectedDeliveryFee}
                         cartData={cartData}
+                        checkedItems={checkedItems}
+                        isCheckoutVisible={false}
+                        toggleCheckoutVisibility={() => {}}
+                        handleCheckout={() => {}}
                     />
                 </div>
                 <div className={cx('shoppingBag')}>
-                    {cartData && cartData.length > 0 ? (
-                        cartData.map((product) => (
-                            <div className={cx('shoppingBagItem')} key={product.id}>
+                    {selectedCartData.length > 0 ? (
+                        selectedCartData.map((product) => (
+                            <div
+                                className={cx('shoppingBagItem')}
+                                key={`${product.id}-${product.size}-${product.color}`}
+                            >
                                 <ShoppingBag
                                     image={product.image}
                                     name={product.name}
-                                    category={product.category}
                                     color={product.color || 'Color'}
-                                    size={product.size || ['Size']}
+                                    size={product.size || 'Size'}
                                     price={product.price}
-                                    // quantity={product.quantity}
                                     initialQuantity={product.quantity}
-                                    onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
+                                    onQuantityChange={() => {}}
                                     allowQuantityChange={false}
-                                    allowSizeChange={false}
+                                    onCheckboxChange={() => {}}
+                                    product={product}
+                                    removeIcon={null}
+                                    onRemove={() => {}}
+                                    isChecked={false}
                                 />
                             </div>
                         ))
                     ) : (
-                        <p>No items in the cart.</p>
+                        <p>No items selected.</p>
                     )}
-                  
                 </div>
             </div>
-            {
-                    isCompleted &&
-                   <Modal
-                        valid={true}
-                        title="Order placed successfully!"
-                        message="Thank you for shopping with us."
-                        onConfirm={() => navigator(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
-                        isConfirm={true}
-                        contentConfirm="OK"
-                        isCancel={false}
-
-                    />
-                   }
-                   {
-                    isFailed &&
-                    <Modal
-                        valid={false}
-                        title="Order failed!"
-                        message="Please try again."
-                        onConfirm={() => navigator(`/cart`)}
-                        isConfirm={true}
-                        contentConfirm="OK"
-                    />
-                   }
+            {isCompleted && (
+                <Modal
+                    valid={true}
+                    title="Order placed successfully!"
+                    message="Thank you for shopping with us."
+                    onConfirm={() => navigate(`/purchasedProductsList/${localStorage.getItem('customerId')}`)}
+                    isConfirm={true}
+                    contentConfirm="OK"
+                    isCancel={false}
+                />
+            )}
+            {isFailed && (
+                <Modal
+                    valid={false}
+                    title="Order failed!"
+                    message="Please try again."
+                    onConfirm={() => navigate('/cart')}
+                    isConfirm={true}
+                    contentConfirm="OK"
+                />
+            )}
         </main>
     );
 };

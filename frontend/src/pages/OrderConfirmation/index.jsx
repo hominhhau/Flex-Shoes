@@ -7,6 +7,7 @@ const OrderConfirmation = () => {
     // const { isLoggedIn, role } = useAuth()
     const { state } = useLocation();
     const { invoiceId, amount, bankCode, orderInfo, transactionNo, payDate } = state || {};
+    const customerID = localStorage.getItem('customerId');
 
     // Format payDate từ YYYYMMDDHHmmss sang định dạng đẹp hơn
     const formatPayDate = (dateString) => {
@@ -59,12 +60,11 @@ const OrderConfirmation = () => {
                     </Link>
 
                     <Link
-                        to="/purchasedProductsList/1"
+                        to={`/purchasedProductsList/${customerID}`}
                         className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors ml-4"
                     >
                         Historry oders
                     </Link>
-                    
                 </div>
             </div>
         </div>

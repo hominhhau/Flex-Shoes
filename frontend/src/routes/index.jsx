@@ -21,6 +21,7 @@ import AddNewProduct from '../pages/admin/AddNewProduct';
 import config from '../config';
 import CheckoutForm from '../pages/Checkout';
 import ManagerCustomer from '../pages/admin/ManagerCustomer';
+import FormProfile from '../pages/FormProfile';
 
 // AllProduct
 import AllProduct from '../pages/admin/Allproduct/Allproduct';
@@ -40,7 +41,7 @@ const publicRoutes = [
     { path: config.routes.login, component: Login },
     { path: config.routes.register, component: Register },
     { path: config.routes.dashboard, component: Dashboard },
-    { path: '/payment-return', component: PaymentReturn },
+    { path: 'payment/payment-return', component: PaymentReturn },
     // { path: 'payment-failed', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
     { path: config.routes.managerCustomer, component: ManagerCustomer },
@@ -55,6 +56,7 @@ const publicRoutes = [
     { path: config.routes.addNewProduct, component: AddNewProduct },
     { path: '/payment-failed', component: Home },
     { path: '/admin-chat', component: SidebarChat },
+    {path : config.routes.updateProfile, component: FormProfile},
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

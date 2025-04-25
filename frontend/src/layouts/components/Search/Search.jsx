@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDebounce } from '../../../hooks';
 // import request from '~/utils/request';
 // import * as searchServices from '~/services/searchService';
-import { Api_Product } from '../../../../apis/Api_Product';
+import { Api_Inventory } from '../../../../apis/Api_Inventory';
 
 import classNames from 'classnames/bind';
 import styles from './Search.module.scss';
@@ -40,7 +40,7 @@ function Search() {
         // Axios search result
         const fetchApi = async () => {
             setLoading(true);
-            const result = await Api_Product.searchProduct(debounced);
+            const result = await Api_Inventory.searchProduct(debounced);
             setSearchResult(result);
             setLoading(false);
         };

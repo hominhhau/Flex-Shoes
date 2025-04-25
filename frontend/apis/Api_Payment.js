@@ -1,42 +1,81 @@
-import { ApiManager } from "./ApiManager";
+import axios from 'axios';
+
+const BASE_URL = 'http://localhost:8888/api/v1';
+
+// Tạo một instance của axios
+export const ApiManager = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Interceptor để tự động gắn token vào mỗi request
+ApiManager.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    } else {
+        console.warn("Token is missing, please log in again.");
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
+
+// Interceptor để bắt lỗi 401 và xử lý tự động
+ApiManager.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            console.warn('Token hết hạn hoặc không hợp lệ!');
+            localStorage.removeItem('token');
+            window.location.href = '/login'; // hoặc navigate đến trang login
+        }
+        return Promise.reject(error);
+    }
+);
+
+
 
 export const Api_Payment = {
-    createPayment: async (invoiceDto) => {
+
+    createPayment: async (payload) => {
         try {
-            console.log('Creating payment with invoice data:', invoiceDto);
-            const response = await ApiManager.post('/api/payment/create_payment', invoiceDto);
-
-            if (!response || !response.URL) {
-                throw new Error('Invalid payment response received');
-            }
-
-            return response;
+            const response = await ApiManager.post('/payment/create_payment', payload);
+            return response.data;
         } catch (error) {
-            console.error('Error creating payment:', error);
+            console.error("Error creating payment:", error);
             throw error;
         }
     },
-
-    getPaymentInfo: async (params) => {
+    getAllPayments: async () => {
         try {
-            console.log('Getting payment info with params:', params);
-            const response = await ApiManager.get('/api/payment/payment_info', { params });
-            console.log('Raw API Response:', response);
-            return response;
+            const response = await ApiManager.get('/payment/getAllPayments');
+            return response.data;
         } catch (error) {
-            console.error('Error getting payment info:', error);
-            console.error('Error details:', error.response?.data);
+            console.error("Error fetching payments:", error);
             throw error;
         }
     },
-
-    verifyPayment: async (paymentData) => {
-        const response = await ApiManager.post('/api/payment/verify', paymentData);
-        return response.data;
+    getPaymentById: async (paymentId) => {
+        try {
+            const response = await ApiManager.get(`/payment/getPaymentById/${paymentId}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching payment by ID:", error);
+            throw error;
+        }
     },
-
-    getOrderDetails: async () =>{
-        const response = await ApiManager.get('/api/order/order_details');
-        return response.data;
+    payment_return: async (params) => {
+        try {
+            const response = await ApiManager.get('/payment/payment-return', { params });
+            return response.data;
+        } catch (error) {
+            console.error("Error processing payment return:", error);
+            throw error;
+        }
     }
+
 };

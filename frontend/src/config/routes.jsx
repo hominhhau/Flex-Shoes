@@ -30,6 +30,8 @@ const routes = {
 
     // AllProduct
     AllProduct: '/AllProduct',
+
+    updateProfile: '/updateProfile',
 };
 
 export default routes;
