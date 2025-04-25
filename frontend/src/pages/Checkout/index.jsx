@@ -198,6 +198,25 @@ const CheckoutForm = () => {
                 }
             }
 
+            const paymentResponse = await Api_Payment.createPayment({
+                order: invoiceResponse,
+            });
+
+            if (selectedPaymentMethod == 'Bank Transfer') {
+                if (paymentResponse?.URL) {
+                    window.location.href = paymentResponse.URL;
+                } else {
+                    alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+                    throw new Error('Không nhận được URL thanh toán từ VNPay.');
+                }
+            }
+            if (selectedPaymentMethod == 'Cash on Delivery') {
+                console.log('Payment response:', paymentResponse);
+                setPaymentStatus(paymentResponse.status);
+            }
+
+            // }
+            // Xóa product da mua trong giỏ hàng sau khi đặt hàng
             const newCartData = cartData.filter(
                 (product) =>
                     !checkedItems.some(

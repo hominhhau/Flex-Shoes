@@ -26,22 +26,17 @@ const AddNewProduct = () => {
         purchases: [],
     });
     const [loadingAI, setLoadingAI] = useState(false);
-
-    console.log('Form data trước khi gửi:', formData);
-
+    const [isSubmitting, setIsSubmitting] = useState(false); // Trạng thái submitting
     const [newPurchase, setNewPurchase] = useState({
         color: null,
         size: null,
         quantity: 1,
     });
-    console.log('New purchase:', newPurchase);
-
     const [purchases, setPurchases] = useState([]);
     const [colors, setColors] = useState([]);
     const [sizes, setSizes] = useState([]);
     const [categorys, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
-    console.log('Purchases:', purchases);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -81,6 +76,7 @@ const AddNewProduct = () => {
             tags: prev.tags.filter((tag) => tag !== tagToRemove),
         }));
     };
+
     const handleImproveDescription = async () => {
         if (!formData.description.trim()) {
             alert('Please enter a description before using AI to improve it.');
@@ -110,7 +106,6 @@ const AddNewProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        //   Validation checks (bỏ comment nếu cần)
         if (
             !formData.productName ||
             !formData.description ||
@@ -127,7 +122,8 @@ const AddNewProduct = () => {
             return;
         }
 
-        // Tạo FormData để gửi dữ liệu
+        setIsSubmitting(true); // Bật trạng thái submitting
+
         const formDataToSend = new FormData();
         formDataToSend.append('productName', formData.productName);
         formDataToSend.append('description', formData.description);
@@ -139,10 +135,9 @@ const AddNewProduct = () => {
         formDataToSend.append('brandId', formData.brandName);
         formDataToSend.append('categoryId', formData.category);
 
-        // Thêm file ảnh
         formData.images.forEach((image, index) => {
-            console.log(`Adding image ${index}:`, image.file); // Log để kiểm tra
-            formDataToSend.append('images', image.file); // Field name phải là 'images'
+            console.log(`Adding image ${index}:`, image.file);
+            formDataToSend.append('images', image.file);
         });
 
         formDataToSend.append(
@@ -156,23 +151,20 @@ const AddNewProduct = () => {
             ),
         );
 
-        // Log toàn bộ FormData
-        for (let [key, value] of formDataToSend.entries()) {
-            console.log(`${key}:`, value);
-        }
-
         try {
             const createdProduct = await Api_Inventory.createProduct(formDataToSend);
             console.log('Created product:', createdProduct);
             if (createdProduct) {
                 alert('Product created successfully!');
-                // navigate(config.routes.admin.products);
+                navigate(config.routes.admin.products);
             } else {
                 alert('Failed to create product. Please try again.');
             }
         } catch (error) {
             console.error('Error creating product:', error);
-            alert('An error occurred while creating the product. Please try again later.');
+            // alert('An error occurred while creating the product. Please try again later.');
+        } finally {
+            setIsSubmitting(false); // Tắt trạng thái submitting
         }
     };
 
@@ -202,9 +194,7 @@ const AddNewProduct = () => {
     };
 
     const handleQuantityChange = (colorId, sizeId, newQuantity) => {
-        // Chuyển đổi newQuantity thành số nguyên, mặc định là 0 nếu không hợp lệ
         const quantity = Math.max(0, parseInt(newQuantity, 10) || 0);
-
         setPurchases((prevPurchases) =>
             prevPurchases.map((purchase) =>
                 purchase.color._id === colorId && purchase.size._id === sizeId ? { ...purchase, quantity } : purchase,
@@ -235,7 +225,7 @@ const AddNewProduct = () => {
             <div className={cx('formContent')}>
                 <section className={cx('inputSection')}>
                     <nav className={cx('breadcrumb')}>
-                        <span>Home</span> &gt; <span>All Products</span> &gt; <span>Add Product </span>
+                        <span>Home</span> <span>All Products</span> <span>Add Product </span>
                     </nav>
 
                     {/* Product Name */}
@@ -259,9 +249,7 @@ const AddNewProduct = () => {
                         <label htmlFor="description" className={cx('fieldLabel')}>
                             Description
                         </label>
-
                         <div className={cx('inputWrapper')}>
-                            {/* Nút AI nằm trên textarea */}
                             {formData.description.trim() !== '' && (
                                 <button
                                     className={cx('aiButton')}
@@ -272,7 +260,6 @@ const AddNewProduct = () => {
                                     {loadingAI ? 'Đang tạo mô tả...' : '✨ Tạo mô tả với chuyên gia Marketing AI'}
                                 </button>
                             )}
-
                             <textarea
                                 id="description"
                                 className={cx('textArea')}
@@ -541,8 +528,14 @@ const AddNewProduct = () => {
                 <ImageUploader onImagesChange={handleImagesChange} />
             </div>
             <div className={cx('buttonContainer')}>
-                <button type="submit" className={cx('submitButton')}>
-                    Submit
+                <button type="submit" className={cx('submitButton')} disabled={isSubmitting}>
+                    {isSubmitting ? (
+                        <span>
+                            <span className={cx('spinner')}></span> Đang xử lý...
+                        </span>
+                    ) : (
+                        'Submit'
+                    )}
                 </button>
                 <button type="button" className={cx('cancelButton')}>
                     Cancel

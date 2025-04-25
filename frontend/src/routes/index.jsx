@@ -41,7 +41,7 @@ const publicRoutes = [
     { path: config.routes.login, component: Login },
     { path: config.routes.register, component: Register },
     { path: config.routes.dashboard, component: Dashboard },
-    { path: '/payment-return', component: PaymentReturn },
+    { path: 'payment/payment-return', component: PaymentReturn },
     // { path: 'payment-failed', component: PaymentReturn },
     { path: '/order-confirmation', component: OrderConfirmation },
     { path: config.routes.managerCustomer, component: ManagerCustomer },
