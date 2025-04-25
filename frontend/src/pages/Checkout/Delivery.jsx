@@ -1,9 +1,10 @@
 import React from 'react';
-import styles from './PaymentOption.module.scss';
+import styles from './DeliveryOptions.module.scss';
 
-const PaymentOption = ({
+const Delivery = ({
   title,
   description,
+  price,
   isSelected,
   onClick,
 }) => {
@@ -16,8 +17,11 @@ const PaymentOption = ({
         <h3 className={styles.optionTitle}>{title}</h3>
         <p className={styles.optionDescription}>{description}</p>
       </div>
+      <span className={`${styles.optionPrice} ${price === 'Free' ? styles.blueText : ''}`}>
+        {price === 'Free' ? price : `$${price}`}
+      </span>
     </div>
   );
 };
 
-export default PaymentOption;
+export default Delivery;

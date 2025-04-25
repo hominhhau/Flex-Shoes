@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
 import InputField from './InputField';
-import DeliveryOptionsButton from './DelivelyOptions';
+import DeliveryOptionsButton from './DeliveryOptionsButton';
 import PaymentOptionsButton from './PaymentOptionsButton';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import ShoppingBag from '../../components/Cart/CartComponent';
@@ -13,11 +13,43 @@ import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
 
 const cx = classNames.bind(styles);
 
+const errorFieldMapping = {
+  receiverNumber: {
+    frontendField: 'phone',
+    translate: (message) => message.includes('bắt buộc') ? 'Phone number is required' : message,
+  },
+  receiverName: {
+    frontendField: 'name',
+    translate: (message) => message.includes('bắt buộc') ? 'Full name is required' : message.includes('105') ? 'Full name cannot exceed 105 characters' : message,
+  },
+  receiverAddress: {
+    frontendField: 'address',
+    translate: (message) => message.includes('bắt buộc') ? 'Address is required' : message.includes('105') ? 'Address cannot exceed 105 characters' : message,
+  },
+  paymentMethod: {
+    frontendField: 'paymentMethod',
+    translate: (message) => message.includes('bắt buộc') ? 'Payment method is required' : message.includes('50') ? 'Payment method cannot exceed 50 characters' : message,
+  },
+  deliveryMethod: {
+    frontendField: 'deliveryMethod',
+    translate: (message) => message.includes('bắt buộc') ? 'Delivery method is required' : message.includes('50') ? 'Delivery method cannot exceed 50 characters' : message,
+  },
+  issueDate: {
+    frontendField: 'issueDate',
+    translate: (message) => message.includes('bắt buộc') ? 'Issue date is required' : message,
+  },
+  total: {
+    frontendField: 'total',
+    translate: (message) => message.includes('bắt buộc') ? 'Total is required' : message.includes('lớn hơn hoặc bằng 0') ? 'Total must be greater than or equal to 0' : message,
+  },
+};
+
 const CheckoutForm = () => {
   const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(false);
   const [isOver13, setIsOver13] = useState(false);
   const [newsletterSubscription, setNewsletterSubscription] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -48,22 +80,41 @@ const CheckoutForm = () => {
     console.log('New delivery fee:', newDeliveryFee);
     setSelectedDeliveryFee(newDeliveryFee);
     setSelectedDeliveryMethod(newDeliveryFee === 0 ? 'Collect in store' : 'Standard Delivery');
+    setErrors((prev) => ({ ...prev, deliveryMethod: '' }));
   };
 
   const handlePaymentChange = (paymentMethod) => {
     console.log('Selected payment method:', paymentMethod);
     setSelectedPaymentMethod(paymentMethod);
+    setErrors((prev) => ({ ...prev, paymentMethod: '' }));
   };
 
   const isAllChecked = billingSameAsDelivery && isOver13;
 
   const handlePlaceOrder = async () => {
-    if (!email || !firstName || !lastName || !address || !phone) {
-      alert('Please fill in all required fields.');
+    // Client-side validation
+    const newErrors = {};
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!email.includes('@')) {
+      newErrors.email = 'Invalid email format';
+    }
+    if (!firstName) newErrors.firstName = 'First name is required';
+    if (!lastName) newErrors.lastName = 'Last name is required';
+    if (!address) newErrors.address = 'Address is required';
+    if (!phone) newErrors.phone = 'Phone number is required';
+    if (!selectedPaymentMethod) newErrors.paymentMethod = 'Payment method is required';
+    if (!selectedDeliveryMethod) newErrors.deliveryMethod = 'Delivery method is required';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      console.log('Validation errors:', newErrors);
       return;
     }
 
     setIsLoading(true);
+    setErrors({});
+
     try {
       const customerID = localStorage.getItem('customerId');
       console.log('customerID:', customerID);
@@ -128,7 +179,30 @@ const CheckoutForm = () => {
       setIsCompleted(true);
     } catch (error) {
       console.error('Lỗi khi xử lý thanh toán:', error);
-      setIsFailed(true);
+      if (error.response?.data?.status === 'fail' && error.response?.data?.result) {
+        const backendErrors = error.response.data.result;
+        const newErrors = {};
+
+        Object.keys(backendErrors).forEach((field) => {
+          const mapping = errorFieldMapping[field];
+          if (mapping) {
+            newErrors[mapping.frontendField] = mapping.translate(backendErrors[field]);
+          } else {
+            newErrors[field] = backendErrors[field];
+          }
+        });
+
+        if (newErrors.name) {
+          newErrors.firstName = newErrors.name;
+          newErrors.lastName = newErrors.name;
+          delete newErrors.name;
+        }
+
+        setErrors(newErrors);
+        console.log('Backend validation errors:', newErrors);
+      } else {
+        setIsFailed(true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +232,11 @@ const CheckoutForm = () => {
               placeholder="Email"
               width={300}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors((prev) => ({ ...prev, email: '' }));
+              }}
+              error={errors.email}
             />
           </form>
         </section>
@@ -174,7 +252,11 @@ const CheckoutForm = () => {
                 placeholder="First Name*"
                 width={300}
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                  setErrors((prev) => ({ ...prev, firstName: '' }));
+                }}
+                error={errors.firstName}
               />
               <InputField
                 label="Last Name"
@@ -182,7 +264,11 @@ const CheckoutForm = () => {
                 placeholder="Last Name*"
                 width={300}
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                  setErrors((prev) => ({ ...prev, lastName: '' }));
+                }}
+                error={errors.lastName}
               />
             </div>
 
@@ -194,7 +280,11 @@ const CheckoutForm = () => {
                 helperText="Start typing your street address or zip code for suggestion"
                 width={665}
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                  setErrors((prev) => ({ ...prev, address: '' }));
+                }}
+                error={errors.address}
               />
             </div>
 
@@ -207,16 +297,20 @@ const CheckoutForm = () => {
                 helperText="E.g. (123) 456-7890"
                 width={300}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setErrors((prev) => ({ ...prev, phone: '' }));
+                }}
+                error={errors.phone}
               />
             </div>
           </form>
         </section>
 
         <br />
-        <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} />
+        <DeliveryOptionsButton onDeliveryChange={handleDeliveryChange} error={errors.deliveryMethod} />
         <br />
-        <PaymentOptionsButton onPaymentChange={handlePaymentChange} />
+        <PaymentOptionsButton onPaymentChange={handlePaymentChange} error={errors.paymentMethod} />
         <section className={cx('checkoutOptions')}>
           <div className={cx('option')}>
             <input
@@ -261,12 +355,12 @@ const CheckoutForm = () => {
             Back to Cart
           </button>
           <button
-            onClick={handlePlaceOrder}
-            className={cx('placeOrderButton')}
-            disabled={!isAllChecked || isLoading}
-          >
-            {isLoading ? 'Processing...' : 'REVIEW AND PAY'}
-          </button>
+  onClick={handlePlaceOrder}
+  className={cx('placeOrderButton')}
+  disabled={isLoading}
+>
+  {isLoading ? 'Processing...' : 'REVIEW AND PAY'}
+</button>
         </div>
       </div>
       <div className={cx('rightContainer')}>

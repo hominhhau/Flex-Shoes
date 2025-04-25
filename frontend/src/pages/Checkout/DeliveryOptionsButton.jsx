@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import styles from './DeliveryOptions.module.scss';
-import Delivery from './DeliveryOption';
+import checkoutStyles from './Checkout.module.scss';
+import classNames from 'classnames/bind';
+import Delivery from './Delivery';
+
+const cx = classNames.bind(checkoutStyles);
 
 const deliveryOptionsData = [
   {
@@ -12,19 +16,17 @@ const deliveryOptionsData = [
     title: 'Collect in store',
     description: 'Pay now, collect in store',
     price: 'Free',
-  }
+  },
 ];
 
-const DeliveryOptionsButton = ({ onDeliveryChange }) => {
-  const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].price);
+const DeliveryOptionsButton = ({ onDeliveryChange, error }) => {
+  const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].title);
 
   const handleSelectOption = (option) => {
     console.log('Selected option:', option);
     setSelectedOption(option.title);
-    // Truyền giá trị phí giao hàng lên component cha (CheckoutForm)
-    //onDeliveryChange(option.price);
     const price = option.price === 'Free' ? 0 : parseFloat(option.price);
-    console.log('Updated price:', price); // Kiểm tra giá trị giá giao hàng
+    console.log('Updated price:', price);
     onDeliveryChange(price);
   };
 
@@ -43,6 +45,7 @@ const DeliveryOptionsButton = ({ onDeliveryChange }) => {
           />
         ))}
       </div>
+      {error && <p className={cx('errorText')}>{error}</p>}
     </section>
   );
 };

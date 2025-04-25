@@ -1,71 +1,79 @@
 .container {
-    padding: 20px;
-    background-color: #f9f9f9; /* Light background for better contrast */
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: left;
-    color: #333; /* Neutral color for better readability */
-  }
-  
+  max-width: 782px;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.title {
+  color: #232321;
+  font: 32px Rubik, sans-serif;
+}
+
+.optionsWrapper {
+  display: flex;
+  margin-top: 32px;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 991px) {
   .optionsWrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 16px; /* Consistent spacing between options */
+      max-width: 100%;
   }
-  
+}
+
+.optionCard {
+  border-radius: 16px;
+  background-color: #fafafa;
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 8px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 16px;
+}
+
+@media (max-width: 991px) {
   .optionCard {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
+      max-width: 100%;
   }
-  
-  .optionCard:hover {
-    border-color: #007bff; /* Highlight border on hover */
-    background-color: #f0f8ff; /* Subtle hover effect */
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.1); /* Add a shadow on hover */
-  }
-  
-  .selectedOption {
-    border-color: #007bff;
-    background-color: #e6f2ff; /* Different background for selected option */
-  }
-  
+}
+
+.optionInfo {
+  display: flex;
+  min-width: 240px;
+  flex-direction: column;
+  color: #232321;
+  flex: 1;
+  flex-basis: 0%;
+}
+
+@media (max-width: 991px) {
   .optionInfo {
-    display: flex;
-    flex-direction: column;
+      max-width: 100%;
   }
-  
-  .optionTitle {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #000; /* Black for emphasis */
-  }
-  
+}
+
+.optionTitle {
+  font: 24px Rubik, sans-serif;
+}
+
+.optionDescription {
+  opacity: 0.8;
+  margin-top: 8px;
+  width: 100%;
+  font: 16px Open Sans, sans-serif;
+}
+
+@media (max-width: 991px) {
   .optionDescription {
-    font-size: 14px;
-    color: #666;
+      max-width: 100%;
   }
-  
-  .optionPrice {
-    font-size: 16px;
-    font-weight: bold;
-    color: #000; /* Neutral color for all prices */
-  }
-  
-  .blueText {
-    color: #007bff; /* Highlight free options */
-  }
-  
+}
+
+.selectedOption {
+  border: 2px solid #232321;
+}
