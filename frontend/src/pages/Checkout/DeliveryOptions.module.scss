@@ -1,88 +1,87 @@
 .container {
-    max-width: 782px;
-    display: flex;
-    flex-direction: column;
-    font-weight: 600;
-  }
-  
-  .title {
-    color: #232321;
-    font: 32px Rubik, sans-serif;
-  }
-  
+  max-width: 782px;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.title {
+  color: #232321;
+  font: 32px Rubik, sans-serif;
+}
+
+.optionsWrapper {
+  display: flex;
+  margin-top: 32px;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 991px) {
   .optionsWrapper {
-    display: flex;
-    margin-top: 32px;
-    width: 100%;
-    flex-direction: column;
-    //khoach cach giua cac option
-    gap: 16px;
-  }
-  
-  @media (max-width: 991px) {
-    .optionsWrapper {
       max-width: 100%;
-    }
   }
-  
+}
+
+.optionCard {
+  border-radius: 16px;
+  background-color: #fafafa;
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 8px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 16px;
+}
+
+@media (max-width: 991px) {
   .optionCard {
-    border-radius: 16px;
-    background-color: #fafafa;
-    display: flex;
-    width: 100%;
-    align-items: flex-start;
-    gap: 8px;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 16px;
-  }
-  
-  @media (max-width: 991px) {
-    .optionCard {
       max-width: 100%;
-    }
   }
-  
+}
+
+.optionInfo {
+  display: flex;
+  min-width: 240px;
+  flex-direction: column;
+  color: #232321;
+  flex: 1;
+  flex-basis: 0%;
+}
+
+@media (max-width: 991px) {
   .optionInfo {
-    display: flex;
-    min-width: 240px;
-    flex-direction: column;
-    color: #232321;
-    flex: 1;
-    flex-basis: 0%;
-  }
-  
-  @media (max-width: 991px) {
-    .optionInfo {
       max-width: 100%;
-    }
   }
-  
-  .optionTitle {
-    font: 24px Rubik, sans-serif;
-  }
-  
+}
+
+.optionTitle {
+  font: 24px Rubik, sans-serif;
+}
+
+.optionDescription {
+  opacity: 0.8;
+  margin-top: 8px;
+  width: 100%;
+  font: 16px Open Sans, sans-serif;
+}
+
+@media (max-width: 991px) {
   .optionDescription {
-    opacity: 0.8;
-    margin-top: 8px;
-    width: 100%;
-    font: 16px Open Sans, sans-serif;
-  }
-  
-  @media (max-width: 991px) {
-    .optionDescription {
       max-width: 100%;
-    }
   }
-  
-  .optionPrice {
-    font: 20px Rubik, sans-serif;
-  }
-  
-  .selectedOption {
-    border: 2px solid #232321;
-  }
-  
-  .blueText {
-    color: #4a69e2;
-  }
+}
+
+.optionPrice {
+  font: 20px Rubik, sans-serif;
+}
+
+.selectedOption {
+  border: 2px solid #232321;
+}
+
+.blueText {
+  color: #4a69e2;
+}

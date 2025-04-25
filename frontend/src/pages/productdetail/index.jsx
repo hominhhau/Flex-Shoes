@@ -156,14 +156,31 @@ const ProductDetail = () => {
 
   // Buy now handler
   const handleBuyNow = () => {
+    console.log('Before adding to cart, selectedSize:', selectedSize);
+    if (!isLoggedIn) {
+      alert('Please login to Buy');
+      return navigate('/login');
+    }
+
+    if (!selectedColor || !selectedSize) {
+      alert('Please select a color and size');
+      return;
+    }
+  
+    const key = `${selectedColor._id}-${selectedSize._id}`;
+    const currentQuantity = availableQuantities[key] || 0;
+    if (currentQuantity <= 0) {
+      alert(`This color and size is currently out of stock.`);
+      return;
+    }
+
     console.log('Before buying now, selectedSize:', selectedSize);
     if (!selectedColor || !selectedSize) {
       alert('Please select a color and size');
       return;
     }
 
-    const key = `${selectedColor._id}-${selectedSize._id}`;
-    const currentQuantity = availableQuantities[key] || 0;
+
     if (currentQuantity <= 0) {
       alert(`This color and size is currently out of stock.`);
       return;
@@ -256,7 +273,7 @@ const ProductDetail = () => {
           </span>
           <h1 className={cx('product-name')}>{product.productName}</h1>
           <p className={cx('product-price')}>
-            {(product.sellingPrice).toFixed(2)}
+           $ {(product.sellingPrice).toFixed(2)}
           </p>
 
           {/* Color Selection */}

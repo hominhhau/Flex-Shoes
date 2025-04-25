@@ -47,6 +47,12 @@ function Header({ user }) {
             separate: true,
             onClick: () => handleLogout(),
         },
+        {
+            icon: <FontAwesomeIcon icon={faCoins} />,
+            title: 'Update Profile',
+            to: '/updateProfile',
+            separate: true,
+        },
     ];
     const handleLogout = async () => {
         try {

@@ -1,23 +1,23 @@
 .container {
     display: flex;
-    max-width: 1200px; /* Increase the width to accommodate both sections */
-    margin: 0 auto; /* Center the container */
-    justify-content: space-between; /* Keep space between the columns */
-    flex-wrap: wrap; /* Allows the containers to wrap on smaller screens */
-    gap: 20px; /* Adds space between the left and right containers */
+    max-width: 1200px;
+    margin: 0 auto;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .loginLink {
     color: #232321;
     text-decoration-line: underline;
-    font:
-        600 20px 'Open Sans',
-        sans-serif;
+    font: 600 20px 'Open Sans', sans-serif;
 }
-.leftContainer {
+
+.leftcontainer {
     flex: 2;
-    min-width: 300px; 
+    min-width: 300px;
 }
+
 .formSection {
     display: flex;
     margin-top: 32px;
@@ -49,17 +49,13 @@
 }
 
 .sectionTitle {
-    font:
-        32px 'Rubik',
-        sans-serif;
+    font: 32px 'Rubik', sans-serif;
 }
 
 .sectionDescription {
     opacity: 0.8;
     margin-top: 8px;
-    font:
-        16px 'Open Sans',
-        sans-serif;
+    font: 16px 'Open Sans', sans-serif;
 }
 
 @media (max-width: 991px) {
@@ -78,9 +74,7 @@
     white-space: nowrap;
     letter-spacing: 0.5px;
     justify-content: flex-start;
-    font:
-        400 16px 'Inter',
-        sans-serif;
+    font: 400 16px 'Inter', sans-serif;
 }
 
 @media (max-width: 991px) {
@@ -118,6 +112,16 @@
     }
 }
 
+.inputError {
+    border-color: #e74c3c;
+}
+
+.errorText {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-top: 5px;
+}
+
 .shippingSection {
     display: flex;
     margin-top: 32px;
@@ -129,9 +133,7 @@
 
 .shippingTitle {
     color: #232321;
-    font:
-        600 32px 'Rubik',
-        sans-serif;
+    font: 600 32px 'Rubik', sans-serif;
 }
 
 .shippingForm {
@@ -237,6 +239,7 @@
     white-space: nowrap;
     border: 0;
 }
+
 .checkoutOptions {
     display: flex;
     flex-direction: column;
@@ -255,7 +258,7 @@
 input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: #232321; 
+    accent-color: #232321;
 }
 
 label {
@@ -264,13 +267,14 @@ label {
 
 .newsletterSection {
     margin-top: 20px;
-
-    h4 {
-        font-weight: 600;
-        margin-bottom: 8px;
-        font-size: 16px;
-    }
 }
+
+.newsletterSection h4 {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
 .placeOrderButton {
     width: 100%;
     padding: 12px;
@@ -283,46 +287,47 @@ label {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
 
-    &:hover {
-        background-color: #1a1a1a;
-    }
+.placeOrderButton:hover {
+    background-color: #1a1a1a;
 }
 
 .rightContainer {
     flex: 1;
-    min-width: 450px; 
-    //background-color: #f5f5f5; 
-    padding: 20px; 
+    min-width: 450px;
+    padding: 20px;
     border-radius: 8px;
 }
+
 .orderSummary {
-    margin-bottom: 20px; 
-    padding: 10px; 
-    background-color: #f5f5f5; 
-    border-radius: 8px; 
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
 }
+
 .shoppingBag {
-    max-height: 580px; 
+    max-height: 580px;
     overflow-y: auto;
-    padding-right: 10px; 
-  }
-  
-  .shoppingBagItem {
+    padding-right: 10px;
+}
+
+.shoppingBagItem {
     display: flex;
     justify-content: space-between;
     padding: 20px;
     border: 1px solid #eaeaea;
     border-radius: 8px;
     background-color: #f9f9f9;
-    margin-bottom: 20px;//kcach giua spham
-  }
+    margin-bottom: 20px;
+}
 
-  .orderSummary, .shoppingBag {
+.orderSummary, .shoppingBag {
     width: 100%;
-    max-width: 500px;//Crong ordersummary va shoppingbag bang nhau
+    max-width: 500px;
     padding: 20px;
     background-color: #f5f5f5;
     border-radius: 8px;
     margin-bottom: 20px;
-  }
+}

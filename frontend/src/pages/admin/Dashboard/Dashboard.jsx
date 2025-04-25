@@ -5,7 +5,7 @@ import styles from './Dashboard.module.scss';
 
 import OrderSummary from '../../../layouts/componentsAdmin/OrderSummary';
 import RecentOrders from '../../../layouts/componentsAdmin/RecentOrders';
-import { Api_InvoiceAdmin } from "../../../../apis/Api_invoiceAdmin";// Giả sử bạn đã import đúng Api_InvoiceAdmin
+import { Api_InvoiceAdmin } from "../../../../apis/Api_invoiceAdmin";   
 
 const cx = classNames.bind(styles);
 
@@ -22,13 +22,14 @@ function Dashboard() {
         const fetchData = async () => {
             try {
                 const totalOrdersResponse = await Api_InvoiceAdmin.getTotalOrders();
-                setTotalOrders(totalOrdersResponse.data.total); // ✅ Lấy đúng field cần
+                setTotalOrders(totalOrdersResponse.data);
     
+                console.log("totalOrdersResponse", totalOrdersResponse.data); 
                 const totalShippingResponse = await Api_InvoiceAdmin.getTotalShipping();
-                setTotalShipping(totalShippingResponse.data.total); // ✅ Nếu trả về giống vậy
+                setTotalShipping(totalShippingResponse.data); 
     
                 const totalRevenueResponse = await Api_InvoiceAdmin.getTotalRevenue();
-                setTotalRevenue(totalRevenueResponse.data.total); // ✅
+                setTotalRevenue(totalRevenueResponse.data); 
     
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
