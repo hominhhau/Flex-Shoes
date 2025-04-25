@@ -5,7 +5,7 @@ import styles from './Dashboard.module.scss';
 
 import OrderSummary from '../../../layouts/componentsAdmin/OrderSummary';
 import RecentOrders from '../../../layouts/componentsAdmin/RecentOrders';
-import { Api_InvoiceAdmin } from "../../../../apis/Api_invoiceAdmin";// Giả sử bạn đã import đúng Api_InvoiceAdmin
+import { Api_InvoiceAdmin } from "../../../../apis/Api_invoiceAdmin";   
 
 const cx = classNames.bind(styles);
 
