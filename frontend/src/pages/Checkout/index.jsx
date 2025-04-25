@@ -149,6 +149,11 @@ const CheckoutForm = () => {
       }));
       console.log('handleCartData:', handleCartData);
 
+      // NHỚ THÊM VÀO API ĐỂ CẬP NHẬT SỐ LƯỢNG SAU KHI CHECKOUT
+      // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
+      // console.log('Updated quantity:', updateQuantity);
+
+
       if (selectedPaymentMethod !== 'Cash on Delivery') {
         const paymentResponse = await Api_Payment.createPayment({
           total: invoiceData.total,
