@@ -2,8 +2,9 @@ import { Modal, Button, Form, Card } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import { getAllProducts } from "../../redux/chatSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { getMessages, sendMessages } from "../../redux/chatSlice";
 
-export const SearchProductModal = ({ show, handleClose }) => {
+export const SearchProductModal = ({ senderID, show, handleClose }) => {
   // const messages = useSelector((state) => state.chat.message);
   const allProducts = useSelector((state) => state.chat.allProducts);
   const dispatch = useDispatch();
@@ -11,9 +12,14 @@ export const SearchProductModal = ({ show, handleClose }) => {
 
   const [products, setProduct] = useState([]);
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    alert('Đã sao chép!');
+  const sendToClipboard = async (text, images) => {
+    let res1 = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: text , type: "text" }));
+    let res2 = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: images[0].imageID.URL , type: "image" }));
+
+    if (res1.meta.requestStatus === "fulfilled" && res2.meta.requestStatus === "fulfilled") {
+      await dispatch(getMessages({ senderID }));
+      handleClose();
+    }
   };
 
   const filteredProducts = products.filter(product =>
@@ -73,13 +79,13 @@ export const SearchProductModal = ({ show, handleClose }) => {
         <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => {
-              const productText = `Tên: ${product.productName}\nGiá: ${product.sellingPrice}\nSize: ${product.sizes.join(', ')}\nMàu: ${product.colors.join(', ')}`;
+              const productText = `Tên sản phẩm: ${product.productName}\nGiá: ${product.sellingPrice}\nSize: ${product.sizes.join(', ')}\nMàu: ${product.colors.join(', ')}`;
               return (
                 <Card key={index} className="mb-2">
                   <Card.Body className="d-flex justify-content-between align-items-center">
                     <pre className="mb-0" style={{ whiteSpace: 'pre-wrap' }}>{productText}</pre>
-                    <Button variant="outline-primary" size="sm" onClick={() => copyToClipboard(productText)}>
-                      Copy
+                    <Button variant="outline-primary" size="sm" onClick={() => sendToClipboard(productText, product.image)}>
+                      Gửi
                     </Button>
                   </Card.Body>
                 </Card>

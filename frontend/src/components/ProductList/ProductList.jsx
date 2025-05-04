@@ -91,7 +91,7 @@ const ProductList = () => {
                 {products.map((product) => (
                     <div key={product.productId} className="flex-none w-full sm:w-1/2 lg:w-1/4 p-2 snap-start">
                         <ProductItem
-                            src={product.images[0]}
+                            // src={product.images[0]}
                             name={product.productName}
                             price={product.finalPrice}
                             originalPrice={product.originalPrice}

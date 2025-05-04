@@ -13,8 +13,8 @@ export const getMessages = createAsyncThunk('chat/getMessages', async (senderId,
     return response.DT;
 });
 
-export const sendMessages = createAsyncThunk('chat/sendMessages', async ({ clientId, senderId, message }, thunkAPI) => {
-    let response = await ApiManager.post('http://localhost:8089/send', { clientId, senderId, message });
+export const sendMessages = createAsyncThunk('chat/sendMessages', async ({ clientId, senderId, message ,type}, thunkAPI) => {
+    let response = await ApiManager.post('http://localhost:8089/send', { clientId, senderId, message, type });
     return response.DT;
 });
 
