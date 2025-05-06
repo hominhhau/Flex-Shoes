@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { Search, Smile, Paperclip, Send } from "lucide-react";
 import "./SidebarChat.scss";
 import { useSelector, useDispatch } from "react-redux";
-// import { getAllSender } from "../../redux/chatSlice";
+import { getAllSender, getLastMessage, updateMessageStatus } from "../../redux/chatSlice";
 import ChatAdmin from "./ChatAdmin";
 
 export default function SidebarChat() {
     // const senders = useSelector((state) => state.chat.senders);
+    const [lastMessages, setLastMessages] = useState([])
     const senders = [
         {
             clientId: 1,
@@ -29,18 +30,37 @@ export default function SidebarChat() {
             time: "2023-10-01T12:00:00Z",
         }
     ]
+    const [searchInput, setSearchInput] = useState("");
     const [conversations, setConversations] = useState([]);
     const [info, setInfo] = useState({});
 
     const dispatch = useDispatch();
-
     const fetchListSender = async () => {
-        // await dispatch(getAllSender());
+        // let sender = await dispatch(getAllSender());
     };
+
+    // Gọi last message của từng sender
+    const lastMessage = async (senders) => {
+        const senderIds = senders.map(s => s.clientId).join(',');
+        // fetch(`http://localhost:8080/getLastMessage?senderIds=${senderIds}`).then(res => res.json());
+        let res = await dispatch(getLastMessage(senderIds))
+
+        if (res.payload.EC === 0 && Array.isArray(res.payload.DT)) {
+            const formattedMessages = res.payload.DT.map(item => ({
+                senderId: item.clientId,
+                message: item.message,
+                state: item.status,
+                timestamp: item.createdAt // nếu cần dùng cho convertTime
+            }));
+            setLastMessages(formattedMessages);
+        }
+
+    }
+
 
     useEffect(() => {
         // dispatch(getAllSender());
-
+        lastMessage(senders)
         const interval = setInterval(fetchListSender, 1000); // Lặp lại mỗi 1 giây
         return () => clearInterval(interval); // Cleanup khi component unmount
     }, []);
@@ -72,27 +92,87 @@ export default function SidebarChat() {
     }
 
     useEffect(() => {
-        setConversations(
-            senders.map(sender => ({
+        const _conversations = senders.map(sender => {
+            const lastMsg = lastMessages.find(m => m.senderId === sender.clientId);
+            console.log('lastMsg ', lastMsg);
+
+            return {
                 id: sender.clientId,
                 name: sender.name,
                 phoneNumber: sender.phoneNumber,
-                dateOfBirth: sender.dateOfBirth,
-                message: 'sender.message',
-                time: convertTime(new Date(sender.createdAt)),
+                message: lastMsg?.message || "",
+                time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt)),
                 avatar: "/placeholder.svg",
-            }))
-        );
-    }, []);
+                state: lastMsg?.state || 0
+            };
+        });
 
-    const handleShowChat = (sender) => {
+        // Sắp xếp theo timestamp mới nhất
+        const sorted = [..._conversations].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        setConversations(sorted);
+    }, [lastMessages]);
+
+    const handleShowChat = async (sender) => {
+        // Gửi yêu cầu cập nhật trạng thái đọc
+        try {
+            await dispatch(updateMessageStatus({ clientId: sender.id }))
+            // Sau khi cập nhật, gọi lại lastMessage để load lại trạng thái
+            await lastMessage(senders);
+        } catch (error) {
+            console.error("Failed to update message status:", error);
+        }
+
         setInfo({
             clientId: sender.id,
             name: sender.name,
             avatar: sender.avatar,
             time: sender.time,
         });
+
     }
+
+    const handleSearch = () => {
+        const keyword = searchInput.toLowerCase();
+
+        const filtered = senders
+            .filter(sender =>
+                sender.name.toLowerCase().includes(keyword) ||
+                sender.phoneNumber.includes(keyword)
+            )
+            .map(sender => ({
+                id: sender.clientId,
+                name: sender.name,
+                phoneNumber: sender.phoneNumber,
+                dateOfBirth: sender.dateOfBirth,
+                message: 'sender.message',
+                time: convertTime(new Date(sender.createdAt || sender.time || new Date())), // fallback nếu thiếu `createdAt`
+                avatar: "/placeholder.svg",
+            }));
+
+        setConversations(filtered);
+    };
+
+    const handleSearchRealtime = (keyword) => {
+        const lowerKeyword = keyword.toLowerCase();
+
+        const filtered = senders
+            .filter(sender =>
+                sender.name.toLowerCase().includes(lowerKeyword) ||
+                sender.phoneNumber.includes(lowerKeyword)
+            )
+            .map(sender => ({
+                id: sender.clientId,
+                name: sender.name,
+                phoneNumber: sender.phoneNumber,
+                dateOfBirth: sender.dateOfBirth,
+                message: 'sender.message',
+                time: convertTime(new Date(sender.createdAt || sender.time || new Date())),
+                avatar: "/placeholder.svg",
+            }));
+
+        setConversations(filtered);
+    };
 
     return (
         <div className="container-fluid vh-100 p-0">
@@ -117,8 +197,17 @@ export default function SidebarChat() {
                                     type="text"
                                     className="form-control form-control-sm bg-light"
                                     placeholder="Tìm kiếm"
+                                    value={searchInput}
+                                    onChange={(e) => {
+                                        setSearchInput(e.target.value);
+                                        handleSearchRealtime(e.target.value);
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                 />
-                                <span className="input-group-text bg-light border-start-0">
+                                <span
+                                    className="input-group-text bg-light border-start-0 cursor-pointer"
+                                    onClick={() => handleSearch()}
+                                >
                                     <Search size={16} />
                                 </span>
                             </div>
@@ -149,8 +238,11 @@ export default function SidebarChat() {
                                         <div className="text-truncate fw-medium ">{chat.name}</div>
                                         <small className="text-muted ms-auto">{chat.time}</small>
                                     </div>
-                                    <div className="text-truncate small text-muted ">
-                                        {chat.message}
+                                    <div className={`text-truncate small ${chat.message && chat.state === 0
+                                        ? 'fw-semibold text-dark'
+                                        : 'text-secondary'
+                                        }`}>
+                                        {chat.message || "Không có tin nhắn"}
                                     </div>
                                 </div>
                             </div>
