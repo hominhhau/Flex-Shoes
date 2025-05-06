@@ -13,10 +13,19 @@ export const getMessages = createAsyncThunk('chat/getMessages', async (senderId,
     return response.DT;
 });
 
-export const sendMessages = createAsyncThunk('chat/sendMessages', async ({ clientId, senderId, message ,type}, thunkAPI) => {
-    let response = await ApiManager.post('http://localhost:8089/send', { clientId, senderId, message, type });
-    return response.DT;
-});
+export const sendMessages = createAsyncThunk(
+    'chat/sendMessages',
+    async ({ clientId, senderId, message, type, productId }, thunkAPI) => {
+        let response = await ApiManager.post('http://localhost:8089/send', {
+            clientId,
+            senderId,
+            message,
+            type,
+            productId,
+        });
+        return response.DT;
+    },
+);
 
 export const getAllSender = createAsyncThunk('chat/getAllSender', async (thunkAPI) => {
     let response = await ApiManager.get('http://localhost:8089/getAllSender');
@@ -99,8 +108,7 @@ const chatSlice = createSlice({
         // getNumberOfProductsById
         builder
             .addCase(getNumberOfProductsById.pending, (state) => {})
-            .addCase(getNumberOfProductsById.fulfilled, (state, action) => {
-            })
+            .addCase(getNumberOfProductsById.fulfilled, (state, action) => {})
             .addCase(getNumberOfProductsById.rejected, (state, action) => {});
     },
 });

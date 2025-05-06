@@ -12,9 +12,9 @@ export const SearchProductModal = ({ senderID, show, handleClose }) => {
 
   const [products, setProduct] = useState([]);
 
-  const sendToClipboard = async (text, images) => {
-    let res1 = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: text , type: "text" }));
-    let res2 = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: images[0].imageID.URL , type: "image" }));
+  const sendToClipboard = async (text, images, productId) => {
+    let res1 = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: text , type: "text" , productId: ""}));
+    let res2 = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: images[0].imageID.URL , type: "image" , productId: productId }));
 
     if (res1.meta.requestStatus === "fulfilled" && res2.meta.requestStatus === "fulfilled") {
       await dispatch(getMessages({ senderID }));
@@ -84,7 +84,7 @@ export const SearchProductModal = ({ senderID, show, handleClose }) => {
                 <Card key={index} className="mb-2">
                   <Card.Body className="d-flex justify-content-between align-items-center">
                     <pre className="mb-0" style={{ whiteSpace: 'pre-wrap' }}>{productText}</pre>
-                    <Button variant="outline-primary" size="sm" onClick={() => sendToClipboard(productText, product.image)}>
+                    <Button variant="outline-primary" size="sm" onClick={() => sendToClipboard(productText, product.image, product._id)}>
                       Gửi
                     </Button>
                   </Card.Body>

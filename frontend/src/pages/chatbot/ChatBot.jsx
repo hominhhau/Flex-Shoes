@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { MessageCircle } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessages } from "../../redux/chatSlice";
+import { useNavigate } from 'react-router-dom';
 
 const ChatBot = () => {
   // const senderID = localStorage.getItem('customerId') ? localStorage.getItem('customerId') : 1;  // khi login sẽ lấy từ user
@@ -11,12 +12,13 @@ const ChatBot = () => {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const toggleChat = () => setIsOpen(!isOpen);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    let res = await dispatch(sendMessages({ clientId: senderID, senderId: 2, message: input, type: "text" }));
+    let res = await dispatch(sendMessages({ clientId: senderID, senderId: 2, message: input, type: "text" , productId: "" }));
 
     if (res.meta.requestStatus === "fulfilled") {
       setInput("");
@@ -49,6 +51,12 @@ const ChatBot = () => {
       timeZone: "Asia/Ho_Chi_Minh",
     });
   };
+
+  // Chuyển hướng đến trang chi tiết sản phẩm
+
+  const handleDetail = async(productId) => {
+    navigate(`/productdetail/${productId}`);
+  }
 
   return (
     <div className="fixed bottom-5 right-5 flex flex-col items-end z-50">
@@ -96,7 +104,7 @@ const ChatBot = () => {
                         className="rounded mb-2"
                         style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
                       />
-                      <button className="btn btn-danger mt-4">Xem chi tiết</button>
+                      <button className="btn btn-danger mt-4" onClick={() => handleDetail(msg.productId)}>Xem chi tiết</button>
                     </div>
                   ) : (
                     <span>{msg.message}</span>

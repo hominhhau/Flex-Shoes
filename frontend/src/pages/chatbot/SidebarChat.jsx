@@ -4,32 +4,20 @@ import "./SidebarChat.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllSender, getLastMessage, updateMessageStatus } from "../../redux/chatSlice";
 import ChatAdmin from "./ChatAdmin";
+import { Api_ManagerCustomer } from '../../../apis/Api_ManagerCustomer';
 
 export default function SidebarChat() {
     // const senders = useSelector((state) => state.chat.senders);
     const [lastMessages, setLastMessages] = useState([])
-    const senders = [
+    const [senders, setSenders] = useState([
         {
             clientId: 1,
             name: "Nguyễn Văn A",
             phoneNumber: "0123456789",
             dateOfBirth: "2000-01-01",
             time: "2023-10-01T12:00:00Z",
-        }, {
-            clientId: 2,
-            name: "Nguyễn Văn B",
-            phoneNumber: "0123456789",
-            dateOfBirth: "2000-01-01",
-            time: "2023-10-01T12:00:00Z",
-        },
-        {
-            clientId: 3,
-            name: "Nguyễn Văn C",
-            phoneNumber: "0123456789",
-            dateOfBirth: "2000-01-01",
-            time: "2023-10-01T12:00:00Z",
         }
-    ]
+    ])
     const [searchInput, setSearchInput] = useState("");
     const [conversations, setConversations] = useState([]);
     const [info, setInfo] = useState({});
@@ -37,12 +25,19 @@ export default function SidebarChat() {
     const dispatch = useDispatch();
     const fetchListSender = async () => {
         // let sender = await dispatch(getAllSender());
+        // { customerId: "KH001", customerName: "Nguyễn Thị Quỳnh Giang", email: "nguyenthiquynhgiang@gmail.com", phoneNumber: "123-456-7890", address: "TPHCM" },
+        // try {
+        //     const customers = await Api_ManagerCustomer.getAllCustomers();
+        //     // setSenders(customers);
+        //     console.log('Customers:', customers);
+        // } catch (error) {
+        //     console.error('Failed to fetch customers:', error);
+        // }
     };
 
     // Gọi last message của từng sender
     const lastMessage = async (senders) => {
         const senderIds = senders.map(s => s.clientId).join(',');
-        // fetch(`http://localhost:8080/getLastMessage?senderIds=${senderIds}`).then(res => res.json());
         let res = await dispatch(getLastMessage(senderIds))
 
         if (res.payload.EC === 0 && Array.isArray(res.payload.DT)) {

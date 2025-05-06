@@ -21,7 +21,7 @@ export default function ChatAdmin(props) {
 
     const sendMessage = async (type) => {
         if (!input.trim()) return;
-        let res = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: input, type: type }));
+        let res = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: input, type: type , productId: "" }));
 
         if (res.meta.requestStatus === "fulfilled") {
             setInput("");
