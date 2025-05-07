@@ -62,7 +62,7 @@ export const Api_Inventory = {
     getAllProducts: async () => {
         try {
             const response = await ApiManager.get('/inventory/getAllProducts');
-            return response;
+            return response.data;
         } catch (error) {
             console.error("Error fetching products:", error);
             throw error;

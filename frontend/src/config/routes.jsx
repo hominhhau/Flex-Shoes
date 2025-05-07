@@ -5,7 +5,7 @@ const routes = {
 
 
     home: '/home',
-    productdetail: '/productdetail',
+    // productdetail: '/productdetail',
 
     home: '/',
 
@@ -27,7 +27,7 @@ const routes = {
     ProductDetails: '/ProductDetails',
     OrderDetails: '/OrderDetails',
     addNewProduct: '/addNewProduct',
-
+    infoCustomer: '/infoCustomer',
     // AllProduct
     AllProduct: '/AllProduct',
 

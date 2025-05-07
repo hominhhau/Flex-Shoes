@@ -27,6 +27,7 @@ import FormProfile from '../pages/FormProfile';
 import AllProduct from '../pages/admin/Allproduct/Allproduct';
 
 import SidebarChat from '../pages/chatbot/SidebarChat';
+import CustomerInfo from '../pages/admin/CustomerInfo';
 
 const publicRoutes = [
     { path: config.routes.main, component: Home },
@@ -57,6 +58,7 @@ const publicRoutes = [
     { path: '/payment-failed', component: Home },
     { path: '/admin-chat', component: SidebarChat },
     {path : config.routes.updateProfile, component: FormProfile},
+    { path: config.routes.infoCustomer, component: CustomerInfo },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };
