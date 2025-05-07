@@ -47,8 +47,8 @@ const request = async (method, url, data = null, params = null, customHeaders = 
 };
 
 export const ApiManager = {
-  get: async (url, { params } = {}) => request('get', url, null, params),
+  get: async (url, { params, headers } = {}) => request('get', url, null, params, headers),
   post: async (url, data, headers = {}) => request('post', url, data, null, headers),
-  put: async (url, data) => request('put', url, data),
+  put: async (url, data, headers = {}) => request('put', url, data, null, headers),
   delete: async (url) => request('delete', url),
 };

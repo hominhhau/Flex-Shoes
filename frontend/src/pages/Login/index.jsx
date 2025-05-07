@@ -13,7 +13,6 @@ import Modal from '../../components/Modal/Modal';
 import { Api_Auth } from '../../../apis/Api_Auth';
 import { useAuth } from '../../hooks/useAuth';
 
-
 const cx = classNames.bind(styles);
 
 function Login() {
@@ -24,28 +23,28 @@ function Login() {
     const { setIsLoggedIn } = useAuth();
     const [isError, setIsError] = useState(false);
 
-    const [messageError, setMessageError] = useState("");
+    const [messageError, setMessageError] = useState('');
 
     const onChangeUserName = (e) => {
         setUsername(e.target.value);
     };
     const handleLogin = async () => {
         try {
-            console.log(username)
-            console.log(password)
-            const data = await Api_Auth.login(username, password); // Gọi API login
-            // Lưu token và role vào localStorage
+
+            const data = await Api_Auth.login(username, password);
+
             localStorage.setItem('token', data.response.token);
+            localStorage.setItem('profileKey', data.response.profileKey);
             localStorage.setItem('role', JSON.stringify(data.response.roles));
+
             // Nếu có điều kiện phân quyền
-            if (data.response.roles.some(role => role.authority === 'ROLE_USER')) {
+            if (data.response.roles.some((role) => role.authority === 'ROLE_USER')) {
                 localStorage.setItem('customerId', data.response.id); // hoặc data.customerId nếu có
             }
             setIsLoggedIn(true);
             navigate(config.routes.home);
-
         } catch (err) {
-            setMessageError(err.response.data.message)
+            setMessageError(err.response.data.message);
             console.error('Login failed:', err.message);
             setIsError(true);
         }
@@ -157,19 +156,17 @@ function Login() {
                     </button>
                 </div>
             </div>
-            {
-                isError && (
-                    <Modal
-                        valid={false}
-                        title="Login Failed!"
-                        message={messageError}
-                        isConfirm={true}                      
-                        onConfirm={handleTryAgain}
-                        contentConfirm={'Try again'}
-                        contentCancel="Login page"
-                    />
-                )
-            }
+            {isError && (
+                <Modal
+                    valid={false}
+                    title="Login Failed!"
+                    message={messageError}
+                    isConfirm={true}
+                    onConfirm={handleTryAgain}
+                    contentConfirm={'Try again'}
+                    contentCancel="Login page"
+                />
+            )}
         </div>
     );
 }

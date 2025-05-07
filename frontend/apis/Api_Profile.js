@@ -11,34 +11,48 @@ export const ApiManager = axios.create({
 });
 
 // Interceptor để tự động gắn token vào mỗi request
-ApiManager.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
+ApiManager.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
+);
 
 // Interceptor để bắt lỗi 401 và xử lý tự động
 ApiManager.interceptors.response.use(
-    response => response,
-    error => {
+    (response) => response,
+    (error) => {
         if (error.response && error.response.status === 401) {
             console.warn('Token hết hạn hoặc không hợp lệ!');
             localStorage.removeItem('token');
             window.location.href = '/login'; // hoặc navigate đến trang login
         }
         return Promise.reject(error);
-    }
+    },
 );
 
-
-
 export const Api_Profile = {
-  getProfile: async (userID) => {
-    return ApiManager.get(`/profile/user/${userID}`);
-},
+    getProfile: async (userID) => {
+        return ApiManager.get(`/profile/${userID}`,{
+                
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization' : `Bearer ${localStorage.getItem('token')}`,
+                },
+        });
+    },
+    updateProfile: async (userID, data) => {
+        return ApiManager.put(`/profile/update/${userID}`, data,{
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Bearer ${localStorage.getItem('token')}`,
+            },
+    });
+    },
 };
-
