@@ -83,4 +83,5 @@ export const Api_Inventory = {
         return ApiManager.delete(`/api/product/deleteQuantity/${quantityId}`);
     },
 
+
 }

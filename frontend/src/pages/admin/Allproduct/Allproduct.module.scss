@@ -3,6 +3,7 @@
     padding-top: 96px;
     padding-left: 300px;
     padding-right: 60px;
+
     .header {
         display: flex;
         justify-content: space-between;
@@ -17,8 +18,56 @@
             font-weight: bold;
         }
 
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .inputWrapper {
+            display: flex;
+            width: 200px;
+            flex-direction: column;
+        }
+
+        .selectInput {
+            border-radius: 8px;
+            border: 1px solid #232321;
+            height: 48px;
+            width: 100%;
+            padding: 0 16px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+
+            &:focus {
+                outline: none;
+                border-color: #666;
+            }
+        }
+
+        .filter-button {
+            background-color: #232321;
+            color: white;
+            border: none;
+            height: 48px;
+            padding: 0 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #444;
+            }
+        }
+
         .add-product {
-            background-color: #000;
+            background-color: #0ab80a;
             color: #fff;
             border: none;
             padding: 10px 20px;
@@ -33,7 +82,8 @@
 
     .product-list {
         display: grid;
-        grid-template-columns: repeat(5, 1fr); /* 5 cột bằng nhau */
+        grid-template-columns: repeat(5, 1fr);
+        /* 5 cột bằng nhau */
         gap: 20px;
 
         .product-card {
@@ -82,11 +132,13 @@
                 line-height: 1.4;
                 font-weight: bold;
             }
+
             .description {
                 font-size: 14px;
                 color: #666;
                 margin-top: 5px;
             }
+
             .stats {
                 display: flex;
                 flex-direction: column;
@@ -107,7 +159,8 @@
                     }
 
                     p:first-child {
-                        font-weight: bold; /* Đậm cho tên các mục */
+                        font-weight: bold;
+                        /* Đậm cho tên các mục */
                         color: #575757;
                     }
 

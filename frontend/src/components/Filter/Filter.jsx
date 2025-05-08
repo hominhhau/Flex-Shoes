@@ -113,6 +113,7 @@ const Filter = ({ onFilterChange }) => {
         UnderArmour: 'BR008',
         ASICS: 'BR009',
         Fila: 'BR010',
+        Other: 'BR011',
     };
 
     const handleFilterChange = (section, value) => {
@@ -252,16 +253,18 @@ const Filter = ({ onFilterChange }) => {
             </FilterSection>
 
             <FilterSection title="CATEGORY">
-                {['Casual shoes', 'Runners', 'Hiking', 'Sneaker', 'Basketball', 'Golf', 'Outdoor'].map((category) => (
-                    <label key={category} className={cx('checkbox-label')}>
-                        <input
-                            type="checkbox"
-                            checked={selectedFilters.category.includes(category)}
-                            onChange={() => handleFilterChange('category', category)}
-                        />
-                        {category}
-                    </label>
-                ))}
+                {['Casual shoes', 'Runners', 'Hiking', 'Sneaker', 'Basketball', 'Golf', 'Outdoor', 'Other'].map(
+                    (category) => (
+                        <label key={category} className={cx('checkbox-label')}>
+                            <input
+                                type="checkbox"
+                                checked={selectedFilters.category.includes(category)}
+                                onChange={() => handleFilterChange('category', category)}
+                            />
+                            {category}
+                        </label>
+                    ),
+                )}
             </FilterSection>
 
             <FilterSection title="GENDER">
@@ -303,7 +306,6 @@ const Filter = ({ onFilterChange }) => {
                                 </div>
                             );
                         }}
-                        
                         renderThumb={({ props }) => {
                             const { key, ...rest } = props;
                             return (
@@ -320,7 +322,6 @@ const Filter = ({ onFilterChange }) => {
                                 />
                             );
                         }}
-                        
                     />
                     <div className={cx('price-values')}>
                         <span>${selectedFilters.price[0]}</span>
