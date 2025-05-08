@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './ProfileForm.module.scss';
 import { Api_Profile } from '../../apis/Api_Profile';
+import { Api_Auth } from '../../apis/Api_Auth';
 
 const cx = classNames.bind(styles);
 
@@ -16,9 +17,7 @@ const ProfileForm = () => {
         addressString: '',
     });
 
-
     const [loginInfo, setLoginInfo] = useState({
-        username: '',
         oldPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -33,7 +32,6 @@ const ProfileForm = () => {
             try {
                 const userId = localStorage.getItem('profileKey');
                 const response = await Api_Profile.getProfile(userId);
-                console.log('API Response:', response);
                 if (
                     response.status === 200 &&
                     response.data &&
@@ -50,11 +48,11 @@ const ProfileForm = () => {
                         addressString: data.address ? data.address.join(', ') : '',
                     });
                 } else {
-                    setError('Không thể tải thông tin hồ sơ.');
+                    setError('Could not load profile information.');
                 }
             } catch (error) {
-                setError('Đã xảy ra lỗi khi tải thông tin hồ sơ.');
-                console.error('Lỗi tải hồ sơ:', error);
+                setError('An error occurred while loading profile information.');
+                console.error('Profile load error:', error);
             } finally {
                 setLoading(false);
             }
@@ -80,6 +78,7 @@ const ProfileForm = () => {
         const { name, value } = event.target;
         setLoginInfo({ ...loginInfo, [name]: value });
     };
+
     const handleSavePersonal = async () => {
         try {
             const userID = localStorage.getItem('customerId');
@@ -93,25 +92,30 @@ const ProfileForm = () => {
                 userID,
             };
 
-            console.log('Data to send:', dataToSend);
-
             const result = await Api_Profile.updateProfile(localStorage.getItem('profileKey'), dataToSend);
 
             if (result.status === 200 && result.data.status === 'SUCCESS') {
                 localStorage.setItem('profile', JSON.stringify(result.data.response));
-                alert('Cập nhật thông tin thành công');
+                alert('Personal information updated successfully');
             } else {
-                alert('Cập nhật không thành công');
+                alert('Failed to update personal information');
             }
         } catch (error) {
-            console.error('Lỗi lưu thông tin cá nhân:', error);
-            alert('Đã xảy ra lỗi khi lưu thông tin cá nhân.');
+            console.error('Error saving personal information:', error);
+            alert('An error occurred while saving personal information.');
         }
     };
 
     const handleSaveLogin = async () => {
+        // Check if the new password and confirm password match
         if (loginInfo.newPassword !== loginInfo.confirmPassword) {
-            alert('New password and confirmation do not match.');
+            alert('New password and confirm password do not match.');
+            return;
+        }
+
+        // Check the length of the new password (backend rule: minimum 8 characters)
+        if (loginInfo.newPassword.length < 8) {
+            alert('New password must be at least 8 characters long.');
             return;
         }
 
@@ -123,22 +127,22 @@ const ProfileForm = () => {
                 newPassword: loginInfo.newPassword,
             };
 
-            const result = await Api_Profile.updatePassword(passwordData);
+            const result = await Api_Auth.updatePassword(passwordData);
+            console.log('Password update result:', result);
 
             if (result.status === 200 && result.data.status === 'SUCCESS') {
                 alert('Password updated successfully!');
-                setLoginInfo((prev) => ({
-                    ...prev,
+                setLoginInfo({
                     oldPassword: '',
                     newPassword: '',
                     confirmPassword: '',
-                }));
+                });
             } else {
-                alert('Password update failed. Please check your old password.');
+                alert('Failed to update password. Please check your old password.');
             }
         } catch (error) {
-            console.error('Error updating password:', error);
-            alert('An error occurred while updating password.');
+            console.error('Password update error:', error);
+            alert('An error occurred while updating the password. Please try again.');
         }
     };
 
@@ -153,21 +157,23 @@ const ProfileForm = () => {
     return (
         <div className={cx('page-container')}>
             <div className={cx('content-section')}>
-                <h2 className={cx('content-title')}>Welcome to Sneaker World!</h2>
+                <h2 className={cx('content-title')}>Welcome to Flex Shoes!</h2>
                 <p className={cx('content-description')}>
-                    At Sneaker World, we bring you the ultimate destination for premium footwear. 
-                    Dive into our extensive collection featuring iconic brands like Nike, Adidas, 
-                    Puma, and New Balance. Whether you're chasing the latest Air Jordan drop, 
-                    seeking the sleek comfort of Adidas Ultraboost, or exploring unique designs 
-                    from emerging brands, we have something for every sneaker enthusiast. 
+                    At Flex Shoes, we bring you the ultimate destination for premium footwear.
+                    Explore our extensive collection featuring renowned brands like Nike, Adidas,
+                    Puma, and New Balance. Whether you're looking for the latest Air Jordans, the
+                    comfort of Adidas Ultraboost, or unique designs from emerging brands, we have
+                    something for every sneaker enthusiast.
                     <br /><br />
-                    Our mission is to deliver not just shoes, but a lifestyle. Each pair is crafted 
-                    with precision, blending style, comfort, and performance to elevate your everyday 
-                    look. Update your profile today to unlock exclusive offers, early access to new 
-                    releases, and personalized recommendations tailored to your style. Join our 
-                    community of sneakerheads and step into a world of unparalleled fashion!
+                    Our mission is to provide not just shoes, but a lifestyle. Each pair is
+                    carefully crafted, blending style, comfort, and performance to elevate your
+                    everyday look. Update your profile today to receive exclusive offers, early
+                    access to new releases, and personalized recommendations tailored to your style.
+                    Join our community of sneakerheads and step into a world of limitless fashion!
                 </p>
-                
+                <div className={cx('image-container')}>
+                    <img src="https://png.pngtree.com/png-clipart/20231006/original/pngtree-orange-sneakers-lined-icons-vector-png-image_12972401.png" alt="Flex Shoes" className={cx('image')} />
+                </div>
             </div>
             <div className={cx('form-section')}>
                 <h2 className={cx('title')}>My Profile</h2>
@@ -305,19 +311,6 @@ const ProfileForm = () => {
                                 onChange={handlePersonalChange}
                             />
                         </div>
-                        {/* <div className={cx('form-group')}>
-                            <label htmlFor="username" className={cx('label')}>
-                                <strong>Username</strong>
-                            </label>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                className={cx('input')}
-                                value={loginInfo.username}
-                                onChange={handleLoginChange}
-                            />
-                        </div> */}
                         <div className={cx('button-container')}>
                             <button
                                 onClick={handleSavePersonal}
