@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import classNames from 'classnames/bind';
+import styles from './ProfileForm.module.scss';
 import { Api_Profile } from '../../apis/Api_Profile';
+
+const cx = classNames.bind(styles);
 
 const ProfileForm = () => {
     const [activeTab, setActiveTab] = useState('personal');
@@ -12,9 +16,12 @@ const ProfileForm = () => {
         addressString: '',
     });
 
+
     const [loginInfo, setLoginInfo] = useState({
-        username: 'nhi.nhi0311',
-        password: 'thuynhi@0099',
+        username: '',
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -43,11 +50,11 @@ const ProfileForm = () => {
                         addressString: data.address ? data.address.join(', ') : '',
                     });
                 } else {
-                    setError('Unable to load profile information.');
+                    setError('Không thể tải thông tin hồ sơ.');
                 }
             } catch (error) {
-                setError('An error occurred while loading profile information.');
-                console.error('Error loading profile:', error);
+                setError('Đã xảy ra lỗi khi tải thông tin hồ sơ.');
+                console.error('Lỗi tải hồ sơ:', error);
             } finally {
                 setLoading(false);
             }
@@ -73,7 +80,6 @@ const ProfileForm = () => {
         const { name, value } = event.target;
         setLoginInfo({ ...loginInfo, [name]: value });
     };
-
     const handleSavePersonal = async () => {
         try {
             const userID = localStorage.getItem('customerId');
@@ -93,235 +99,289 @@ const ProfileForm = () => {
 
             if (result.status === 200 && result.data.status === 'SUCCESS') {
                 localStorage.setItem('profile', JSON.stringify(result.data.response));
-                alert('Profile updated successfully');
+                alert('Cập nhật thông tin thành công');
             } else {
-                alert('Update failed');
+                alert('Cập nhật không thành công');
             }
         } catch (error) {
-            console.error('Error saving personal information:', error);
-            alert('An error occurred while saving personal information.');
+            console.error('Lỗi lưu thông tin cá nhân:', error);
+            alert('Đã xảy ra lỗi khi lưu thông tin cá nhân.');
         }
     };
 
-    const handleSaveLogin = () => {
-        console.log('Saved login information:', loginInfo);
-        alert('Login information saved!');
-        // Call API to save login information (not implemented)
+    const handleSaveLogin = async () => {
+        if (loginInfo.newPassword !== loginInfo.confirmPassword) {
+            alert('New password and confirmation do not match.');
+            return;
+        }
+
+        try {
+            const userId = localStorage.getItem('profileKey');
+            const passwordData = {
+                userId,
+                oldPassword: loginInfo.oldPassword,
+                newPassword: loginInfo.newPassword,
+            };
+
+            const result = await Api_Profile.updatePassword(passwordData);
+
+            if (result.status === 200 && result.data.status === 'SUCCESS') {
+                alert('Password updated successfully!');
+                setLoginInfo((prev) => ({
+                    ...prev,
+                    oldPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                }));
+            } else {
+                alert('Password update failed. Please check your old password.');
+            }
+        } catch (error) {
+            console.error('Error updating password:', error);
+            alert('An error occurred while updating password.');
+        }
     };
 
     if (loading) {
-        return <div className="container mx-auto p-6 mt-10 text-2xl">Loading information...</div>;
+        return <div className={cx('loading')}>Loading information...</div>;
     }
 
     if (error) {
-        return <div className="container mx-auto p-6 mt-10 text-2xl text-red-500">{error}</div>;
+        return <div className={cx('error')}>{error}</div>;
     }
 
     return (
-        <div
-            className="container mx-auto p-6 bg-white shadow-md rounded-lg mt-10 text-2xl w-full"
-            style={{ maxWidth: '1200px', padding: '50px' }}
-        >
-            <h2 className="text-black text-4xl font-semibold mb-6">My Profile</h2>
-            <p className="text-gray-700 text-2xl mb-6">Manage your profile information to secure your account</p>
-
-            <div className="mb-4">
-                <button
-                    className={`py-2 px-4 rounded-md text-2xl ${
-                        activeTab === 'personal'
-                            ? 'bg-[#4A69E2] text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    } mr-2`}
-                    onClick={() => handleTabChange('personal')}
-                >
-                    Manage Personal Information
-                </button>
-                <button
-                    className={`py-2 px-4 rounded-md text-2xl ${
-                        activeTab === 'login'
-                            ? 'bg-[#4A69E2] text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                    onClick={() => handleTabChange('login')}
-                >
-                    Manage Login Information
-                </button>
+        <div className={cx('page-container')}>
+            <div className={cx('content-section')}>
+                <h2 className={cx('content-title')}>Welcome to Sneaker World!</h2>
+                <p className={cx('content-description')}>
+                    At Sneaker World, we bring you the ultimate destination for premium footwear. 
+                    Dive into our extensive collection featuring iconic brands like Nike, Adidas, 
+                    Puma, and New Balance. Whether you're chasing the latest Air Jordan drop, 
+                    seeking the sleek comfort of Adidas Ultraboost, or exploring unique designs 
+                    from emerging brands, we have something for every sneaker enthusiast. 
+                    <br /><br />
+                    Our mission is to deliver not just shoes, but a lifestyle. Each pair is crafted 
+                    with precision, blending style, comfort, and performance to elevate your everyday 
+                    look. Update your profile today to unlock exclusive offers, early access to new 
+                    releases, and personalized recommendations tailored to your style. Join our 
+                    community of sneakerheads and step into a world of unparalleled fashion!
+                </p>
+                
             </div>
+            <div className={cx('form-section')}>
+                <h2 className={cx('title')}>My Profile</h2>
+                <p className={cx('description')}>Manage your profile information to secure your account</p>
 
-            {activeTab === 'personal' && (
-                <div>
-                    <h3 className="text-3xl font-semibold mb-4">Personal Information</h3>
-                    <div className="mb-6">
-                        <label htmlFor="firstName" className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">First Name</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="firstName"
-                            name="firstName"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.firstName}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label htmlFor="lastName" className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">Last Name</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="lastName"
-                            name="lastName"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.lastName}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
+                <div className={cx('tab-container')}>
+                    <button
+                        className={cx('tab-button', { active: activeTab === 'personal' })}
+                        onClick={() => handleTabChange('personal')}
+                    >
+                        Manage Personal Information
+                    </button>
+                    <button
+                        className={cx('tab-button', { active: activeTab === 'login' })}
+                        onClick={() => handleTabChange('login')}
+                    >
+                        Manage Login Information
+                    </button>
+                </div>
 
-                    <div className="mb-6">
-                        <label htmlFor="email" className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">Email</strong>
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.email}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label htmlFor="phone" className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">Phone Number</strong>
-                        </label>
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phoneNumber"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.phoneNumber}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">Gender</strong>
-                        </label>
-                        <div className="flex items-center">
-                            <div className="flex items-center mr-6">
-                                <input
-                                    type="radio"
-                                    id="male"
-                                    className="focus:ring-4A69E2 h-6 w-6 text-4A69E2 border-gray-300 focus:ring-offset-2"
-                                    name="gender"
-                                    value="MEN"
-                                    checked={personalInfo.gender === 'MEN'}
-                                    onChange={handleGenderChange}
-                                />
-                                <label htmlFor="male" className="text-gray-700 ml-2 text-2xl">
-                                    Male
-                                </label>
-                            </div>
-                            <div className="flex items-center mr-6">
-                                <input
-                                    type="radio"
-                                    id="female"
-                                    className="focus:ring-4A69E2 h-6 w-6 text-4A69E2 border-gray-300 focus:ring-offset-2"
-                                    name="gender"
-                                    value="WOMEN"
-                                    checked={personalInfo.gender === 'WOMEN'}
-                                    onChange={handleGenderChange}
-                                />
-                                <label htmlFor="female" className="text-gray-700 ml-2 text-2xl">
-                                    Female
-                                </label>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="radio"
-                                    id="other"
-                                    className="focus:ring-4A69E2 h-6 w-6 text-4A69E2 border-gray-300 focus:ring-offset-2"
-                                    name="gender"
-                                    value="OTHER"
-                                    checked={personalInfo.gender === 'OTHER'}
-                                    onChange={handleGenderChange}
-                                />
-                                <label htmlFor="other" className="text-gray-700 ml-2 text-2xl">
-                                    Other
-                                </label>
+                {activeTab === 'personal' && (
+                    <div className={cx('form-container')}>
+                        <h3 className={cx('form-title')}>Personal Information</h3>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="firstName" className={cx('label')}>
+                                <strong>First Name</strong>
+                            </label>
+                            <input
+                                type="text"
+                                id="firstName"
+                                name="firstName"
+                                className={cx('input')}
+                                value={personalInfo.firstName}
+                                onChange={handlePersonalChange}
+                            />
+                        </div>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="lastName" className={cx('label')}>
+                                <strong>Last Name</strong>
+                            </label>
+                            <input
+                                type="text"
+                                id="lastName"
+                                name="lastName"
+                                className={cx('input')}
+                                value={personalInfo.lastName}
+                                onChange={handlePersonalChange}
+                            />
+                        </div>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="email" className={cx('label')}>
+                                <strong>Email</strong>
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                className={cx('input')}
+                                value={personalInfo.email}
+                                onChange={handlePersonalChange}
+                            />
+                        </div>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="phone" className={cx('label')}>
+                                <strong>Phone Number</strong>
+                            </label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phoneNumber"
+                                className={cx('input')}
+                                value={personalInfo.phoneNumber}
+                                onChange={handlePersonalChange}
+                            />
+                        </div>
+                        <div className={cx('form-group')}>
+                            <label className={cx('label')}>
+                                <strong>Gender</strong>
+                            </label>
+                            <div className={cx('radio-group')}>
+                                <div className={cx('radio-option')}>
+                                    <input
+                                        type="radio"
+                                        id="male"
+                                        name="gender"
+                                        value="MEN"
+                                        checked={personalInfo.gender === 'MEN'}
+                                        onChange={handleGenderChange}
+                                        className={cx('radio')}
+                                    />
+                                    <label htmlFor="male" className={cx('radio-label')}>
+                                        Male
+                                    </label>
+                                </div>
+                                <div className={cx('radio-option')}>
+                                    <input
+                                        type="radio"
+                                        id="female"
+                                        name="gender"
+                                        value="WOMEN"
+                                        checked={personalInfo.gender === 'WOMEN'}
+                                        onChange={handleGenderChange}
+                                        className={cx('radio')}
+                                    />
+                                    <label htmlFor="female" className={cx('radio-label')}>
+                                        Female
+                                    </label>
+                                </div>
+                                <div className={cx('radio-option')}>
+                                    <input
+                                        type="radio"
+                                        id="other"
+                                        name="gender"
+                                        value="OTHER"
+                                        checked={personalInfo.gender === 'OTHER'}
+                                        onChange={handleGenderChange}
+                                        className={cx('radio')}
+                                    />
+                                    <label htmlFor="other" className={cx('radio-label')}>
+                                        Other
+                                    </label>
+                                </div>
                             </div>
                         </div>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="address" className={cx('label')}>
+                                <strong>Address</strong>
+                            </label>
+                            <input
+                                type="text"
+                                id="address"
+                                name="addressString"
+                                className={cx('input')}
+                                value={personalInfo.addressString}
+                                onChange={handlePersonalChange}
+                            />
+                        </div>
+                        {/* <div className={cx('form-group')}>
+                            <label htmlFor="username" className={cx('label')}>
+                                <strong>Username</strong>
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                className={cx('input')}
+                                value={loginInfo.username}
+                                onChange={handleLoginChange}
+                            />
+                        </div> */}
+                        <div className={cx('button-container')}>
+                            <button
+                                onClick={handleSavePersonal}
+                                className={cx('save-button')}
+                            >
+                                Save Personal Information
+                            </button>
+                        </div>
                     </div>
+                )}
 
-                    <div className="mb-6">
-                        <label htmlFor="address" className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">Address</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="address"
-                            name="addressString"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.addressString}
-                            onChange={handlePersonalChange}
-                        />
+                {activeTab === 'login' && (
+                    <div className={cx('form-container')}>
+                        <h3 className={cx('form-title')}>Update Password</h3>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="oldPassword" className={cx('label')}>
+                                <strong>Old Password</strong>
+                            </label>
+                            <input
+                                type="password"
+                                id="oldPassword"
+                                name="oldPassword"
+                                className={cx('input')}
+                                value={loginInfo.oldPassword}
+                                onChange={handleLoginChange}
+                            />
+                        </div>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="newPassword" className={cx('label')}>
+                                <strong>New Password</strong>
+                            </label>
+                            <input
+                                type="password"
+                                id="newPassword"
+                                name="newPassword"
+                                className={cx('input')}
+                                value={loginInfo.newPassword}
+                                onChange={handleLoginChange}
+                            />
+                        </div>
+                        <div className={cx('form-group')}>
+                            <label htmlFor="confirmPassword" className={cx('label')}>
+                                <strong>Confirm New Password</strong>
+                            </label>
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                className={cx('input')}
+                                value={loginInfo.confirmPassword}
+                                onChange={handleLoginChange}
+                            />
+                        </div>
+                        <div className={cx('button-container')}>
+                            <button
+                                onClick={handleSaveLogin}
+                                className={cx('save-button')}
+                            >
+                                Update Password
+                            </button>
+                        </div>
                     </div>
-
-                    <div className="flex justify-center">
-                        <button
-                            onClick={handleSavePersonal}
-                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-2xl"
-                        >
-                            Save Personal Information
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'login' && (
-                <div>
-                    <h3 className="text-3xl font-semibold mb-4">Login Information</h3>
-                    <div className="mb-6">
-                        <label htmlFor="username" className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">Username</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={loginInfo.username}
-                            onChange={handleLoginChange}
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label htmlFor="password" className="text-gray-700 block text-2xl font-medium mb-2">
-                            <strong className="text-2xl">Password</strong>
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={loginInfo.password}
-                            onChange={handleLoginChange}
-                        />
-                    </div>
-
-                    <div className="flex justify-center">
-                        <button
-                            onClick={handleSaveLogin}
-                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-2xl"
-                        >
-                            Save Login Information
-                        </button>
-                    </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };
