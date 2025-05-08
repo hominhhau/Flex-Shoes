@@ -11,13 +11,13 @@ const cx = classNames.bind(styles);
 
 function Dashboard() {
     const today = new Date();
-    const formattedDate = `Ngày ${today.getDate()} Tháng ${today.getMonth() + 1} Năm ${today.getFullYear()}`;
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
 
-    const [totalOrders, setTotalOrders] = useState(0);
+    const [ totalOrders, setTotalOrders] = useState(0);
     const [totalShipping, setTotalShipping] = useState(0);
     const [totalRevenue, setTotalRevenue] = useState(0);
 
-    // Gọi API để lấy dữ liệu tổng quan
+    // Fetch API data for dashboard overview
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -55,10 +55,10 @@ function Dashboard() {
                     </div>
                 </div>
                 <div className="flex mt-5 col-span-3 gap-6">
-                    {/* Truyền dữ liệu vào các OrderSummary */}
-                    <OrderSummary name={'Tổng số đơn đặt hàng'} price={totalOrders} rate={50} />
-                    <OrderSummary name={'Tổng số đơn đang vận chuyển'} price={totalShipping} rate={50} />
-                    <OrderSummary name={'Tổng doanh thu'} price={`$ ${totalRevenue}`} rate={50} />
+                    {/* Pass data to OrderSummary components */}
+                    <OrderSummary name={'Total Orders'} price={totalOrders} rate={50} />
+                    <OrderSummary name={'Total Orders in Shipping'} price={totalShipping} rate={50} />
+                    <OrderSummary name={'Total Revenue'} price={`$ ${totalRevenue}`} rate={50} />
                 </div>
                 <div>
                     <RecentOrders />

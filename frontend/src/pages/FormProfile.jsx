@@ -64,7 +64,7 @@ const ProfileForm = () => {
                 addressString: data.address ? data.address.join(', ') : '',
             });
         } else {
-            setError('Không thể tải thông tin hồ sơ.');
+            setError('Unable to load profile information.');
         }
       } catch (error) {
         console.error("Profile load error:", error);
@@ -106,16 +106,16 @@ const ProfileForm = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\d{10,11}$/;
     if (!personalInfo.firstName.trim()) {
-      return "Họ không được để trống.";
+      return "First name cannot be empty.";
     }
     if (!personalInfo.lastName.trim()) {
-      return "Tên không được để trống.";
+      return "Last name cannot be empty.";
     }
     if (!emailRegex.test(personalInfo.email)) {
-      return "Email không hợp lệ.";
+      return "Invalid email.";
     }
     if (!phoneRegex.test(personalInfo.phoneNumber)) {
-      return "Số điện thoại phải có 10-11 chữ số.";
+      return "Phone number must have 10-11 digits.";
     }
     return null;
   };
@@ -138,7 +138,7 @@ const ProfileForm = () => {
       if (!userId) {
         toast.error(
           <CustomToast
-            message="Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại."
+            message="User information not found. Please log in again."
             type="error"
           />,
           { toastId: "no-user-id" }
@@ -167,19 +167,19 @@ const ProfileForm = () => {
         localStorage.setItem("profile", JSON.stringify(resultData.response));
         toast.success(
           <CustomToast
-            message={resultData.message || "Cập nhật thông tin cá nhân thành công!"}
+            message={resultData.message || "Personal information updated successfully!"}
             type="success"
           />,
           { toastId: "personal-update-success" }
         );
       } else {
-        throw new Error(resultData?.message || "Không thể cập nhật thông tin cá nhân.");
+        throw new Error(resultData?.message || "Unable to update personal information.");
       }
     } catch (error) {
       console.error("Error saving personal information:", error);
       toast.error(
         <CustomToast
-          message={error.message || "Đã xảy ra lỗi khi cập nhật thông tin cá nhân."}
+          message={error.message || "An error occurred while updating personal information."}
           type="error"
         />,
         { toastId: "personal-update-error" }
@@ -191,14 +191,14 @@ const ProfileForm = () => {
 
   const validatePassword = () => {
     if (!loginInfo.oldPassword) {
-      return "Vui lòng nhập mật khẩu cũ.";
+      return "Please enter the old password.";
     }
     if (loginInfo.newPassword !== loginInfo.confirmPassword) {
-      return "Mật khẩu mới và xác nhận mật khẩu không khớp.";
+      return "New password and confirm password do not match.";
     }
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(loginInfo.newPassword)) {
-      return "Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.";
+      return "New password must be at least 8 characters, including uppercase, lowercase, number, and special character.";
     }
     return null;
   };
@@ -221,7 +221,7 @@ const ProfileForm = () => {
       if (!userId) {
         toast.error(
           <CustomToast
-            message="Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại."
+            message="User information not found. Please log in again."
             type="error"
           />,
           { toastId: "no-customer-id" }
@@ -238,13 +238,12 @@ const ProfileForm = () => {
       const result = await Api_Auth.updatePassword(userId, passwordData);
       console.log("Update password API response:", JSON.stringify(result, null, 2));
 
-      // Xử lý phản hồi trực tiếp (không giả định result.data)
       const resultData = result;
 
-      if ( resultData?.status?.toUpperCase() === "SUCCESS") {
+      if (resultData?.status?.toUpperCase() === "SUCCESS") {
         toast.success(
           <CustomToast
-            message={resultData.message || "Cập nhật mật khẩu thành công!"}
+            message={resultData.message || "Password updated successfully!"}
             type="success"
           />,
           { toastId: "password-update-success" }
@@ -263,15 +262,15 @@ const ProfileForm = () => {
         throw new Error(
           resultData?.message ||
           resultData?.response ||
-          "Không thể cập nhật mật khẩu. Vui lòng kiểm tra lại mật khẩu cũ."
+          "Unable to update password. Please check the old password again."
         );
       }
     } catch (error) {
-      console.error("Lỗi cập nhật mật khẩu:", error);
+      console.error("Password update error:", error);
       if (error.response?.status === 401) {
         toast.error(
           <CustomToast
-            message="Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại."
+            message="Login session expired. Please log in again."
             type="error"
           />,
           { toastId: "session-expired" }
@@ -284,7 +283,7 @@ const ProfileForm = () => {
             message={
               errorData?.message ||
               errorData?.response ||
-              "Mật khẩu cũ không chính xác. Vui lòng thử lại."
+              "Old password is incorrect. Please try again."
             }
             type="error"
           />,
@@ -294,7 +293,7 @@ const ProfileForm = () => {
         toast.error(
           <CustomToast
             message={
-              error.message || "Đã xảy ra lỗi trong quá trình cập nhật mật khẩu. Vui lòng thử lại sau."
+              error.message || "An error occurred while updating the password. Please try again later."
             }
             type="error"
           />,
@@ -307,7 +306,7 @@ const ProfileForm = () => {
   };
 
   if (loading) {
-    return <div className={cx("loading")}>Đang tải thông tin...</div>;
+    return <div className={cx("loading")}>Loading information...</div>;
   }
 
   if (error) {
@@ -329,20 +328,20 @@ const ProfileForm = () => {
         theme="light"
       />
       <div className={cx("content-section")}>
-        <h2 className={cx("content-title")}>Chào mừng đến với Flex Shoes!</h2>
+        <h2 className={cx("content-title")}>Welcome to Flex Shoes!</h2>
         <p className={cx("content-description")}>
-          Tại Flex Shoes, chúng tôi mang đến cho bạn điểm đến tuyệt vời cho các loại giày cao cấp.
-          Khám phá bộ sưu tập đa dạng của chúng tôi với các thương hiệu nổi tiếng như Nike, Adidas,
-          Puma và New Balance. Dù bạn đang tìm kiếm đôi Air Jordan mới nhất, sự thoải mái của
-          Adidas Ultraboost hay thiết kế độc đáo từ các thương hiệu mới, chúng tôi đều có thứ phù hợp
-          cho mọi tín đồ giày sneaker.
+          At Flex Shoes, we bring you the ultimate destination for premium footwear.
+          Explore our diverse collection featuring renowned brands like Nike, Adidas,
+          Puma, and New Balance. Whether you're looking for the latest Air Jordan,
+          the comfort of Adidas Ultraboost, or unique designs from emerging brands,
+          we have something for every sneaker enthusiast.
           <br />
           <br />
-          Sứ mệnh của chúng tôi không chỉ là cung cấp giày, mà còn là một phong cách sống. Mỗi đôi giày
-          được chế tác tỉ mỉ, kết hợp giữa phong cách, sự thoải mái và hiệu suất để nâng tầm diện mạo
-          hàng ngày của bạn. Cập nhật hồ sơ của bạn ngay hôm nay để nhận ưu đãi độc quyền, quyền truy cập
-          sớm vào các sản phẩm mới và gợi ý cá nhân hóa theo phong cách của bạn. Hãy tham gia cộng đồng
-          sneakerhead của chúng tôi và bước vào thế giới thời trang không giới hạn!
+          Our mission is not just to provide shoes but a lifestyle. Each pair is
+          meticulously crafted, blending style, comfort, and performance to elevate
+          your everyday look. Update your profile today to receive exclusive offers,
+          early access to new releases, and personalized style recommendations.
+          Join our sneakerhead community and step into a world of limitless fashion!
         </p>
         <div className={cx("image-container")}>
           <img
@@ -353,9 +352,9 @@ const ProfileForm = () => {
         </div>
       </div>
       <div className={cx("form-section")}>
-        <h2 className={cx("title")}>Hồ sơ của tôi</h2>
+        <h2 className={cx("title")}>My Profile</h2>
         <p className={cx("description")}>
-          Quản lý thông tin hồ sơ của bạn để bảo mật tài khoản
+          Manage your profile information to secure your account
         </p>
 
         <div className={cx("tab-container")}>
@@ -363,22 +362,22 @@ const ProfileForm = () => {
             className={cx("tab-button", { active: activeTab === "personal" })}
             onClick={() => handleTabChange("personal")}
           >
-            Quản lý thông tin cá nhân
+            Manage Personal Information
           </button>
           <button
             className={cx("tab-button", { active: activeTab === "login" })}
             onClick={() => handleTabChange("login")}
           >
-            Quản lý thông tin đăng nhập
+            Manage Login Information
           </button>
         </div>
 
         {activeTab === "personal" && (
           <div className={cx("form-container")}>
-            <h3 className={cx("form-title")}>Thông tin cá nhân</h3>
+            <h3 className={cx("form-title")}>Personal Information</h3>
             <div className={cx("form-group")}>
               <label htmlFor="firstName" className={cx("label")}>
-                <strong>Họ</strong>
+                <strong>First Name</strong>
               </label>
               <input
                 type="text"
@@ -392,7 +391,7 @@ const ProfileForm = () => {
             </div>
             <div className={cx("form-group")}>
               <label htmlFor="lastName" className={cx("label")}>
-                <strong>Tên</strong>
+                <strong>Last Name</strong>
               </label>
               <input
                 type="text"
@@ -419,7 +418,7 @@ const ProfileForm = () => {
             </div>
             <div className={cx("form-group")}>
               <label htmlFor="phone" className={cx("label")}>
-                <strong>Số điện thoại</strong>
+                <strong>Phone Number</strong>
               </label>
               <input
                 type="tel"
@@ -433,7 +432,7 @@ const ProfileForm = () => {
             </div>
             <div className={cx("form-group")}>
               <label className={cx("label")}>
-                <strong>Giới tính</strong>
+                <strong>Gender</strong>
               </label>
               <div className={cx("radio-group")}>
                 <div className={cx("radio-option")}>
@@ -448,7 +447,7 @@ const ProfileForm = () => {
                     disabled={updateLoading}
                   />
                   <label htmlFor="male" className={cx("radio-label")}>
-                    Nam
+                    Male
                   </label>
                 </div>
                 <div className={cx("radio-option")}>
@@ -463,7 +462,7 @@ const ProfileForm = () => {
                     disabled={updateLoading}
                   />
                   <label htmlFor="female" className={cx("radio-label")}>
-                    Nữ
+                    Female
                   </label>
                 </div>
                 <div className={cx("radio-option")}>
@@ -478,14 +477,14 @@ const ProfileForm = () => {
                     disabled={updateLoading}
                   />
                   <label htmlFor="other" className={cx("radio-label")}>
-                    Khác
+                    Other
                   </label>
                 </div>
               </div>
             </div>
             <div className={cx("form-group")}>
               <label htmlFor="address" className={cx("label")}>
-                <strong>Địa chỉ</strong>
+                <strong>Address</strong>
               </label>
               <input
                 type="text"
@@ -503,7 +502,7 @@ const ProfileForm = () => {
                 className={cx("save-button")}
                 disabled={updateLoading}
               >
-                {updateLoading ? "Đang lưu..." : "Lưu thông tin cá nhân"}
+                {updateLoading ? "Saving..." : "Save Personal Information"}
               </button>
             </div>
           </div>
@@ -511,11 +510,11 @@ const ProfileForm = () => {
 
         {activeTab === "login" && (
           <div className={cx("form-container")}>
-            <h3 className={cx("form-title")}>Cập nhật mật khẩu</h3>
+            <h3 className={cx("form-title")}>Update Password</h3>
             <form>
               <div className={cx("form-group")}>
                 <label htmlFor="oldPassword" className={cx("label")}>
-                  <strong>Mật khẩu cũ</strong>
+                  <strong>Old Password</strong>
                 </label>
                 <input
                   type="password"
@@ -530,7 +529,7 @@ const ProfileForm = () => {
               </div>
               <div className={cx("form-group")}>
                 <label htmlFor="newPassword" className={cx("label")}>
-                  <strong>Mật khẩu mới</strong>
+                  <strong>New Password</strong>
                 </label>
                 <input
                   type="password"
@@ -545,7 +544,7 @@ const ProfileForm = () => {
               </div>
               <div className={cx("form-group")}>
                 <label htmlFor="confirmPassword" className={cx("label")}>
-                  <strong>Xác nhận mật khẩu mới</strong>
+                  <strong>Confirm New Password</strong>
                 </label>
                 <input
                   type="password"
@@ -565,7 +564,7 @@ const ProfileForm = () => {
                   className={cx("save-button")}
                   disabled={updateLoading}
                 >
-                  {updateLoading ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
+                  {updateLoading ? "Updating..." : "Update Password"}
                 </button>
               </div>
             </form>

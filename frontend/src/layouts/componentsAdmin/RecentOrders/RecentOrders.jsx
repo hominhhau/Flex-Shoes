@@ -10,34 +10,34 @@ const cx = classNames.bind(styles);
 function RecentOrders() {
     const navigator = useNavigate();
 
-    const [orders, setOrders] = useState([]); // State lưu danh sách hóa đơn
-    const [loading, setLoading] = useState(true); // State quản lý trạng thái tải
-    const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-    const [ordersPerPage] = useState(5); // Số lượng đơn hàng mỗi trang
-    const [searchQuery, setSearchQuery] = useState(''); // Giá trị ô tìm kiếm
-    const [orderStatus, setOrderStatus] = useState('All'); // Trạng thái đơn hàng
+    const [orders, setOrders] = useState([]); // State to store the list of invoices
+    const [loading, setLoading] = useState(true); // State to manage loading status
+    const [currentPage, setCurrentPage] = useState(1); // Current page
+    const [ordersPerPage] = useState(5); // Number of orders per page
+    const [searchQuery, setSearchQuery] = useState(''); // Search input value
+    const [orderStatus, setOrderStatus] = useState('All'); // Order status
     const [allOrders, setAllOrders] = useState([]); 
 
-    // Hàm gọi API lấy hóa đơn gần đây
+    // Function to fetch recent invoices via API
     const fetchRecentOrders = async () => {
         try {
             setLoading(true);
             const recentOrders = await Api_InvoiceAdmin.getRecentInvoices();
-            setOrders(recentOrders.data); // <-- lấy đúng mảng
+            setOrders(recentOrders.data); // Set the correct array
             setAllOrders(recentOrders.data);
         } catch (error) {
-            console.error('Lỗi khi tải hóa đơn gần đây:', error);
+            console.error('Error fetching recent invoices:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    // Hàm tìm kiếm theo ID đơn hàng
+    // Function to search by order ID
     const searchById = async () => {
         try {
             setLoading(true);
             const filters = {
-                id: searchQuery || undefined, // Tìm kiếm theo ID (nếu có)
+                id: searchQuery || undefined, // Search by ID (if provided)
             };
             console.log('====================================');
             console.log('id', filters.id);
@@ -45,26 +45,26 @@ function RecentOrders() {
             const filteredOrders = await Api_InvoiceAdmin.searchInvoices(filters);
             setOrders(filteredOrders.data);
         } catch (error) {
-            console.error('Lỗi khi tìm kiếm hóa đơn theo ID:', error);
+            console.error('Error searching invoices by ID:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    // Hàm tìm kiếm theo trạng thái đơn hàng
+    // Function to search by order status
     const searchByStatus = async () => {
         try {
             setLoading(true);
             if (orderStatus === 'All') {
-                // Nếu orderStatus là 'All', hiển thị tất cả các đơn hàng đã tải
+                // If orderStatus is 'All', display all loaded orders
                 setOrders(allOrders);
             } else {
-                // Nếu chọn trạng thái khác 'All', lọc danh sách theo trạng thái
+                // If a specific status is selected, filter the list by status
                 const filteredOrders = allOrders.filter(order => order.orderStatus === orderStatus);
                 setOrders(filteredOrders);
             }
         } catch (error) {
-            console.error('Lỗi khi tìm kiếm hóa đơn theo trạng thái:', error);
+            console.error('Error searching invoices by status:', error);
         } finally {
             setLoading(false);
         }
@@ -74,14 +74,12 @@ function RecentOrders() {
         searchByStatus();
     }, [orderStatus]);
     
-
-
-    // Xử lý khi component render lần đầu
+    // Handle initial component render
     useEffect(() => {
         fetchRecentOrders();
     }, []);
 
-    // Phân trang
+    // Pagination
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
@@ -111,42 +109,42 @@ function RecentOrders() {
         return pages;
     };
 
-    if (loading) return <div className="text-center">Đang tải...</div>;
+    if (loading) return <div className="text-center">Loading...</div>;
 
-    if (orders.length === 0) return <div className="text-center">Không có đơn hàng nào gần đây.</div>;
+    if (orders.length === 0) return <div className="text-center">No recent orders found.</div>;
 
     return (
         <div className="bg-white w-full rounded-3xl shadow-md p-12 mt-8">
             <div className="flex flex-row items-center justify-between pb-8 border-b">
-                <div className="font-bold">Đơn đặt hàng</div>
-                {/* Ô tìm kiếm và nút tìm */}
+                <div className="font-bold">Orders</div>
+                {/* Search input and button */}
                 <div className="flex items-center gap-2">
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Nhập tên khách hàng..."
+                        placeholder="Enter customer ID..."
                         className="border border-gray-300 px-4 py-2 rounded-xl focus:border-blue-500"
                     />
                     <button
-                        onClick={searchById} // Tìm kiếm theo ID
+                        onClick={searchById} // Search by ID
                         className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
                     >
-                        Tìm
+                        Search
                     </button>
-                    {/* Dropdown chọn trạng thái đơn hàng */}
+                    {/* Dropdown for selecting order status */}
                     <select
                         value={orderStatus}
                         onChange={(e) => {
-                            setOrderStatus(e.target.value); // Cập nhật trạng thái
-                            searchByStatus(); // Gọi hàm tìm kiếm ngay khi thay đổi
+                            setOrderStatus(e.target.value); // Update status
+                            searchByStatus(); // Call search function on change
                         }}
                         className="border border-gray-300 px-4 py-2 rounded-xl"
                     >
-                        <option value="All">Tất cả</option>
-                        <option value="Delivered">Đã giao</option>
-                        <option value="Canceled">Đã hủy</option>
-                        <option value="Processing">Đang xử lý</option>
+                        <option value="All">All</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Canceled">Canceled</option>
+                        <option value="Processing">Processing</option>
                     </select>
                 </div>
             </div>
@@ -154,11 +152,11 @@ function RecentOrders() {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">ID đơn hàng</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Ngày</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/3">Tên khách hàng</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Trạng thái</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Số tiền</th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Order ID</th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Date</th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/3">Customer Name</th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Status</th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Amount</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200 ">
@@ -207,7 +205,7 @@ function RecentOrders() {
                     <button
                         key={index}
                         className={`px-4 py-2 mx-2 rounded-xl border border-gray-300 ${
-                            page === '...' ? 'bg-transparent' : currentPage === page ? 'bg-blue-500 text-white' : 'bg-white'
+                            page === '...' ? 'bg-transparent' : currentPage === page ? 'bg-blue-500 text-white' : 'hover:bg-blue-500 hover:text-white'
                         }`}
                         onClick={() => page !== '...' && handlePageChange(page)}
                         disabled={page === '...'}

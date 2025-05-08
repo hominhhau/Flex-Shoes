@@ -121,6 +121,7 @@ const OrderDetails = () => {
 
   const displayStatus = normalizeStatus(invoice.orderStatus);
 
+  const shippingFee = invoice.deliveryMethod === "Standard Delivery" ? 6 : 0;
   return (
     <div className={cx("wrapper")}>
       <div className={cx("contentOrder")}>
@@ -229,6 +230,12 @@ const OrderDetails = () => {
         </div>
         <div className={cx("totalPayment")}>
           <table>
+            <tr>
+            <td>Shipping Fee</td>
+              <td>
+                <b>${shippingFee.toFixed(2)}</b>
+              </td>
+            </tr>
             <tr>
               <td>Total</td>
               <td>
