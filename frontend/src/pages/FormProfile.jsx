@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Api_Profile } from '../../apis/Api_Profile'; // Đảm bảo đường dẫn này đúng
+import { Api_Profile } from '../../apis/Api_Profile';
 
 const ProfileForm = () => {
     const [activeTab, setActiveTab] = useState('personal');
@@ -43,11 +43,11 @@ const ProfileForm = () => {
                         addressString: data.address ? data.address.join(', ') : '',
                     });
                 } else {
-                    setError('Không thể tải thông tin hồ sơ.');
+                    setError('Unable to load profile information.');
                 }
             } catch (error) {
-                setError('Đã xảy ra lỗi khi tải thông tin hồ sơ.');
-                console.error('Lỗi tải hồ sơ:', error);
+                setError('An error occurred while loading profile information.');
+                console.error('Error loading profile:', error);
             } finally {
                 setLoading(false);
             }
@@ -93,122 +93,122 @@ const ProfileForm = () => {
 
             if (result.status === 200 && result.data.status === 'SUCCESS') {
                 localStorage.setItem('profile', JSON.stringify(result.data.response));
-                alert('Cập nhật thông tin thành công');
+                alert('Profile updated successfully');
             } else {
-                alert('Cập nhật không thành công');
+                alert('Update failed');
             }
         } catch (error) {
-            console.error('Lỗi lưu thông tin cá nhân:', error);
-            alert('Đã xảy ra lỗi khi lưu thông tin cá nhân.');
+            console.error('Error saving personal information:', error);
+            alert('An error occurred while saving personal information.');
         }
     };
 
     const handleSaveLogin = () => {
-        console.log('Đã lưu thông tin đăng nhập:', loginInfo);
-        alert('Thông tin đăng nhập đã được lưu!');
-        // Gọi API để lưu thông tin đăng nhập (chưa triển khai)
+        console.log('Saved login information:', loginInfo);
+        alert('Login information saved!');
+        // Call API to save login information (not implemented)
     };
 
     if (loading) {
-        return <div className="container mx-auto p-6 mt-10 text-xl">Đang tải thông tin...</div>;
+        return <div className="container mx-auto p-6 mt-10 text-2xl">Loading information...</div>;
     }
 
     if (error) {
-        return <div className="container mx-auto p-6 mt-10 text-xl text-red-500">{error}</div>;
+        return <div className="container mx-auto p-6 mt-10 text-2xl text-red-500">{error}</div>;
     }
 
     return (
         <div
-            className="container mx-auto p-6 bg-white shadow-md rounded-lg mt-10 text-xl"
+            className="container mx-auto p-6 bg-white shadow-md rounded-lg mt-10 text-2xl w-full"
             style={{ maxWidth: '1200px', padding: '50px' }}
         >
-            <h2 className="text-black text-3xl font-semibold mb-6">Hồ Sơ Của Tôi</h2>
-            <p className="text-gray-700 text-xl mb-6">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+            <h2 className="text-black text-4xl font-semibold mb-6">My Profile</h2>
+            <p className="text-gray-700 text-2xl mb-6">Manage your profile information to secure your account</p>
 
             <div className="mb-4">
                 <button
-                    className={`py-2 px-4 rounded-md text-xl ${
+                    className={`py-2 px-4 rounded-md text-2xl ${
                         activeTab === 'personal'
                             ? 'bg-[#4A69E2] text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     } mr-2`}
                     onClick={() => handleTabChange('personal')}
                 >
-                    Quản lý thông tin cá nhân
+                    Manage Personal Information
                 </button>
                 <button
-                    className={`py-2 px-4 rounded-md text-xl ${
+                    className={`py-2 px-4 rounded-md text-2xl ${
                         activeTab === 'login'
                             ? 'bg-[#4A69E2] text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                     onClick={() => handleTabChange('login')}
                 >
-                    Quản lý thông tin đăng nhập
+                    Manage Login Information
                 </button>
             </div>
 
             {activeTab === 'personal' && (
                 <div>
-                    <h3 className="text-2xl font-semibold mb-4">Thông Tin Cá Nhân</h3>
+                    <h3 className="text-3xl font-semibold mb-4">Personal Information</h3>
                     <div className="mb-6">
-                        <label htmlFor="name" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Họ</strong>
+                        <label htmlFor="firstName" className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">First Name</strong>
                         </label>
                         <input
                             type="text"
-                            id="name"
+                            id="firstName"
                             name="firstName"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
+                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
                             value={personalInfo.firstName}
                             onChange={handlePersonalChange}
                         />
                     </div>
                     <div className="mb-6">
-                        <label htmlFor="name" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Tên</strong>
+                        <label htmlFor="lastName" className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">Last Name</strong>
                         </label>
                         <input
                             type="text"
-                            id="name"
+                            id="lastName"
                             name="lastName"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
+                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
                             value={personalInfo.lastName}
                             onChange={handlePersonalChange}
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label htmlFor="email" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Email</strong>
+                        <label htmlFor="email" className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">Email</strong>
                         </label>
                         <input
                             type="email"
                             id="email"
                             name="email"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
+                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
                             value={personalInfo.email}
                             onChange={handlePersonalChange}
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label htmlFor="phone" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Số điện thoại</strong>
+                        <label htmlFor="phone" className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">Phone Number</strong>
                         </label>
                         <input
                             type="tel"
                             id="phone"
                             name="phoneNumber"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
+                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
                             value={personalInfo.phoneNumber}
                             onChange={handlePersonalChange}
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Giới tính</strong>
+                        <label className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">Gender</strong>
                         </label>
                         <div className="flex items-center">
                             <div className="flex items-center mr-6">
@@ -221,8 +221,8 @@ const ProfileForm = () => {
                                     checked={personalInfo.gender === 'MEN'}
                                     onChange={handleGenderChange}
                                 />
-                                <label htmlFor="male" className="text-gray-700 ml-2 text-xl">
-                                    Nam
+                                <label htmlFor="male" className="text-gray-700 ml-2 text-2xl">
+                                    Male
                                 </label>
                             </div>
                             <div className="flex items-center mr-6">
@@ -235,8 +235,8 @@ const ProfileForm = () => {
                                     checked={personalInfo.gender === 'WOMEN'}
                                     onChange={handleGenderChange}
                                 />
-                                <label htmlFor="female" className="text-gray-700 ml-2 text-xl">
-                                    Nữ
+                                <label htmlFor="female" className="text-gray-700 ml-2 text-2xl">
+                                    Female
                                 </label>
                             </div>
                             <div className="flex items-center">
@@ -249,22 +249,22 @@ const ProfileForm = () => {
                                     checked={personalInfo.gender === 'OTHER'}
                                     onChange={handleGenderChange}
                                 />
-                                <label htmlFor="other" className="text-gray-700 ml-2 text-xl">
-                                    Khác
+                                <label htmlFor="other" className="text-gray-700 ml-2 text-2xl">
+                                    Other
                                 </label>
                             </div>
                         </div>
                     </div>
 
                     <div className="mb-6">
-                        <label htmlFor="address" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Địa chỉ</strong>
+                        <label htmlFor="address" className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">Address</strong>
                         </label>
                         <input
                             type="text"
                             id="address"
                             name="addressString"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
+                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
                             value={personalInfo.addressString}
                             onChange={handlePersonalChange}
                         />
@@ -273,9 +273,9 @@ const ProfileForm = () => {
                     <div className="flex justify-center">
                         <button
                             onClick={handleSavePersonal}
-                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-xl"
+                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-2xl"
                         >
-                            Lưu Thông Tin Cá Nhân
+                            Save Personal Information
                         </button>
                     </div>
                 </div>
@@ -283,30 +283,30 @@ const ProfileForm = () => {
 
             {activeTab === 'login' && (
                 <div>
-                    <h3 className="text-2xl font-semibold mb-4">Thông Tin Đăng Nhập</h3>
+                    <h3 className="text-3xl font-semibold mb-4">Login Information</h3>
                     <div className="mb-6">
-                        <label htmlFor="username" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Tên đăng nhập</strong>
+                        <label htmlFor="username" className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">Username</strong>
                         </label>
                         <input
                             type="text"
                             id="username"
                             name="username"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
+                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
                             value={loginInfo.username}
                             onChange={handleLoginChange}
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label htmlFor="password" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Mật khẩu</strong>
+                        <label htmlFor="password" className="text-gray-700 block text-2xl font-medium mb-2">
+                            <strong className="text-2xl">Password</strong>
                         </label>
                         <input
                             type="password"
                             id="password"
                             name="password"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
+                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-2xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
                             value={loginInfo.password}
                             onChange={handleLoginChange}
                         />
@@ -315,9 +315,9 @@ const ProfileForm = () => {
                     <div className="flex justify-center">
                         <button
                             onClick={handleSaveLogin}
-                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-xl"
+                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-2xl"
                         >
-                            Lưu Thông Tin Đăng Nhập
+                            Save Login Information
                         </button>
                     </div>
                 </div>
