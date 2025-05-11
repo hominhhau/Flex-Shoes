@@ -108,9 +108,9 @@ export const Api_Inventory = {
         return ApiManager.get('/inventory/getAllProductTypes');
     },
 
-    deleteProduct: async (productId) => {
-        return ApiManager.delete(`/api/product/delete/${productId}`);
-    },
+    // deleteProduct: async (productId) => {
+    //     return ApiManager.delete(`/api/product/delete/${productId}`);
+    // },
     getQuantity: async (productId) => {
         return ApiManager.get(`/api/product/getQuantityByProductId/${productId}`);
     },
@@ -123,5 +123,9 @@ export const Api_Inventory = {
     purchase: async (data) => {
         console.log('Dữ liệu gửi đi từ frontend: ', data);
         return ApiManager.post('/inventory/purchase', data);
+    },
+    deleteProduct: async (productId) => {
+        console.log('Deleting product with ID:', productId);
+        return ApiManager.delete(`/inventory/delete/${productId}`);
     },
 };
