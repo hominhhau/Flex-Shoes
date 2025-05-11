@@ -113,7 +113,8 @@ const ProductForm = () => {
         try {
             const response = await Api_Inventory.deleteProduct(productId);
             if (response) {
-                setIsSuccess(true);
+                //setIsSuccess(true);
+                navigator(config1.routes.AllProduct);
             }
         } catch (error) {
             console.error('Error deleting product:', error);
@@ -134,6 +135,8 @@ const ProductForm = () => {
     if (loading) {
         return <div>Loading...</div>;
     }
+
+    
 
     return (
         <>

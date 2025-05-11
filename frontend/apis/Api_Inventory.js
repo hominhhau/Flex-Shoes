@@ -126,6 +126,6 @@ export const Api_Inventory = {
     },
     deleteProduct: async (productId) => {
         console.log('Deleting product with ID:', productId);
-        return ApiManager.delete(`/inventory/delete/${productId}`);
+        return ApiManager.post(`/inventory/delete/${productId}`);
     },
 };
