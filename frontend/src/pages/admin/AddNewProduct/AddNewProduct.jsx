@@ -45,10 +45,10 @@ const AddNewProduct = () => {
                 const brandRes = await Api_Inventory.getBrand();
                 const colorRes = await Api_Inventory.getColor();
                 const sizeRes = await Api_Inventory.getSize();
-                setCategories(categoryRes);
-                setBrands(brandRes);
-                setColors(colorRes);
-                setSizes(sizeRes);
+                setCategories(categoryRes.data);
+                setBrands(brandRes.data);
+                setColors(colorRes.data);
+                setSizes(sizeRes.data);
             } catch (error) {
                 console.error('Lỗi khi load Color/Size:', error);
             }
@@ -122,6 +122,8 @@ const AddNewProduct = () => {
             return;
         }
 
+        console.log('Form', formData);
+
         setIsSubmitting(true); // Bật trạng thái submitting
 
         const formDataToSend = new FormData();
@@ -152,11 +154,12 @@ const AddNewProduct = () => {
         );
 
         try {
+            console.log('Created form:', formDataToSend);
             const createdProduct = await Api_Inventory.createProduct(formDataToSend);
             console.log('Created product:', createdProduct);
             if (createdProduct) {
                 alert('Product created successfully!');
-                navigate(config.routes.admin.products);
+                navigate(config.routes.AllProduct);
             } else {
                 alert('Failed to create product. Please try again.');
             }

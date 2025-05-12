@@ -11,27 +11,30 @@ export const ApiManager = axios.create({
 });
 
 // Interceptor để tự động gắn token vào mỗi request
-ApiManager.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
+ApiManager.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
+);
 
 // Interceptor để bắt lỗi 401 và xử lý tự động
 ApiManager.interceptors.response.use(
-    response => response,
-    error => {
+    (response) => response,
+    (error) => {
         if (error.response && error.response.status === 401) {
             console.warn('Token hết hạn hoặc không hợp lệ!');
             localStorage.removeItem('token');
             window.location.href = '/login'; // hoặc navigate đến trang login
         }
         return Promise.reject(error);
-    }
+    },
 );
 
 export const Api_Inventory = {
@@ -43,17 +46,18 @@ export const Api_Inventory = {
             const response = await ApiManager.post('/inventory/createProduct', formData, {
                 headers: {
                     // Không đặt 'Content-Type' ở đây, để axios tự xử lý với FormData
+                    'Content-Type': 'multipart/form-data',
                 },
             });
             console.log('Raw API Response:', response);
 
-            if (!response || !response.product) {
+            if (!response) {
                 console.error('Unexpected API response format:', response);
                 throw new Error('Invalid product response received');
             }
 
             const createdProduct = response; // response đã là dữ liệu từ ApiManager
-            return createdProduct;
+            return createdProduct.data;
         } catch (error) {
             console.error('Error creating product:', error);
             throw error;
@@ -62,9 +66,9 @@ export const Api_Inventory = {
     getAllProducts: async () => {
         try {
             const response = await ApiManager.get('/inventory/getAllProducts');
-            return response;
+            return response.data;
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error('Error fetching products:', error);
             throw error;
         }
     },
@@ -74,16 +78,16 @@ export const Api_Inventory = {
             const response = await ApiManager.patch('/inventory/attachInventoryToProduct', payload);
             return response.data;
         } catch (error) {
-            console.error("Error attaching inventory:", error);
+            console.error('Error attaching inventory:', error);
             throw error;
         }
     },
     updateProduct: async (product) => {
         try {
             const response = await ApiManager.post('/inventory/update', product);
-            return response
+            return response;
         } catch (error) {
-            console.error("Error updating product:", error);
+            console.error('Error updating product:', error);
             throw error;
         }
     },
@@ -117,8 +121,7 @@ export const Api_Inventory = {
         return ApiManager.delete(`/api/product/deleteQuantity/${quantityId}`);
     },
     purchase: async (data) => {
-        console.log("Dữ liệu gửi đi từ frontend: ", data); 
+        console.log('Dữ liệu gửi đi từ frontend: ', data);
         return ApiManager.post('/inventory/purchase', data);
     },
-
-}
+};

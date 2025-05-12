@@ -114,7 +114,7 @@ function Register() {
                 address: addresses,
                 roles: ['ROLE_USER']
             };
-    
+            console.log('Register data:', registerData);
             const response = await Api_Auth.registerAccount(registerData);
             setIsSuccess(true);
         } catch (err) {

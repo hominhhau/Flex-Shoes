@@ -34,9 +34,11 @@ const ProductForm = () => {
                 const brandResp = await Api_Inventory.getBrand();
                 const categoryResp = await Api_Inventory.getCategory();
 
-                setProduct({ ...productResp });
-                setBrand(brandResp || []);
-                setCategory(categoryResp || []);
+                console.log('Data category detail:', categoryResp);
+
+                setProduct({ ...productResp.data });
+                setBrand(brandResp.data || []);
+                setCategory(categoryResp.data || []);
                 setQuantities(productResp.inventory);
             } catch (error) {
                 console.error('Error fetching product details:', error);

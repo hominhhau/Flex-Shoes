@@ -90,6 +90,7 @@ const CheckoutForm = () => {
     const { cartData, itemCount, totalAmount, deliveryFee, checkedItems } = location.state || {};
     console.log('Checkout data:', { cartData, checkedItems, itemCount, totalAmount });
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee || 0);
+    const [paymentStatus, setPaymentStatus] = useState('unpaid');
 
     if (!location.state || !checkedItems || checkedItems.length === 0) {
         return (
