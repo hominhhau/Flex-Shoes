@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import productImage from '../../assets/images/Product01.png';
 import ShoppingBag from '../../components/Cart/CartComponent';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import styles from './Cart.module.scss';
@@ -22,13 +21,14 @@ function Cart() {
       : productData
       ? [
           {
-            id: productData.productId,
+            id: productData.id,
             image: productData.image,
             name: productData.name,
             color: productData.color,
             size: productData.size,
             price: parseFloat(productData.price),
             quantity: productData.quantity,
+            maxQuantity: productData.maxQuantity
           },
         ]
       : [];
@@ -55,6 +55,22 @@ function Cart() {
     console.log('Total products:', newTotalProducts, 'Total amount:', newTotalAmount);
   }, [checkedItems]);
 
+  // Kiểm tra xem tất cả sản phẩm có được chọn hay không
+  const isAllSelected = data.length > 0 && checkedItems.length === data.length;
+
+  // Xử lý chọn hoặc bỏ chọn tất cả
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      // Bỏ chọn tất cả
+      setCheckedItems([]);
+      console.log('Deselected all items');
+    } else {
+      // Chọn tất cả
+      setCheckedItems([...data]);
+      console.log('Selected all items:', data);
+    }
+  };
+
   const handleCheckout = () => {
     console.log('Before navigating to CheckoutForm - checkedItems:', checkedItems);
     if (checkedItems.length === 0) {
@@ -80,6 +96,13 @@ function Cart() {
   };
 
   const handleQuantityChange = (id, size, newQuantity) => {
+    const product = data.find((p) => p.id === id && p.size === size);
+    const maxQuantity = product?.maxQuantity || Infinity;
+    if (newQuantity > maxQuantity) {
+      alert(`Cannot increase quantity. Only ${maxQuantity} items available.`);
+      return;
+    }
+
     const updatedData = data.map((product) =>
       product.id === id && product.size === size
         ? { ...product, quantity: newQuantity }
@@ -144,6 +167,17 @@ function Cart() {
           <p className={cx('bagDescription')}>
             Items in your bag not reserved - check out now to make them yours.
           </p>
+          <div className={cx('selectAllContainer')}>
+            <label className={cx('selectAllLabel')}>
+              <input
+                type="checkbox"
+                checked={isAllSelected}
+                onChange={handleSelectAll}
+                className={cx('selectAllCheckbox')}
+              />
+              <span>Select All</span>
+            </label>
+          </div>
         </header>
       </div>
 
@@ -153,8 +187,8 @@ function Cart() {
             data.map((product) => (
               <ShoppingBag
                 key={`${product.id}-${product.size}-${product.color}`}
-                image={product.image || productImage}
-                name={product.name || 'Null'}
+                image={product.image}
+                name={product.name}
                 color={product.color}
                 size={product.size}
                 price={product.price}
@@ -183,7 +217,7 @@ function Cart() {
             checkedItems={checkedItems}
             isCheckoutVisible={isCheckoutVisible}
             toggleCheckoutVisibility={toggleCheckoutVisibility}
-            handleCheckout={handleCheckout} // Truyền handleCheckout từ Cart
+            handleCheckout={handleCheckout}
           />
         </div>
       </div>

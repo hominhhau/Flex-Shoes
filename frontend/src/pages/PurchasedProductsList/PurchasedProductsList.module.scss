@@ -1,107 +1,113 @@
-.card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    background-color: #fff;
+@use 'sass:map';
+
+.container {
+  @apply max-w-full mx-auto py-10 px-4;
 }
 
-.cardHeader {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-    text-align: center;
+.title {
+  @apply text-3xl font-bold mb-8 text-center;
 }
 
-.cardTitle {
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-    margin: 0;
-    font-weight: bold;
-    text-align: center;
+.list-container {
+  @apply w-full;
 }
 
-.icon {
-    margin-right: 8px;
+.loading {
+  @apply text-center py-10;
 }
 
-.cardDescription {
-    font-size: 0.9rem;
-    color: #666;
+.error {
+  @apply text-center py-10 text-red-500;
 }
 
-.cardContent {
-    overflow-x: auto;
+.no-products {
+  @apply text-center py-10;
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 16px;
+.invoice-table {
+  @apply w-full border-collapse;
 }
 
-.tableHead {
-    background-color: #f5f5f5;
-    font-weight: bold;
-    padding: 8px;
-    text-align: left;
-    border-bottom: 2px solid #ddd;
+.invoice-row {
+  @apply border bg-white shadow-md hover:shadow-lg transition-shadow duration-300;
 }
 
-.tableRow {
-    &:nth-child(even) {
-        background-color: #f9f9f9;
-    }
+.invoice-cell {
+  @apply p-6;
 }
 
-.tableCell {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
+.invoice-header {
+  @apply flex justify-between items-center mb-4;
 }
 
-.productImage {
-    border-radius: 4px;
+.invoice-id {
+  @apply text-xl font-semibold;
 }
 
-.cardFooter {
-    font-weight: bold;
-    text-align: right;
-    margin-top: 8px;
+.invoice-info {
+  @apply text-right;
 }
 
-.totalSpent {
-    color: #333;
+.invoice-date {
+  @apply text-gray-600;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 20px;
-  }
-  
-  .paginationButton {
-    padding: 8px 12px;
-    border: 1px solid #232321;
-    border-radius: 4px;
-    background-color: #fff;
-    color: #232321;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .paginationButton:hover:not(.disabled) {
-    background-color: #f5f5f5;
-  }
-  
-  .paginationButton.active {
-    background-color: #232321;
-    color: #fff;
-  }
-  
-  .paginationButton.disabled {
-    border-color: #ccc;
-    color: #ccc;
-    cursor: not-allowed;
-  }
+.invoice-status {
+  @apply text-gray-600;
+}
+
+.status-label {
+  @apply text-black;
+}
+
+.status-value {
+  // Màu được xử lý trong JSX bằng Tailwind classes
+}
+
+.invoice-total {
+  @apply font-bold text-green-600;
+}
+
+.product-table {
+  @apply w-full border-collapse;
+}
+
+.product-head-row {
+  @apply bg-gray-100;
+}
+
+.product-head {
+  @apply p-3 text-left font-semibold;
+}
+
+.product-row {
+  @apply border-b;
+}
+
+.product-row:hover {
+  @apply bg-gray-50;
+}
+
+.product-cell {
+  @apply p-3;
+}
+
+.product-image {
+  @apply w-24 h-24 object-cover rounded-md transition-transform duration-300 hover:scale-105;
+}
+
+.no-image {
+  @apply text-gray-400;
+}
+
+.grand-total-cell {
+  @apply p-6 text-right bg-gray-100;
+}
+
+.grand-total-label {
+  @apply font-semibold mr-4;
+}
+
+.grand-total-amount {
+  @apply font-bold text-green-600;
+}

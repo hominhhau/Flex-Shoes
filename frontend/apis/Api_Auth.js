@@ -33,6 +33,16 @@ export const Api_Auth = {
     },
     introspect: async (token) => {
         return ApiManager.post('/users/introspect', { token });
-    }
+    },
+
+ // Cập nhật mật khẩu
+ updatePassword: async (userId, passwordData) => {
+    // Đảm bảo token được gửi trong header
+    return ApiManager.post(`/users/${userId}/update-password`, passwordData, {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+    });
+},
+
+
 };
 

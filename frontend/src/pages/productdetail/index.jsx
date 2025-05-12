@@ -99,11 +99,8 @@ const ProductDetail = () => {
     // Extract images
     const images = product.image?.map((img) => img?.imageID?.URL) || [];
 
-    // const images = product.image[0].imageID.URL
-
     // Add to cart handler
     const handleAddToCart = () => {
-        console.log('Before adding to cart, selectedSize:', selectedSize);
         if (!isLoggedIn) {
             alert('Please login to add product to cart');
             return navigate('/login');
@@ -121,21 +118,32 @@ const ProductDetail = () => {
             return;
         }
 
+        const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        const existingItem = cart.find(
+            (item) => item.id === product._id && item.color === selectedColor.colorName && item.size === selectedSize.nameSize
+        );
+
+        const requestedQuantity = (existingItem ? existingItem.quantity : 0) + 1;
+        if (requestedQuantity > currentQuantity) {
+            alert(`Cannot add to cart. Only ${currentQuantity} items available for this color and size.`);
+            return;
+        }
+
         const cartItem = {
-            id: product._id, // Sử dụng _id từ product
+            id: product._id,
             name: product.productName,
             color: selectedColor.colorName,
             size: selectedSize.nameSize,
             price: product.sellingPrice,
             image: images[0],
             quantity: 1,
+            maxQuantity: currentQuantity // Lưu số lượng tối đa
         };
 
         console.log('Adding to cart:', cartItem);
 
-        const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
         const existingIndex = cart.findIndex(
-            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size,
+            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size
         );
 
         if (existingIndex >= 0) {
@@ -150,7 +158,6 @@ const ProductDetail = () => {
 
     // Buy now handler
     const handleBuyNow = () => {
-        console.log('Before adding to cart, selectedSize:', selectedSize);
         if (!isLoggedIn) {
             alert('Please login to Buy');
             return navigate('/login');
@@ -168,32 +175,32 @@ const ProductDetail = () => {
             return;
         }
 
-        console.log('Before buying now, selectedSize:', selectedSize);
-        if (!selectedColor || !selectedSize) {
-            alert('Please select a color and size');
-            return;
-        }
+        const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        const existingItem = cart.find(
+            (item) => item.id === product._id && item.color === selectedColor.colorName && item.size === selectedSize.nameSize
+        );
 
-        if (currentQuantity <= 0) {
-            alert(`This color and size is currently out of stock.`);
+        const requestedQuantity = (existingItem ? existingItem.quantity : 0) + 1;
+        if (requestedQuantity > currentQuantity) {
+            alert(`Cannot proceed. Only ${currentQuantity} items available for this color and size.`);
             return;
         }
 
         const cartItem = {
-            id: product._id, // Sử dụng _id từ product
+            id: product._id,
             name: product.productName,
             color: selectedColor.colorName,
             size: selectedSize.nameSize,
             price: product.sellingPrice,
             image: images[0],
             quantity: 1,
+            maxQuantity: currentQuantity // Lưu số lượng tối đa
         };
 
         console.log('Buying now:', cartItem);
 
-        const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
         const existingIndex = cart.findIndex(
-            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size,
+            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size
         );
 
         if (existingIndex >= 0) {
@@ -208,13 +215,12 @@ const ProductDetail = () => {
 
     const handleColorSelect = (color) => {
         setSelectedColor(color);
-        // Optionally reset selected size if the new color doesn't have the previously selected size
         if (
             selectedSize &&
             !product.inventory.some(
                 (item) =>
                     item?.numberOfProduct?.color?._id === color._id &&
-                    item?.numberOfProduct?.size?._id === selectedSize._id,
+                    item?.numberOfProduct?.size?._id === selectedSize._id
             )
         ) {
             setSelectedSize(null);
@@ -222,15 +228,14 @@ const ProductDetail = () => {
     };
 
     const handleSizeSelect = (size) => {
-        console.log('handleSizeSelect called with:', size); // Log khi chọn size
+        console.log('handleSizeSelect called with:', size);
         setSelectedSize(size);
-        // Optionally reset selected color if the new size doesn't have the previously selected color
         if (
             selectedColor &&
             !product.inventory.some(
                 (item) =>
                     item?.numberOfProduct?.color?._id === selectedColor._id &&
-                    item?.numberOfProduct?.size?._id === size._id,
+                    item?.numberOfProduct?.size?._id === size._id
             )
         ) {
             setSelectedColor(null);
