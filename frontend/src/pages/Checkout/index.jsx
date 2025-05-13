@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
@@ -25,14 +25,6 @@ const errorFieldMapping = {
   receiverAddress: {
     frontendField: 'address',
     translate: (message) => message.includes('bắt buộc') ? 'Address is required' : message.includes('105') ? 'Address cannot exceed 105 characters' : message,
-  },
-  paymentMethod: {
-    frontendField: 'paymentMethod',
-    translate: (message) => message.includes('bắt buộc') ? 'Payment method is required' : message.includes('50') ? 'Payment method cannot exceed 50 characters' : message,
-  },
-  deliveryMethod: {
-    frontendField: 'deliveryMethod',
-    translate: (message) => message.includes('bắt buộc') ? 'Delivery method is required' : message.includes('50') ? 'Delivery method cannot exceed 50 characters' : message,
   },
   issueDate: {
     frontendField: 'issueDate',
@@ -61,158 +53,196 @@ const CheckoutForm = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const location = useLocation();
-  const { cartData, itemCount, totalAmount, deliveryFee, checkedItems } = location.state || {};
-  console.log('Checkout data:', { cartData, checkedItems, itemCount, totalAmount });
+  const [checkoutData, setCheckoutData] = useState(location.state || {});
+  const { cartData, itemCount, totalAmount, deliveryFee, checkedItems } = checkoutData;
   const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee || 0);
 
-  if (!location.state || !checkedItems || checkedItems.length === 0) {
-    return (
-      <div className={cx('container')}>
-        <p>No items selected. Please go back to your cart to select products.</p>
-        <button onClick={() => navigate('/cart')} className={cx('backButton')}>
-          Back to Cart
-        </button>
-      </div>
-    );
-  }
+  // Ghi chú: Theo dõi thay đổi location.state để cập nhật checkoutData
+  useEffect(() => {
+    console.log('location.state:', location.state);
+    setCheckoutData(location.state || {});
+  }, [location.state]);
 
-  const handleDeliveryChange = (newDeliveryFee) => {
+  // Ghi chú: Debug state để phát hiện render vô hạn
+  useEffect(() => {
+    console.log('State updated:', {
+      email,
+      firstName,
+      lastName,
+      address,
+      phone,
+      selectedPaymentMethod,
+      selectedDeliveryMethod,
+      isLoading,
+      isCompleted,
+      isFailed,
+      errors,
+      checkoutData,
+    });
+  }, [email, firstName, lastName, address, phone, selectedPaymentMethod, selectedDeliveryMethod, isLoading, isCompleted, isFailed, errors, checkoutData]);
+
+  // Ghi chú: Sử dụng useCallback để tránh tạo hàm mới trong mỗi render
+  const handleDeliveryChange = useCallback((newDeliveryFee) => {
     console.log('New delivery fee:', newDeliveryFee);
     setSelectedDeliveryFee(newDeliveryFee);
     setSelectedDeliveryMethod(newDeliveryFee === 0 ? 'Collect in store' : 'Standard Delivery');
     setErrors((prev) => ({ ...prev, deliveryMethod: '' }));
-  };
+  }, []);
 
-  const handlePaymentChange = (paymentMethod) => {
+  const handlePaymentChange = useCallback((paymentMethod) => {
     console.log('Selected payment method:', paymentMethod);
     setSelectedPaymentMethod(paymentMethod);
     setErrors((prev) => ({ ...prev, paymentMethod: '' }));
-  };
+  }, []);
 
   const isAllChecked = billingSameAsDelivery && isOver13;
 
-  const handlePlaceOrder = async () => {
-    // Client-side validation
-    const newErrors = {};
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!email.includes('@')) {
-      newErrors.email = 'Invalid email format';
-    }
-    if (!firstName) newErrors.firstName = 'First name is required';
-    if (!lastName) newErrors.lastName = 'Last name is required';
-    if (!address) newErrors.address = 'Address is required';
-    if (!phone) newErrors.phone = 'Phone number is required';
-    if (!selectedPaymentMethod) newErrors.paymentMethod = 'Payment method is required';
-    if (!selectedDeliveryMethod) newErrors.deliveryMethod = 'Delivery method is required';
+  // Ghi chú: Hàm xử lý đặt hàng, đảm bảo cập nhật số lượng tồn kho khi thanh toán thành công
+const handlePlaceOrder = useCallback(async () => {
+  const newErrors = {};
+  if (!email) newErrors.email = 'Email is required';
+  else if (!email.includes('@')) newErrors.email = 'Invalid email format';
+  if (!firstName) newErrors.firstName = 'First name is required';
+  if (!lastName) newErrors.lastName = 'Last name is required';
+  if (!address) newErrors.address = 'Address is required';
+  if (!phone) newErrors.phone = 'Phone number is required';
+  if (!selectedPaymentMethod) newErrors.paymentMethod = 'Payment method is required';
+  if (!selectedDeliveryMethod) newErrors.deliveryMethod = 'Delivery method is required';
+  if (!checkedItems || checkedItems.length === 0) newErrors.cart = 'Không có sản phẩm nào được chọn';
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      console.log('Validation errors:', newErrors);
-      return;
-    }
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    console.log('Validation errors:', newErrors);
+    return;
+  }
 
-    setIsLoading(true);
-    setErrors({});
+  setIsLoading(true);
+  setErrors({});
 
-    try {
-      const customerID = localStorage.getItem('customerId');
-      console.log('customerID:', customerID);
+  try {
+    const customerID = localStorage.getItem('customerId');
+    const invoiceData = {
+      invoiceDetails: checkedItems.map((product) => ({
+        productId: product.id,
+        id: product.id,
+        quantity: product.quantity,
+      })),
+      issueDate: new Date().toISOString().split('T')[0],
+      receiverNumber: phone,
+      receiverName: `${firstName} ${lastName}`,
+      receiverAddress: address,
+      paymentMethod: selectedPaymentMethod.toString(),
+      deliveryMethod: selectedDeliveryMethod.toString(),
+      customerId: customerID,
+      orderStatus: 'Processing',
+      total: totalAmount + selectedDeliveryFee,
+    };
 
-      const invoiceData = {
-        invoiceDetails: checkedItems.map((product) => ({
-          productId: product.id,
-          id: product.id,
-          quantity: product.quantity,
-        })),
-        issueDate: new Date().toISOString().split('T')[0],
-        receiverNumber: phone,
-        receiverName: `${firstName} ${lastName}`,
-        receiverAddress: address,
-        paymentMethod: selectedPaymentMethod.toString(),
-        deliveryMethod: selectedDeliveryMethod.toString(),
-        customerId: customerID,
-        orderStatus: 'Processing',
-        total: totalAmount + selectedDeliveryFee,
-      };
+    // Ghi chú: Log dữ liệu hóa đơn để debug
+    console.log('Sending invoice data:', JSON.stringify(invoiceData, null, 2));
+    const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
+    console.log('Received Invoice:', invoiceResponse);
 
-      console.log('Sending invoice data to server:', invoiceData);
-
-      const invoiceResponse = await Api_InvoiceAdmin.createInvoice(invoiceData);
-      console.log('Received Invoice:', invoiceResponse);
-
-      const handleCartData = checkedItems.map((product) => ({
+    // Ghi chú: Kiểm tra dữ liệu sản phẩm trước khi gửi
+    const handleCartData = checkedItems.map((product) => {
+      if (!product.id || !product.quantity || !product.color || !product.size) {
+        throw new Error(`Dữ liệu sản phẩm không hợp lệ: ${JSON.stringify(product)}`);
+      }
+      return {
         productId: product.id,
         quantity: product.quantity,
         colorName: product.color,
         sizeName: product.size,
-      }));
-      console.log('handleCartData:', handleCartData);
+      };
+    });
+    console.log('handleCartData:', JSON.stringify(handleCartData, null, 2));
 
-      // NHỚ THÊM VÀO API ĐỂ CẬP NHẬT SỐ LƯỢNG SAU KHI CHECKOUT
-      // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
-      // console.log('Updated quantity:', updateQuantity);
-
-
-      if (selectedPaymentMethod !== 'Cash on Delivery') {
-        const paymentResponse = await Api_Payment.createPayment({
-          total: invoiceData.total,
-          invoiceId: invoiceResponse.invoiceId || Math.floor(Math.random() * 100000),
-        });
-        console.log('Payment response:', paymentResponse);
-
-        if (paymentResponse?.URL) {
-          window.location.href = paymentResponse.URL;
-          return;
-        } else {
-          throw new Error('Không nhận được URL thanh toán từ VNPay.');
-        }
-      }
-
-      const newCartData = cartData.filter(
-        (product) =>
-          !checkedItems.some(
-            (item) =>
-              item.id === product.id &&
-              item.size === product.size &&
-              item.color === product.color
-          )
-      );
-      sessionStorage.setItem('cart', JSON.stringify(newCartData));
-      console.log('Updated cart after purchase:', newCartData);
-
-      setIsCompleted(true);
-    } catch (error) {
-      console.error('Lỗi khi xử lý thanh toán:', error);
-      if (error.response?.data?.status === 'fail' && error.response?.data?.result) {
-        const backendErrors = error.response.data.result;
-        const newErrors = {};
-
-        Object.keys(backendErrors).forEach((field) => {
-          const mapping = errorFieldMapping[field];
-          if (mapping) {
-            newErrors[mapping.frontendField] = mapping.translate(backendErrors[field]);
-          } else {
-            newErrors[field] = backendErrors[field];
-          }
-        });
-
-        if (newErrors.name) {
-          newErrors.firstName = newErrors.name;
-          newErrors.lastName = newErrors.name;
-          delete newErrors.name;
-        }
-
-        setErrors(newErrors);
-        console.log('Backend validation errors:', newErrors);
+    // Ghi chú: Chỉ cập nhật số lượng tồn kho nếu thanh toán thành công hoặc là Cash on Delivery
+    let updateQuantity;
+    if (selectedPaymentMethod !== 'Cash on Delivery') {
+      // Ghi chú: Xử lý thanh toán trực tuyến
+      const paymentResponse = await Api_Payment.createPayment({
+        total: invoiceData.total,
+        invoiceId: invoiceResponse.invoiceId || Math.floor(Math.random() * 100000),
+      });
+      console.log('Payment response:', paymentResponse);
+      if (paymentResponse?.URL) {
+        // Ghi chú: Chuyển hướng tới URL thanh toán, không cập nhật tồn kho ngay
+        window.location.href = paymentResponse.URL;
+        return;
       } else {
-        setIsFailed(true);
+        throw new Error('Không nhận được URL thanh toán từ VNPay.');
       }
-    } finally {
-      setIsLoading(false);
+    } else {
+      // Ghi chú: Cash on Delivery - Cập nhật số lượng ngay sau khi tạo hóa đơn
+      updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout({ items: handleCartData });
+      console.log('Updated quantity response:', JSON.stringify(updateQuantity, null, 2));
+      
+      // Ghi chú: Kiểm tra phản hồi cẩn thận hơn
+      if (updateQuantity?.status === 'fail') {
+        setErrors({ inventory: 'Cập nhật số lượng tồn kho thất bại: ' + (updateQuantity?.message || 'Lỗi không xác định từ server') });
+        setIsCompleted(true); // Vẫn hoàn thành vì hóa đơn đã được tạo
+        return;
+      }
+      if (!updateQuantity?.updated) {
+        console.warn('Phản hồi không có thuộc tính updated:', updateQuantity);
+        // Ghi chú: Xác nhận cập nhật bằng cách kiểm tra cơ sở dữ liệu nếu cần
+        setIsCompleted(true);
+        return;
+      }
     }
-  };
 
+    // Ghi chú: Cập nhật giỏ hàng sau khi xử lý thành công
+    const newCartData = cartData.filter(
+      (product) =>
+        !checkedItems.some(
+          (item) =>
+            item.id === product.id &&
+            item.size === product.size &&
+            item.color === product.color
+        )
+    );
+    sessionStorage.setItem('cart', JSON.stringify(newCartData));
+    console.log('Updated cart:', newCartData);
+    setIsCompleted(true);
+  } catch (error) {
+    console.error('Lỗi chi tiết:', error);
+    console.error('Thông tin lỗi:', {
+      message: error.message,
+      code: error.code,
+      response: error.response?.data,
+    });
+    if (error.message.includes('Network Error')) {
+      setErrors({ general: 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.' });
+      setIsFailed(true);
+    } else if (error.response?.data?.status === 'fail' && error.response?.data?.result) {
+      // Ghi chú: Xử lý lỗi validation từ backend
+      const backendErrors = error.response.data.result;
+      const newErrors = {};
+      Object.keys(backendErrors).forEach((field) => {
+        const mapping = errorFieldMapping[field];
+        if (mapping) {
+          newErrors[mapping.frontendField] = mapping.translate(backendErrors[field]);
+        } else {
+          newErrors[field] = backendErrors[field];
+        }
+      });
+      if (newErrors.name) {
+        newErrors.firstName = newErrors.name;
+        newErrors.lastName = newErrors.name;
+        delete newErrors.name;
+      }
+      setErrors(newErrors);
+      console.log('Backend validation errors:', newErrors);
+    } else {
+      // Ghi chú: Chỉ đặt isFailed nếu hóa đơn chưa được tạo
+      setErrors({ general: error.message || 'Có lỗi xảy ra khi xử lý đơn hàng.' });
+      setIsFailed(true);
+    }
+  } finally {
+    setIsLoading(false);
+  }
+}, [email, firstName, lastName, address, phone, selectedPaymentMethod, selectedDeliveryMethod, checkedItems, totalAmount, selectedDeliveryFee, cartData, navigate]);
   const selectedCartData = checkedItems || [];
 
   return (
@@ -360,12 +390,12 @@ const CheckoutForm = () => {
             Back to Cart
           </button>
           <button
-  onClick={handlePlaceOrder}
-  className={cx('placeOrderButton')}
-  disabled={isLoading}
->
-  {isLoading ? 'Processing...' : 'REVIEW AND PAY'}
-</button>
+            onClick={handlePlaceOrder}
+            className={cx('placeOrderButton')}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : 'REVIEW AND PAY'}
+          </button>
         </div>
       </div>
       <div className={cx('rightContainer')}>
@@ -414,7 +444,8 @@ const CheckoutForm = () => {
         <Modal
           valid={true}
           title="Order placed successfully!"
-          message="Thank you for shopping with us."
+          // Ghi chú: Hiển thị lỗi cập nhật tồn kho nếu có
+          message={errors.inventory ? `Hóa đơn được tạo, nhưng ${errors.inventory}` : "Thank you for shopping with us."}
           onConfirm={() =>
             navigate(`/purchasedProductsList/${localStorage.getItem('customerId')}`)
           }
@@ -427,7 +458,7 @@ const CheckoutForm = () => {
         <Modal
           valid={false}
           title="Order failed!"
-          message="Please try again."
+          message={errors.general || "Please try again."}
           onConfirm={() => navigate('/cart')}
           isConfirm={true}
           contentConfirm="OK"
@@ -437,4 +468,4 @@ const CheckoutForm = () => {
   );
 };
 
-export default CheckoutForm;
+export default React.memo(CheckoutForm);

@@ -10,6 +10,8 @@ const PurchasedProductsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [purchasedProducts, setPurchasedProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Added: State for current page
+  const productsPerPage = 5; // Added: Fixed 5 products per page
   const { id } = useParams();
 
   const totalSpent = purchasedProducts.reduce((sum, invoice) => sum + (invoice.total || 0), 0);
@@ -41,6 +43,20 @@ const PurchasedProductsList = () => {
     }
   }, [id]);
 
+  // Added: Calculate total pages and slice data for current page
+  const totalPages = Math.ceil(purchasedProducts.length / productsPerPage);
+  const paginatedProducts = purchasedProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  // Added: Handle page change
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   if (loading) {
     return <div className={cx('loading', 'text-center py-10')}>Loading...</div>;
   }
@@ -59,7 +75,7 @@ const PurchasedProductsList = () => {
       <div className={cx('list-container')}>
         <table className={cx('invoice-table', 'w-full border-collapse')}>
           <tbody>
-            {purchasedProducts.map((invoice) => (
+            {paginatedProducts.map((invoice) => ( // Modified: Use paginatedProducts
               <tr key={invoice.invoiceId} className={cx('invoice-row', 'border bg-white')}>
                 <td className={cx('invoice-cell', 'p-6')} colSpan={5}>
                   <div className={cx('invoice-header', 'flex justify-between items-center mb-4')}>
@@ -144,6 +160,34 @@ const PurchasedProductsList = () => {
             </tr>
           </tbody>
         </table>
+        {/* Added: Pagination controls */}
+        <div className={cx('pagination-container', 'flex justify-center mt-6')}>
+          <button
+            className={cx('pagination-button', 'px-4 py-2 mx-1')}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              className={cx('pagination-item', 'px-4 py-2 mx-1', {
+                'active-page': currentPage === index + 1,
+              })}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            className={cx('pagination-button', 'px-4 py-2 mx-1')}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

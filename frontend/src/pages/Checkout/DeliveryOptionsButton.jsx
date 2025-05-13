@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DeliveryOptions.module.scss';
 import checkoutStyles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
@@ -20,7 +20,15 @@ const deliveryOptionsData = [
 ];
 
 const DeliveryOptionsButton = ({ onDeliveryChange, error }) => {
-  const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].title);
+  const [selectedOption, setSelectedOption] = useState(deliveryOptionsData[0].title); // Default to Standard Delivery
+
+  useEffect(() => {
+    // Call onDeliveryChange with default price when component mounts
+    const defaultOption = deliveryOptionsData[0]; // Standard Delivery
+    const price = defaultOption.price === 'Free' ? 0 : parseFloat(defaultOption.price);
+    console.log('Initial delivery price:', price);
+    onDeliveryChange(price);
+  }, [onDeliveryChange]); // Run once on mount
 
   const handleSelectOption = (option) => {
     console.log('Selected option:', option);

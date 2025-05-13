@@ -70,7 +70,7 @@ export const Api_InvoiceAdmin = {
 
     delete: async (id) => ApiManager.delete(`invoiceDetail/delete/${id}`),
 
-    updateQuantityAfterCheckout: async (data) => ApiManager.put(`api/product/updateQuantityAfterCheckout`, data),
+    updateQuantityAfterCheckout: async (data) => ApiManager.put(`/inventory/purchase`, data),
 
     // Lấy danh sách sản phẩm đã mua của một customer
     getPurchasedProducts: async (customerId) => ApiManager.get(`/invoices/findByCustomerId/${customerId}`),

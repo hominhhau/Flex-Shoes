@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './PaymentOption.module.scss';
 import checkoutStyles from './Checkout.module.scss';
 import classNames from 'classnames/bind';
@@ -18,7 +18,14 @@ const paymentOptionsData = [
 ];
 
 const PaymentOptionsButton = ({ onPaymentChange, error }) => {
-  const [selectedOption, setSelectedOption] = useState(paymentOptionsData[0].title);
+  const [selectedOption, setSelectedOption] = useState(paymentOptionsData[0].title); // Default to Cash on Delivery
+
+  useEffect(() => {
+    // Call onPaymentChange with default payment method when component mounts
+    const defaultOption = paymentOptionsData[0]; // Cash on Delivery
+    console.log('Initial payment method:', defaultOption.title);
+    onPaymentChange(defaultOption.title);
+  }, [onPaymentChange]); // Run once on mount
 
   const handleSelectOption = (option) => {
     console.log('Selected payment method:', option.title);

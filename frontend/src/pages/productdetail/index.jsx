@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
+import { ToastContainer, toast } from 'react-toastify'; // Added react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // Added toastify CSS
 import styles from './productdetail.module.scss';
 import { Api_Product } from '../../../apis/Api_Product';
 import { useAuth } from '../../hooks/useAuth';
 
 const cx = classNames.bind(styles);
+
+// Custom toast component for consistent styling
+const CustomToast = ({ message, type }) => (
+  <div className={cx('custom-toast', type)}>
+    <span className={cx('toast-icon')}>
+      {type === 'success' ? '✅' : '❌'}
+    </span>
+    <span className={cx('toast-message')}>{message}</span>
+  </div>
+);
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -102,19 +114,30 @@ const ProductDetail = () => {
     // Add to cart handler
     const handleAddToCart = () => {
         if (!isLoggedIn) {
-            alert('Please login to add product to cart');
-            return navigate('/login');
+            toast.error(
+                <CustomToast message="Please login to add product to cart" type="error" />,
+                { toastId: 'login-error-cart' }
+            );
+            // Modified: Added delay to show toast before redirecting
+            setTimeout(() => navigate('/login'), 3000);
+            return;
         }
 
         if (!selectedColor || !selectedSize) {
-            alert('Please select a color and size');
+            toast.error(
+                <CustomToast message="Please select a color and size" type="error" />,
+                { toastId: 'selection-error-cart' }
+            );
             return;
         }
 
         const key = `${selectedColor._id}-${selectedSize._id}`;
         const currentQuantity = availableQuantities[key] || 0;
         if (currentQuantity <= 0) {
-            alert(`This color and size is currently out of stock.`);
+            toast.error(
+                <CustomToast message="This color and size is currently out of stock." type="error" />,
+                { toastId: 'stock-error-cart' }
+            );
             return;
         }
 
@@ -125,7 +148,13 @@ const ProductDetail = () => {
 
         const requestedQuantity = (existingItem ? existingItem.quantity : 0) + 1;
         if (requestedQuantity > currentQuantity) {
-            alert(`Cannot add to cart. Only ${currentQuantity} items available for this color and size.`);
+            toast.error(
+                <CustomToast
+                    message={`Cannot add to cart. Only ${currentQuantity} items available for this color and size.`}
+                    type="error"
+                />,
+                { toastId: 'quantity-error-cart' }
+            );
             return;
         }
 
@@ -137,7 +166,7 @@ const ProductDetail = () => {
             price: product.sellingPrice,
             image: images[0],
             quantity: 1,
-            maxQuantity: currentQuantity // Lưu số lượng tối đa
+            maxQuantity: currentQuantity
         };
 
         console.log('Adding to cart:', cartItem);
@@ -153,25 +182,39 @@ const ProductDetail = () => {
         }
 
         sessionStorage.setItem('cart', JSON.stringify(cart));
-        alert('Product added to cart!');
+        toast.success(
+            <CustomToast message="Product added to cart!" type="success" />,
+            { toastId: 'success-cart' }
+        );
     };
 
     // Buy now handler
     const handleBuyNow = () => {
         if (!isLoggedIn) {
-            alert('Please login to Buy');
-            return navigate('/login');
+            toast.error(
+                <CustomToast message="Please login to Buy" type="error" />,
+                { toastId: 'login-error-buy' }
+            );
+            // Modified: Added delay to show toast before redirecting
+            setTimeout(() => navigate('/login'), 3000);
+            return;
         }
 
         if (!selectedColor || !selectedSize) {
-            alert('Please select a color and size');
+            toast.error(
+                <CustomToast message="Please select a color and size" type="error" />,
+                { toastId: 'selection-error-buy' }
+            );
             return;
         }
 
         const key = `${selectedColor._id}-${selectedSize._id}`;
         const currentQuantity = availableQuantities[key] || 0;
         if (currentQuantity <= 0) {
-            alert(`This color and size is currently out of stock.`);
+            toast.error(
+                <CustomToast message="This color and size is currently out of stock." type="error" />,
+                { toastId: 'stock-error-buy' }
+            );
             return;
         }
 
@@ -182,7 +225,13 @@ const ProductDetail = () => {
 
         const requestedQuantity = (existingItem ? existingItem.quantity : 0) + 1;
         if (requestedQuantity > currentQuantity) {
-            alert(`Cannot proceed. Only ${currentQuantity} items available for this color and size.`);
+            toast.error(
+                <CustomToast
+                    message={`Cannot proceed. Only ${currentQuantity} items available for this color and size.`}
+                    type="error"
+                />,
+                { toastId: 'quantity-error-buy' }
+            );
             return;
         }
 
@@ -194,7 +243,7 @@ const ProductDetail = () => {
             price: product.sellingPrice,
             image: images[0],
             quantity: 1,
-            maxQuantity: currentQuantity // Lưu số lượng tối đa
+            maxQuantity: currentQuantity
         };
 
         console.log('Buying now:', cartItem);
@@ -252,6 +301,18 @@ const ProductDetail = () => {
 
     return (
         <div className={cx('wrapper')}>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            /> {/* Added ToastContainer for toast notifications */}
             <div className={cx('content-header')}>
                 {/* Product Images */}
                 <div className={cx('product-images')}>

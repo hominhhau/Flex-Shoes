@@ -3,11 +3,23 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { ToastContainer, toast } from 'react-toastify'; // Added react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // Added toastify CSS
 import ShoppingBag from '../../components/Cart/CartComponent';
 import OrderSummary from '../../components/CartSummary/OrderSummary';
 import styles from './Cart.module.scss';
 
 const cx = classNames.bind(styles);
+
+// Custom toast component for consistent styling
+const CustomToast = ({ message, type }) => (
+  <div className={cx('custom-toast', type)}>
+    <span className={cx('toast-icon')}>
+      {type === 'success' ? '✅' : '❌'}
+    </span>
+    <span className={cx('toast-message')}>{message}</span>
+  </div>
+);
 
 function Cart() {
   const location = useLocation();
@@ -74,7 +86,13 @@ function Cart() {
   const handleCheckout = () => {
     console.log('Before navigating to CheckoutForm - checkedItems:', checkedItems);
     if (checkedItems.length === 0) {
-      alert('Please select at least one product to proceed to checkout.');
+      toast.error(
+        <CustomToast
+          message="Please select at least one product to proceed to checkout."
+          type="error"
+        />,
+        { toastId: 'checkout-error' } // Added toastId to prevent duplicates
+      );
       return;
     }
     navigate('/checkout', {
@@ -99,7 +117,13 @@ function Cart() {
     const product = data.find((p) => p.id === id && p.size === size);
     const maxQuantity = product?.maxQuantity || Infinity;
     if (newQuantity > maxQuantity) {
-      alert(`Cannot increase quantity. Only ${maxQuantity} items available.`);
+      toast.error(
+        <CustomToast
+          message={`Cannot increase quantity. Only ${maxQuantity} items available.`}
+          type="error"
+        />,
+        { toastId: 'quantity-error' } // Added toastId to prevent duplicates
+      );
       return;
     }
 
@@ -152,6 +176,18 @@ function Cart() {
 
   return (
     <div className={cx('wrapper')}>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      /> {/* Added ToastContainer for toast notifications */}
       <div className={cx('promotion')}>
         <h2>Saving to celebrate</h2>
         <p>
