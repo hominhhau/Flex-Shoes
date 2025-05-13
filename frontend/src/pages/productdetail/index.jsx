@@ -35,7 +35,7 @@ const ProductDetail = () => {
                 if (!data) throw new Error('Product not found');
 
                 setProduct(data);
-                console.log('Product data:', data);
+                console.log('Product data 11:', data);
 
                 // Initialize available quantities
                 const initialQuantities = {};
@@ -71,7 +71,7 @@ const ProductDetail = () => {
                 }
             } catch (err) {
                 console.error('Failed to fetch product:', err);
-                setError(err.message || 'Error fetching product details');
+                // setError(err.message || 'Error fetching product details');
             } finally {
                 setLoading(false);
             }
@@ -120,7 +120,10 @@ const ProductDetail = () => {
 
         const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
         const existingItem = cart.find(
-            (item) => item.id === product._id && item.color === selectedColor.colorName && item.size === selectedSize.nameSize
+            (item) =>
+                item.id === product._id &&
+                item.color === selectedColor.colorName &&
+                item.size === selectedSize.nameSize,
         );
 
         const requestedQuantity = (existingItem ? existingItem.quantity : 0) + 1;
@@ -137,13 +140,13 @@ const ProductDetail = () => {
             price: product.sellingPrice,
             image: images[0],
             quantity: 1,
-            maxQuantity: currentQuantity // Lưu số lượng tối đa
+            maxQuantity: currentQuantity, // Lưu số lượng tối đa
         };
 
         console.log('Adding to cart:', cartItem);
 
         const existingIndex = cart.findIndex(
-            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size
+            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size,
         );
 
         if (existingIndex >= 0) {
@@ -177,7 +180,10 @@ const ProductDetail = () => {
 
         const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
         const existingItem = cart.find(
-            (item) => item.id === product._id && item.color === selectedColor.colorName && item.size === selectedSize.nameSize
+            (item) =>
+                item.id === product._id &&
+                item.color === selectedColor.colorName &&
+                item.size === selectedSize.nameSize,
         );
 
         const requestedQuantity = (existingItem ? existingItem.quantity : 0) + 1;
@@ -194,13 +200,13 @@ const ProductDetail = () => {
             price: product.sellingPrice,
             image: images[0],
             quantity: 1,
-            maxQuantity: currentQuantity // Lưu số lượng tối đa
+            maxQuantity: currentQuantity, // Lưu số lượng tối đa
         };
 
         console.log('Buying now:', cartItem);
 
         const existingIndex = cart.findIndex(
-            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size
+            (item) => item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size,
         );
 
         if (existingIndex >= 0) {
@@ -220,7 +226,7 @@ const ProductDetail = () => {
             !product.inventory.some(
                 (item) =>
                     item?.numberOfProduct?.color?._id === color._id &&
-                    item?.numberOfProduct?.size?._id === selectedSize._id
+                    item?.numberOfProduct?.size?._id === selectedSize._id,
             )
         ) {
             setSelectedSize(null);
@@ -235,7 +241,7 @@ const ProductDetail = () => {
             !product.inventory.some(
                 (item) =>
                     item?.numberOfProduct?.color?._id === selectedColor._id &&
-                    item?.numberOfProduct?.size?._id === size._id
+                    item?.numberOfProduct?.size?._id === size._id,
             )
         ) {
             setSelectedColor(null);

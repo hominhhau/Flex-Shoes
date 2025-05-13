@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8888/api/v1';
+// const BASE_URL = 'http://localhost:8085';
 
 export const ApiManager = axios.create({
     baseURL: BASE_URL,
@@ -28,5 +29,4 @@ export const Api_Product = {
     searchProduct: async (name) => ApiManager.get(`api/product/search?name=${encodeURIComponent(name)}`),
     //getAllProducts: async () => ApiManager.get(`api/products/admin`),
     getAllProducts: async () => ApiManager.get(`/inventory/getAllProducts`),
-
 };
