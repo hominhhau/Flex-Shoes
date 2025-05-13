@@ -57,6 +57,11 @@ export const Api_InvoiceAdmin = {
 
     updateInvoice: async (data) => ApiManager.put(`invoices/updateInvoice`, data),
 
+    updateOrderStatus: async (invoiceId, orderStatus) => {
+        console.log('Sending updateOrderStatus request:', { invoiceId, orderStatus });
+        return ApiManager.put(`/invoices/update/${invoiceId}/status`, orderStatus);
+    },
+
     // Tìm kiếm hóa đơn dựa trên ID, tên khách hàng, hoặc trạng thái đơn hàng
     searchInvoices: async (params) => {
         const queryString = new URLSearchParams(params).toString();

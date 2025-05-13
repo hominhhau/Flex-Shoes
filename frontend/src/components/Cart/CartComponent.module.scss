@@ -80,6 +80,8 @@
 
 .productName {
   font: 24px Rubik, sans-serif;
+  color: #232321;
+  font-weight: 600;
 }
 
 .productMetaContainer {
@@ -105,13 +107,16 @@
 }
 
 .sizeContainer,
+.colorContainer,
 .quantityContainer {
   display: flex;
   align-items: center;
   gap: 24px;
+  margin-top: 10px;
 }
 
 .sizeText,
+.colorText,
 .quantityText {
   opacity: 0.8;
 }
@@ -211,4 +216,11 @@ input[type="checkbox"] {
   font-size: 16px;
   color: #232321;
   opacity: 0.8;
+}
+
+.productColorLabel {
+  font-size: 20px;
+  color: #232321;
+  opacity: 0.8;
+  margin-top: 16px;
 }

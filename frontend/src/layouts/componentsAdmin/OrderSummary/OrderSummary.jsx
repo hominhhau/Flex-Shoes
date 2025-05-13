@@ -23,7 +23,7 @@ function OrderSummary({ name, price, rate }) {
             <div className="flex flex-col items-end ">
                 <IoMdMore size={30} className=" mb-2" />
                 <div className="text-green-500 ">↑ {rate}%</div>
-                <p className=" text-muted-foreground">So với tháng 1 năm 2022</p>
+                <p className=" text-muted-foreground">Compared to January 2022</p>
             </div>
         </div>
     );

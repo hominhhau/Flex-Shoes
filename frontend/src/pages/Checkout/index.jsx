@@ -10,7 +10,6 @@ import ShoppingBag from '../../components/Cart/CartComponent';
 import Modal from '../../components/Modal';
 import { Api_Payment } from '../../../apis/Api_Payment';
 import { Api_InvoiceAdmin } from '../../../apis/Api_invoiceAdmin';
-import { Api_Inventory } from '../../../apis/Api_Inventory';
 
 const cx = classNames.bind(styles);
 
@@ -90,7 +89,6 @@ const CheckoutForm = () => {
     const { cartData, itemCount, totalAmount, deliveryFee, checkedItems } = location.state || {};
     console.log('Checkout data:', { cartData, checkedItems, itemCount, totalAmount });
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee || 0);
-    const [paymentStatus, setPaymentStatus] = useState('unpaid');
 
     if (!location.state || !checkedItems || checkedItems.length === 0) {
         return (
@@ -180,25 +178,6 @@ const CheckoutForm = () => {
             // const updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout(handleCartData);
             // console.log('Updated quantity:', updateQuantity);
 
-            // Cập nhật số lượng sản phẩm trong kho (gọi API backend)
-            const updateQuantityResponse = await Api_Inventory.purchase({ items: handleCartData });
-            console.log('Updated Inventory:', updateQuantityResponse);
-
-            if (selectedPaymentMethod !== 'Cash on Delivery') {
-                const paymentResponse = await Api_Payment.createPayment({
-                    total: invoiceData.total,
-                    invoiceId: invoiceResponse.invoiceId || Math.floor(Math.random() * 100000),
-                });
-                console.log('Payment response:', paymentResponse);
-
-                if (paymentResponse?.URL) {
-                    window.location.href = paymentResponse.URL;
-                    return;
-                } else {
-                    throw new Error('Không nhận được URL thanh toán từ VNPay.');
-                }
-            }
-
             const paymentResponse = await Api_Payment.createPayment({
                 order: invoiceResponse,
             });
@@ -216,8 +195,6 @@ const CheckoutForm = () => {
                 setPaymentStatus(paymentResponse.status);
             }
 
-            // }
-            // Xóa product da mua trong giỏ hàng sau khi đặt hàng
             const newCartData = cartData.filter(
                 (product) =>
                     !checkedItems.some(

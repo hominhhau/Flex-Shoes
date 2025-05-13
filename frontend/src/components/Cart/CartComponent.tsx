@@ -5,23 +5,7 @@ import styles from './CartComponent.module.scss';
 
 const cx = classNames.bind(styles);
 
-type CartComponentProps = {
-  image: string;
-  name: string;
-  color: string;
-  size: string;
-  initialQuantity?: number;
-  price: number;
-  removeIcon: any;
-  onRemove: () => void;
-  onQuantityChange: (quantity: number) => void;
-  onCheckboxChange: (isChecked: boolean, product: any) => void;
-  allowQuantityChange?: boolean;
-  product: any;
-  isChecked?: boolean; // Thêm prop để đồng bộ với checkedItems từ Cart
-};
-
-const ShoppingBag: React.FC<CartComponentProps> = ({
+const ShoppingBag = ({
   image,
   name,
   color,
@@ -36,7 +20,7 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
   product,
   isChecked = false,
 }) => {
-  const [quantity, setQuantity] = useState<number>(initialQuantity);
+  const [quantity, setQuantity] = useState(initialQuantity);
 
   useEffect(() => {
     setQuantity(initialQuantity);
@@ -46,7 +30,12 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
 
   const increaseQuantity = () => {
     setQuantity((prev) => {
+      const maxQuantity = product.maxQuantity || Infinity;
       const newQuantity = prev + 1;
+      if (newQuantity > maxQuantity) {
+        alert(`Cannot increase quantity. Only ${maxQuantity} items available.`);
+        return prev;
+      }
       onQuantityChange(newQuantity);
       return newQuantity;
     });
@@ -86,8 +75,16 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
             <div className={cx('productInfo')}>
               <h2 className={cx('productName')}>{name}</h2>
               <div className={cx('productMetaContainer')}>
-                <p className={cx('productColor')}>{color}</p>
-                <p className={cx('productSize')}>{size}</p>
+
+
+                <div className={cx('colorContainer')}>
+                  <label htmlFor="color" className={cx('colorLabel')}>
+                    Color
+                  </label>
+                  <span className={cx('colorText')}>{color}</span>
+                </div>
+                <div className={cx('colorSwatch')} style={{ backgroundColor: color }}></div>
+
               </div>
 
               <div className={cx('productOptionsContainer')}>
@@ -107,7 +104,11 @@ const ShoppingBag: React.FC<CartComponentProps> = ({
                           -
                         </button>
                         <span className={cx('quantityText')}>{quantity}</span>
-                        <button onClick={increaseQuantity} className={cx('quantityButton')}>
+                        <button
+                          onClick={increaseQuantity}
+                          className={cx('quantityButton')}
+                          disabled={quantity >= (product.maxQuantity || Infinity)}
+                        >
                           +
                         </button>
                       </>

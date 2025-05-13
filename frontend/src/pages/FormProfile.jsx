@@ -1,329 +1,578 @@
-import React, { useState, useEffect } from 'react';
-import { Api_Profile } from '../../apis/Api_Profile'; // Đảm bảo đường dẫn này đúng
+import React, { useState, useEffect } from "react";
+import classNames from "classnames/bind";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import styles from "./ProfileForm.module.scss";
+import { Api_Profile } from "../../apis/Api_Profile";
+import { Api_Auth } from "../../apis/Api_Auth";
+
+const cx = classNames.bind(styles);
+
+const CustomToast = ({ message, type }) => (
+  <div className={cx("custom-toast", type)}>
+    <span className={cx("toast-icon")}>
+      {type === "success" ? "✅" : "❌"}
+    </span>
+    <span className={cx("toast-message")}>{message}</span>
+  </div>
+);
 
 const ProfileForm = () => {
-    const [activeTab, setActiveTab] = useState('personal');
-    const [personalInfo, setPersonalInfo] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        gender: '',
-        addressString: '',
-    });
+  const [activeTab, setActiveTab] = useState("personal");
+  const [personalInfo, setPersonalInfo] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    gender: "OTHER",
+    addressString: "",
+  });
+  const [loginInfo, setLoginInfo] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [loading, setLoading] = useState(true);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const [loginInfo, setLoginInfo] = useState({
-        username: 'nhi.nhi0311',
-        password: 'thuynhi@0099',
-    });
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchProfile = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const userId = localStorage.getItem('profileKey');
-                const response = await Api_Profile.getProfile(userId);
-                console.log('API Response:', response);
-                if (
-                    response.status === 200 &&
-                    response.data &&
-                    response.data.status === 'SUCCESS' &&
-                    response.data.response
-                ) {
-                    const data = response.data.response;
-                    setPersonalInfo({
-                        firstName: data.firstName || '',
-                        lastName: data.lastName || '',
-                        email: data.email || '',
-                        phoneNumber: data.phoneNumber || '',
-                        gender: data.gender || 'OTHER',
-                        addressString: data.address ? data.address.join(', ') : '',
-                    });
-                } else {
-                    setError('Không thể tải thông tin hồ sơ.');
-                }
-            } catch (error) {
-                setError('Đã xảy ra lỗi khi tải thông tin hồ sơ.');
-                console.error('Lỗi tải hồ sơ:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProfile();
-    }, []);
-
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-    };
-
-    const handlePersonalChange = (event) => {
-        const { name, value } = event.target;
-        setPersonalInfo({ ...personalInfo, [name]: value });
-    };
-
-    const handleGenderChange = (event) => {
-        setPersonalInfo({ ...personalInfo, gender: event.target.value });
-    };
-
-    const handleLoginChange = (event) => {
-        const { name, value } = event.target;
-        setLoginInfo({ ...loginInfo, [name]: value });
-    };
-
-    const handleSavePersonal = async () => {
-        try {
-            const userID = localStorage.getItem('customerId');
-            const dataToSend = {
-                firstName: personalInfo.firstName,
-                lastName: personalInfo.lastName,
-                email: personalInfo.email,
-                phoneNumber: personalInfo.phoneNumber,
-                gender: personalInfo.gender,
-                address: personalInfo.addressString.split(',').map((item) => item.trim()),
-                userID,
-            };
-
-            console.log('Data to send:', dataToSend);
-
-            const result = await Api_Profile.updateProfile(localStorage.getItem('profileKey'), dataToSend);
-
-            if (result.status === 200 && result.data.status === 'SUCCESS') {
-                localStorage.setItem('profile', JSON.stringify(result.data.response));
-                alert('Cập nhật thông tin thành công');
-            } else {
-                alert('Cập nhật không thành công');
-            }
-        } catch (error) {
-            console.error('Lỗi lưu thông tin cá nhân:', error);
-            alert('Đã xảy ra lỗi khi lưu thông tin cá nhân.');
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const userId = localStorage.getItem("profileKey");
+        if (!userId) {
+          throw new Error("No user ID found. Please log in again.");
         }
+        const response = await Api_Profile.getProfile(userId);
+     
+        console.log('API Response:', response);
+        if (
+            response.status === 200 &&
+            response.data &&
+            response.data.status === 'SUCCESS' &&
+            response.data.response
+        ) {
+            const data = response.data.response;
+            setPersonalInfo({
+                firstName: data.firstName || '',
+                lastName: data.lastName || '',
+                email: data.email || '',
+                phoneNumber: data.phoneNumber || '',
+                gender: data.gender || 'OTHER',
+                addressString: data.address ? data.address.join(', ') : '',
+            });
+        } else {
+            setError('Unable to load profile information.');
+        }
+      } catch (error) {
+        console.error("Profile load error:", error);
+        setError(error.message || "An error occurred while loading profile information.");
+        toast.error(
+          <CustomToast
+            message={error.message || "Failed to load profile information."}
+            type="error"
+          />,
+          { toastId: "profile-load-error" }
+        );
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleSaveLogin = () => {
-        console.log('Đã lưu thông tin đăng nhập:', loginInfo);
-        alert('Thông tin đăng nhập đã được lưu!');
-        // Gọi API để lưu thông tin đăng nhập (chưa triển khai)
-    };
+    fetchProfile();
+  }, []);
 
-    if (loading) {
-        return <div className="container mx-auto p-6 mt-10 text-xl">Đang tải thông tin...</div>;
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handlePersonalChange = (event) => {
+    const { name, value } = event.target;
+    setPersonalInfo({ ...personalInfo, [name]: value });
+  };
+
+  const handleGenderChange = (event) => {
+    setPersonalInfo({ ...personalInfo, gender: event.target.value });
+  };
+
+  const handleLoginChange = (event) => {
+    const { name, value } = event.target;
+    setLoginInfo({ ...loginInfo, [name]: value });
+  };
+
+  const validatePersonalInfo = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\d{10,11}$/;
+    if (!personalInfo.firstName.trim()) {
+      return "First name cannot be empty.";
+    }
+    if (!personalInfo.lastName.trim()) {
+      return "Last name cannot be empty.";
+    }
+    if (!emailRegex.test(personalInfo.email)) {
+      return "Invalid email.";
+    }
+    if (!phoneRegex.test(personalInfo.phoneNumber)) {
+      return "Phone number must have 10-11 digits.";
+    }
+    return null;
+  };
+
+  const handleSavePersonal = async () => {
+    if (updateLoading) return;
+
+    const validationError = validatePersonalInfo();
+    if (validationError) {
+      toast.error(
+        <CustomToast message={validationError} type="error" />,
+        { toastId: "personal-validation-error" }
+      );
+      return;
     }
 
-    if (error) {
-        return <div className="container mx-auto p-6 mt-10 text-xl text-red-500">{error}</div>;
+    setUpdateLoading(true);
+    try {
+      const userId = localStorage.getItem("profileKey");
+      if (!userId) {
+        toast.error(
+          <CustomToast
+            message="User information not found. Please log in again."
+            type="error"
+          />,
+          { toastId: "no-user-id" }
+        );
+        window.location.href = "/login";
+        return;
+      }
+      const dataToSend = {
+        firstName: personalInfo.firstName.trim(),
+        lastName: personalInfo.lastName.trim(),
+        email: personalInfo.email.trim(),
+        phoneNumber: personalInfo.phoneNumber.trim(),
+        gender: personalInfo.gender,
+        address: personalInfo.addressString
+          .split(",")
+          .map((item) => item.trim())
+          .filter((item) => item),
+        userID: userId,
+      };
+
+      const result = await Api_Profile.updateProfile(userId, dataToSend);
+      console.log("Update profile API response:", JSON.stringify(result, null, 2));
+      const resultData = result.data || result;
+
+      if (result.status === 200 && resultData?.status?.toUpperCase() === "SUCCESS") {
+        localStorage.setItem("profile", JSON.stringify(resultData.response));
+        toast.success(
+          <CustomToast
+            message={resultData.message || "Personal information updated successfully!"}
+            type="success"
+          />,
+          { toastId: "personal-update-success" }
+        );
+      } else {
+        throw new Error(resultData?.message || "Unable to update personal information.");
+      }
+    } catch (error) {
+      console.error("Error saving personal information:", error);
+      toast.error(
+        <CustomToast
+          message={error.message || "An error occurred while updating personal information."}
+          type="error"
+        />,
+        { toastId: "personal-update-error" }
+      );
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const validatePassword = () => {
+    if (!loginInfo.oldPassword) {
+      return "Please enter the old password.";
+    }
+    if (loginInfo.newPassword !== loginInfo.confirmPassword) {
+      return "New password and confirm password do not match.";
+    }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(loginInfo.newPassword)) {
+      return "New password must be at least 8 characters, including uppercase, lowercase, number, and special character.";
+    }
+    return null;
+  };
+
+  const handleSaveLogin = async () => {
+    if (updateLoading) return;
+
+    const validationError = validatePassword();
+    if (validationError) {
+      toast.error(
+        <CustomToast message={validationError} type="error" />,
+        { toastId: "password-validation-error" }
+      );
+      return;
     }
 
-    return (
-        <div
-            className="container mx-auto p-6 bg-white shadow-md rounded-lg mt-10 text-xl"
-            style={{ maxWidth: '1200px', padding: '50px' }}
-        >
-            <h2 className="text-black text-3xl font-semibold mb-6">Hồ Sơ Của Tôi</h2>
-            <p className="text-gray-700 text-xl mb-6">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+    setUpdateLoading(true);
+    try {
+      const userId = localStorage.getItem("customerId");
+      if (!userId) {
+        toast.error(
+          <CustomToast
+            message="User information not found. Please log in again."
+            type="error"
+          />,
+          { toastId: "no-customer-id" }
+        );
+        window.location.href = "/login";
+        return;
+      }
 
-            <div className="mb-4">
-                <button
-                    className={`py-2 px-4 rounded-md text-xl ${
-                        activeTab === 'personal'
-                            ? 'bg-[#4A69E2] text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    } mr-2`}
-                    onClick={() => handleTabChange('personal')}
-                >
-                    Quản lý thông tin cá nhân
-                </button>
-                <button
-                    className={`py-2 px-4 rounded-md text-xl ${
-                        activeTab === 'login'
-                            ? 'bg-[#4A69E2] text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                    onClick={() => handleTabChange('login')}
-                >
-                    Quản lý thông tin đăng nhập
-                </button>
-            </div>
+      const passwordData = {
+        oldPassword: loginInfo.oldPassword,
+        newPassword: loginInfo.newPassword,
+      };
 
-            {activeTab === 'personal' && (
-                <div>
-                    <h3 className="text-2xl font-semibold mb-4">Thông Tin Cá Nhân</h3>
-                    <div className="mb-6">
-                        <label htmlFor="name" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Họ</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="firstName"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.firstName}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label htmlFor="name" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Tên</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="lastName"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.lastName}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
+      const result = await Api_Auth.updatePassword(userId, passwordData);
+      console.log("Update password API response:", JSON.stringify(result, null, 2));
 
-                    <div className="mb-6">
-                        <label htmlFor="email" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Email</strong>
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.email}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
+      const resultData = result;
 
-                    <div className="mb-6">
-                        <label htmlFor="phone" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Số điện thoại</strong>
-                        </label>
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phoneNumber"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.phoneNumber}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
+      if (resultData?.status?.toUpperCase() === "SUCCESS") {
+        toast.success(
+          <CustomToast
+            message={resultData.message || "Password updated successfully!"}
+            type="success"
+          />,
+          { toastId: "password-update-success" }
+        );
+        setLoginInfo({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        console.warn("API response failed validation:", {
+          status: result.status,
+          data: result.data,
+          result: result,
+        });
+        throw new Error(
+          resultData?.message ||
+          resultData?.response ||
+          "Unable to update password. Please check the old password again."
+        );
+      }
+    } catch (error) {
+      console.error("Password update error:", error);
+      if (error.response?.status === 401) {
+        toast.error(
+          <CustomToast
+            message="Login session expired. Please log in again."
+            type="error"
+          />,
+          { toastId: "session-expired" }
+        );
+        window.location.href = "/login";
+      } else if (error.response?.status === 400) {
+        const errorData = error.response.data || error.response;
+        toast.error(
+          <CustomToast
+            message={
+              errorData?.message ||
+              errorData?.response ||
+              "Old password is incorrect. Please try again."
+            }
+            type="error"
+          />,
+          { toastId: "invalid-password" }
+        );
+      } else {
+        toast.error(
+          <CustomToast
+            message={
+              error.message || "An error occurred while updating the password. Please try again later."
+            }
+            type="error"
+          />,
+          { toastId: "password-update-error" }
+        );
+      }
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
 
-                    <div className="mb-6">
-                        <label className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Giới tính</strong>
-                        </label>
-                        <div className="flex items-center">
-                            <div className="flex items-center mr-6">
-                                <input
-                                    type="radio"
-                                    id="male"
-                                    className="focus:ring-4A69E2 h-6 w-6 text-4A69E2 border-gray-300 focus:ring-offset-2"
-                                    name="gender"
-                                    value="MEN"
-                                    checked={personalInfo.gender === 'MEN'}
-                                    onChange={handleGenderChange}
-                                />
-                                <label htmlFor="male" className="text-gray-700 ml-2 text-xl">
-                                    Nam
-                                </label>
-                            </div>
-                            <div className="flex items-center mr-6">
-                                <input
-                                    type="radio"
-                                    id="female"
-                                    className="focus:ring-4A69E2 h-6 w-6 text-4A69E2 border-gray-300 focus:ring-offset-2"
-                                    name="gender"
-                                    value="WOMEN"
-                                    checked={personalInfo.gender === 'WOMEN'}
-                                    onChange={handleGenderChange}
-                                />
-                                <label htmlFor="female" className="text-gray-700 ml-2 text-xl">
-                                    Nữ
-                                </label>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="radio"
-                                    id="other"
-                                    className="focus:ring-4A69E2 h-6 w-6 text-4A69E2 border-gray-300 focus:ring-offset-2"
-                                    name="gender"
-                                    value="OTHER"
-                                    checked={personalInfo.gender === 'OTHER'}
-                                    onChange={handleGenderChange}
-                                />
-                                <label htmlFor="other" className="text-gray-700 ml-2 text-xl">
-                                    Khác
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+  if (loading) {
+    return <div className={cx("loading")}>Loading information...</div>;
+  }
 
-                    <div className="mb-6">
-                        <label htmlFor="address" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Địa chỉ</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="address"
-                            name="addressString"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={personalInfo.addressString}
-                            onChange={handlePersonalChange}
-                        />
-                    </div>
+  if (error) {
+    return <div className={cx("error")}>{error}</div>;
+  }
 
-                    <div className="flex justify-center">
-                        <button
-                            onClick={handleSavePersonal}
-                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-xl"
-                        >
-                            Lưu Thông Tin Cá Nhân
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'login' && (
-                <div>
-                    <h3 className="text-2xl font-semibold mb-4">Thông Tin Đăng Nhập</h3>
-                    <div className="mb-6">
-                        <label htmlFor="username" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Tên đăng nhập</strong>
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={loginInfo.username}
-                            onChange={handleLoginChange}
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label htmlFor="password" className="text-gray-700 block text-xl font-medium mb-2">
-                            <strong className="text-xl">Mật khẩu</strong>
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            className="text-black border-gray-300 shadow-sm focus:ring-4A69E2 focus:border-4A69E2 block w-full text-xl border rounded-md bg-gray-100 py-3 px-4 hover:bg-white"
-                            value={loginInfo.password}
-                            onChange={handleLoginChange}
-                        />
-                    </div>
-
-                    <div className="flex justify-center">
-                        <button
-                            onClick={handleSaveLogin}
-                            className="bg-[#4A69E2] text-white font-semibold py-4 px-8 rounded-md text-xl"
-                        >
-                            Lưu Thông Tin Đăng Nhập
-                        </button>
-                    </div>
-                </div>
-            )}
+  return (
+    <div className={cx("page-container")}>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <div className={cx("content-section")}>
+        <h2 className={cx("content-title")}>Welcome to Flex Shoes!</h2>
+        <p className={cx("content-description")}>
+          At Flex Shoes, we bring you the ultimate destination for premium footwear.
+          Explore our diverse collection featuring renowned brands like Nike, Adidas,
+          Puma, and New Balance. Whether you're looking for the latest Air Jordan,
+          the comfort of Adidas Ultraboost, or unique designs from emerging brands,
+          we have something for every sneaker enthusiast.
+          <br />
+          <br />
+          Our mission is not just to provide shoes but a lifestyle. Each pair is
+          meticulously crafted, blending style, comfort, and performance to elevate
+          your everyday look. Update your profile today to receive exclusive offers,
+          early access to new releases, and personalized style recommendations.
+          Join our sneakerhead community and step into a world of limitless fashion!
+        </p>
+        <div className={cx("image-container")}>
+          <img
+            src="https://png.pngtree.com/png-clipart/20231006/original/pngtree-orange-sneakers-lined-icons-vector-png-image_12972401.png"
+            alt="Flex Shoes"
+            className={cx("image")}
+          />
         </div>
-    );
+      </div>
+      <div className={cx("form-section")}>
+        <h2 className={cx("title")}>My Profile</h2>
+        <p className={cx("description")}>
+          Manage your profile information to secure your account
+        </p>
+
+        <div className={cx("tab-container")}>
+          <button
+            className={cx("tab-button", { active: activeTab === "personal" })}
+            onClick={() => handleTabChange("personal")}
+          >
+            Manage Personal Information
+          </button>
+          <button
+            className={cx("tab-button", { active: activeTab === "login" })}
+            onClick={() => handleTabChange("login")}
+          >
+            Manage Login Information
+          </button>
+        </div>
+
+        {activeTab === "personal" && (
+          <div className={cx("form-container")}>
+            <h3 className={cx("form-title")}>Personal Information</h3>
+            <div className={cx("form-group")}>
+              <label htmlFor="firstName" className={cx("label")}>
+                <strong>First Name</strong>
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                className={cx("input")}
+                value={personalInfo.firstName}
+                onChange={handlePersonalChange}
+                disabled={updateLoading}
+              />
+            </div>
+            <div className={cx("form-group")}>
+              <label htmlFor="lastName" className={cx("label")}>
+                <strong>Last Name</strong>
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                className={cx("input")}
+                value={personalInfo.lastName}
+                onChange={handlePersonalChange}
+                disabled={updateLoading}
+              />
+            </div>
+            <div className={cx("form-group")}>
+              <label htmlFor="email" className={cx("label")}>
+                <strong>Email</strong>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className={cx("input")}
+                value={personalInfo.email}
+                onChange={handlePersonalChange}
+                disabled={updateLoading}
+              />
+            </div>
+            <div className={cx("form-group")}>
+              <label htmlFor="phone" className={cx("label")}>
+                <strong>Phone Number</strong>
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phoneNumber"
+                className={cx("input")}
+                value={personalInfo.phoneNumber}
+                onChange={handlePersonalChange}
+                disabled={updateLoading}
+              />
+            </div>
+            <div className={cx("form-group")}>
+              <label className={cx("label")}>
+                <strong>Gender</strong>
+              </label>
+              <div className={cx("radio-group")}>
+                <div className={cx("radio-option")}>
+                  <input
+                    type="radio"
+                    id="male"
+                    name="gender"
+                    value="MEN"
+                    checked={personalInfo.gender === "MEN"}
+                    onChange={handleGenderChange}
+                    className={cx("radio")}
+                    disabled={updateLoading}
+                  />
+                  <label htmlFor="male" className={cx("radio-label")}>
+                    Male
+                  </label>
+                </div>
+                <div className={cx("radio-option")}>
+                  <input
+                    type="radio"
+                    id="female"
+                    name="gender"
+                    value="WOMEN"
+                    checked={personalInfo.gender === "WOMEN"}
+                    onChange={handleGenderChange}
+                    className={cx("radio")}
+                    disabled={updateLoading}
+                  />
+                  <label htmlFor="female" className={cx("radio-label")}>
+                    Female
+                  </label>
+                </div>
+                <div className={cx("radio-option")}>
+                  <input
+                    type="radio"
+                    id="other"
+                    name="gender"
+                    value="OTHER"
+                    checked={personalInfo.gender === "OTHER"}
+                    onChange={handleGenderChange}
+                    className={cx("radio")}
+                    disabled={updateLoading}
+                  />
+                  <label htmlFor="other" className={cx("radio-label")}>
+                    Other
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className={cx("form-group")}>
+              <label htmlFor="address" className={cx("label")}>
+                <strong>Address</strong>
+              </label>
+              <input
+                type="text"
+                id="address"
+                name="addressString"
+                className={cx("input")}
+                value={personalInfo.addressString}
+                onChange={handlePersonalChange}
+                disabled={updateLoading}
+              />
+            </div>
+            <div className={cx("button-container")}>
+              <button
+                onClick={handleSavePersonal}
+                className={cx("save-button")}
+                disabled={updateLoading}
+              >
+                {updateLoading ? "Saving..." : "Save Personal Information"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "login" && (
+          <div className={cx("form-container")}>
+            <h3 className={cx("form-title")}>Update Password</h3>
+            <form>
+              <div className={cx("form-group")}>
+                <label htmlFor="oldPassword" className={cx("label")}>
+                  <strong>Old Password</strong>
+                </label>
+                <input
+                  type="password"
+                  id="oldPassword"
+                  name="oldPassword"
+                  className={cx("input")}
+                  value={loginInfo.oldPassword}
+                  onChange={handleLoginChange}
+                  required
+                  disabled={updateLoading}
+                />
+              </div>
+              <div className={cx("form-group")}>
+                <label htmlFor="newPassword" className={cx("label")}>
+                  <strong>New Password</strong>
+                </label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  className={cx("input")}
+                  value={loginInfo.newPassword}
+                  onChange={handleLoginChange}
+                  required
+                  disabled={updateLoading}
+                />
+              </div>
+              <div className={cx("form-group")}>
+                <label htmlFor="confirmPassword" className={cx("label")}>
+                  <strong>Confirm New Password</strong>
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className={cx("input")}
+                  value={loginInfo.confirmPassword}
+                  onChange={handleLoginChange}
+                  required
+                  disabled={updateLoading}
+                />
+              </div>
+              <div className={cx("button-container")}>
+                <button
+                  type="button"
+                  onClick={handleSaveLogin}
+                  className={cx("save-button")}
+                  disabled={updateLoading}
+                >
+                  {updateLoading ? "Updating..." : "Update Password"}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default ProfileForm;

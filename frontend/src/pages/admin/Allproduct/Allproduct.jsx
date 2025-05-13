@@ -20,6 +20,29 @@ const AllProduct = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [products, setProducts] = useState([]);
+    const [categorys, setCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
+
+    // Filter states
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedBrand, setSelectedBrand] = useState('all');
+    const [selectedGender, setSelectedGender] = useState('all');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const categoryRes = await Api_Inventory.getCategory();
+                const brandRes = await Api_Inventory.getBrand();
+
+                setCategories(categoryRes.data);
+                setBrands(brandRes.data);
+            } catch (error) {
+                console.error('Lỗi khi load :', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     // Fetch products on mount
     useEffect(() => {
@@ -29,6 +52,7 @@ const AllProduct = () => {
             try {
                 const response = await Api_Inventory.getAllProducts();
                 setProducts(response || []);
+                setFilteredProducts(response || []);
                 console.log('Product Data:', response);
             } catch (error) {
                 setError(error.message);
@@ -39,6 +63,27 @@ const AllProduct = () => {
 
         fetchProducts();
     }, []);
+
+    const handleFilter = () => {
+        const filterData = {
+            category: selectedCategory !== 'all' ? selectedCategory : '',
+            brand: selectedBrand !== 'all' ? selectedBrand : '',
+            gender: selectedGender !== 'all' ? selectedGender.toUpperCase() : '',
+        };
+
+        console.log('Filter Data:', filterData);
+
+        // Lọc sản phẩm dựa trên filterData
+        const filtered = products.filter((product) => {
+            const matchCategory = !filterData.category || product.proType === filterData.category;
+            const matchBrand = !filterData.brand || product.braType === filterData.brand;
+            const matchGender = !filterData.gender || product.gender === filterData.gender;
+
+            return matchCategory && matchBrand && matchGender;
+        });
+
+        setFilteredProducts(filtered);
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -56,6 +101,57 @@ const AllProduct = () => {
         <div className={cx('wrapper')}>
             <div className={cx('header')}>
                 <h1>All Products</h1>
+                <div className={cx('filter-container')}>
+                    <div className={cx('inputWrapper')}>
+                        <select
+                            id="category"
+                            className={cx('selectInput')}
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                        >
+                            <option value="all">All Categories</option>
+                            {categorys.map((category) => (
+                                <option key={category._id} value={category._id}>
+                                    {category.productTypeName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className={cx('inputWrapper')}>
+                        <select
+                            id="brand"
+                            className={cx('selectInput')}
+                            value={selectedBrand}
+                            onChange={(e) => setSelectedBrand(e.target.value)}
+                        >
+                            <option value="all">All Brands</option>
+                            {brands.map((brand) => (
+                                <option key={brand._id} value={brand._id}>
+                                    {brand.brandTypeName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className={cx('inputWrapper')}>
+                        <select
+                            id="gender"
+                            className={cx('selectInput')}
+                            value={selectedGender}
+                            onChange={(e) => setSelectedGender(e.target.value)}
+                        >
+                            <option value="all">All Genders</option>
+                            <option value="MEN">Men</option>
+                            <option value="Women">Women</option>
+                            <option value="UNISEX">Unisex</option>
+                        </select>
+                    </div>
+
+                    <button className={cx('filter-button')} onClick={handleFilter}>
+                        Filter
+                    </button>
+                </div>
                 <button
                     className={cx('add-product')}
                     onClick={() => {
@@ -66,7 +162,7 @@ const AllProduct = () => {
                 </button>
             </div>
             <div className={cx('product-list')}>
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                     <div
                         key={product._id}
                         onClick={() => {
@@ -87,9 +183,7 @@ const AllProduct = () => {
                         </div>
                         <div>
                             <p className={cx('summary')}>Summary</p>
-                            <p className={cx('description')}>
-                                {limitWords(product.description, 20)} {/* Giới hạn 20 từ */}
-                            </p>
+                            <p className={cx('description')}>{limitWords(product.description, 20)}</p>
                         </div>
                         <div className={cx('stats')}>
                             <div className={cx('stat-item')}>
