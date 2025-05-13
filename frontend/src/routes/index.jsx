@@ -56,7 +56,8 @@ const publicRoutes = [
     { path: config.routes.OrderDetails, component: OrderDetails },
     { path: config.routes.addNewProduct, component: AddNewProduct },
     { path: '/payment-failed', component: Home },
-    { path: '/admin-chat', component: SidebarChat },
+    // { path: '/admin-chat', component: SidebarChat },
+    { path: config.routes.chatAdmin, component: SidebarChat },
     {path : config.routes.updateProfile, component: FormProfile},
     { path: config.routes.infoCustomer, component: CustomerInfo },
 ];

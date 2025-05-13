@@ -28,6 +28,7 @@ const routes = {
     OrderDetails: '/OrderDetails',
     addNewProduct: '/addNewProduct',
     infoCustomer: '/infoCustomer',
+    chatAdmin: '/admin-chat',
     // AllProduct
     AllProduct: '/AllProduct',
 
