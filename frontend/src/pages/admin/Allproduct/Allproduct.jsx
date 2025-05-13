@@ -35,8 +35,8 @@ const AllProduct = () => {
                 const categoryRes = await Api_Inventory.getCategory();
                 const brandRes = await Api_Inventory.getBrand();
 
-                setCategories(categoryRes);
-                setBrands(brandRes);
+                setCategories(categoryRes.data);
+                setBrands(brandRes.data);
             } catch (error) {
                 console.error('Lỗi khi load :', error);
             }
