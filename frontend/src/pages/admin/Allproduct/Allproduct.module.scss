@@ -87,6 +87,10 @@
         gap: 20px;
 
         .product-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; // Đảm bảo phần stats luôn ở dưới cùng
+            height: 340px;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -134,9 +138,15 @@
             }
 
             .description {
+                margin-top: 5px;
                 font-size: 14px;
                 color: #666;
-                margin-top: 5px;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 3; // Hiển thị tối đa 3 dòng
+                -webkit-box-orient: vertical;
+                min-height: 54px; // Đảm bảo chiều cao tối thiểu cho 3 dòng (18px x 3)
+                max-height: 54px;
             }
 
             .stats {

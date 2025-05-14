@@ -3,6 +3,43 @@
     margin-left: 20px;
     flex-direction: column;
     align-items: center;
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 1rem;
+
+        .page-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover:not(:disabled) {
+                background-color: #f0f0f0;
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            &.active {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+
+                &:hover {
+                    background-color: #0056b3;
+                }
+            }
+        }
+    }
 }
 
 .grid-container {

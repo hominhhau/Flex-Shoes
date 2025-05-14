@@ -89,6 +89,7 @@ const CheckoutForm = () => {
     const { cartData, itemCount, totalAmount, deliveryFee, checkedItems } = location.state || {};
     console.log('Checkout data:', { cartData, checkedItems, itemCount, totalAmount });
     const [selectedDeliveryFee, setSelectedDeliveryFee] = useState(deliveryFee || 0);
+    const [paymentStatus, setPaymentStatus] = useState('');
 
     if (!location.state || !checkedItems || checkedItems.length === 0) {
         return (
@@ -193,6 +194,7 @@ const CheckoutForm = () => {
             if (selectedPaymentMethod == 'Cash on Delivery') {
                 console.log('Payment response:', paymentResponse);
                 setPaymentStatus(paymentResponse.status);
+                setIsCompleted(true);
             }
 
             const newCartData = cartData.filter(
@@ -204,7 +206,7 @@ const CheckoutForm = () => {
             sessionStorage.setItem('cart', JSON.stringify(newCartData));
             console.log('Updated cart after purchase:', newCartData);
 
-            setIsCompleted(true);
+            // setIsCompleted(true);
         } catch (error) {
             console.error('Lỗi khi xử lý thanh toán:', error);
             if (error.response?.data?.status === 'fail' && error.response?.data?.result) {
