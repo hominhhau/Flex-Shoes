@@ -105,7 +105,7 @@ const OrderDetails = () => {
         setIsSuccess(false);
         setIsError(false);
         setError(null);
-        navigate(config.routes.dashboard); // Sử dụng config.routes
+        navigate(config.routes.invoice); // Sử dụng config.routes
     };
 
     const handleTryAgain = () => {

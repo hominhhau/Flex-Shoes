@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import classNames from "classnames/bind";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; // Added Heroicons for eye icons
 import styles from "./ProfileForm.module.scss";
 import { Api_Profile } from "../../apis/Api_Profile";
 import { Api_Auth } from "../../apis/Api_Auth";
@@ -32,6 +33,11 @@ const ProfileForm = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [showPasswords, setShowPasswords] = useState({
+    oldPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  }); // Added state for password visibility
   const [loading, setLoading] = useState(true);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -46,25 +52,25 @@ const ProfileForm = () => {
           throw new Error("No user ID found. Please log in again.");
         }
         const response = await Api_Profile.getProfile(userId);
-     
-        console.log('API Response:', response);
+
+        console.log("API Response:", response);
         if (
-            response.status === 200 &&
-            response.data &&
-            response.data.status === 'SUCCESS' &&
-            response.data.response
+          response.status === 200 &&
+          response.data &&
+          response.data.status === "SUCCESS" &&
+          response.data.response
         ) {
-            const data = response.data.response;
-            setPersonalInfo({
-                firstName: data.firstName || '',
-                lastName: data.lastName || '',
-                email: data.email || '',
-                phoneNumber: data.phoneNumber || '',
-                gender: data.gender || 'OTHER',
-                addressString: data.address ? data.address.join(', ') : '',
-            });
+          const data = response.data.response;
+          setPersonalInfo({
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            email: data.email || "",
+            phoneNumber: data.phoneNumber || "",
+            gender: data.gender || "OTHER",
+            addressString: data.address ? data.address.join(", ") : "",
+          });
         } else {
-            setError('Unable to load profile information.');
+          setError("Unable to load profile information.");
         }
       } catch (error) {
         console.error("Profile load error:", error);
@@ -101,6 +107,13 @@ const ProfileForm = () => {
     const { name, value } = event.target;
     setLoginInfo({ ...loginInfo, [name]: value });
   };
+
+  const togglePasswordVisibility = (field) => {
+    setShowPasswords((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+  }; // Added function to toggle password visibility
 
   const validatePersonalInfo = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -516,46 +529,88 @@ const ProfileForm = () => {
                 <label htmlFor="oldPassword" className={cx("label")}>
                   <strong>Old Password</strong>
                 </label>
-                <input
-                  type="password"
-                  id="oldPassword"
-                  name="oldPassword"
-                  className={cx("input")}
-                  value={loginInfo.oldPassword}
-                  onChange={handleLoginChange}
-                  required
-                  disabled={updateLoading}
-                />
+                <div className={cx("input-container")}>
+                  <input
+                    type={showPasswords.oldPassword ? "text" : "password"} // Toggle input type
+                    id="oldPassword"
+                    name="oldPassword"
+                    className={cx("input")}
+                    value={loginInfo.oldPassword}
+                    onChange={handleLoginChange}
+                    required
+                    disabled={updateLoading}
+                  />
+                  <button
+                    type="button"
+                    className={cx("toggle-password")}
+                    onClick={() => togglePasswordVisibility("oldPassword")}
+                    disabled={updateLoading}
+                  >
+                    {showPasswords.oldPassword ? (
+                      <EyeSlashIcon className={cx("eye-icon")} />
+                    ) : (
+                      <EyeIcon className={cx("eye-icon")} />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className={cx("form-group")}>
                 <label htmlFor="newPassword" className={cx("label")}>
                   <strong>New Password</strong>
                 </label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  name="newPassword"
-                  className={cx("input")}
-                  value={loginInfo.newPassword}
-                  onChange={handleLoginChange}
-                  required
-                  disabled={updateLoading}
-                />
+                <div className={cx("input-container")}>
+                  <input
+                    type={showPasswords.newPassword ? "text" : "password"} // Toggle input type
+                    id="newPassword"
+                    name="newPassword"
+                    className={cx("input")}
+                    value={loginInfo.newPassword}
+                    onChange={handleLoginChange}
+                    required
+                    disabled={updateLoading}
+                  />
+                  <button
+                    type="button"
+                    className={cx("toggle-password")}
+                    onClick={() => togglePasswordVisibility("newPassword")}
+                    disabled={updateLoading}
+                  >
+                    {showPasswords.newPassword ? (
+                      <EyeSlashIcon className={cx("eye-icon")} />
+                    ) : (
+                      <EyeIcon className={cx("eye-icon")} />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className={cx("form-group")}>
                 <label htmlFor="confirmPassword" className={cx("label")}>
                   <strong>Confirm New Password</strong>
                 </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  className={cx("input")}
-                  value={loginInfo.confirmPassword}
-                  onChange={handleLoginChange}
-                  required
-                  disabled={updateLoading}
-                />
+                <div className={cx("input-container")}>
+                  <input
+                    type={showPasswords.confirmPassword ? "text" : "password"} // Toggle input type
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    className={cx("input")}
+                    value={loginInfo.confirmPassword}
+                    onChange={handleLoginChange}
+                    required
+                    disabled={updateLoading}
+                  />
+                  <button
+                    type="button"
+                    className={cx("toggle-password")}
+                    onClick={() => togglePasswordVisibility("confirmPassword")}
+                    disabled={updateLoading}
+                  >
+                    {showPasswords.confirmPassword ? (
+                      <EyeSlashIcon className={cx("eye-icon")} />
+                    ) : (
+                      <EyeIcon className={cx("eye-icon")} />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className={cx("button-container")}>
                 <button

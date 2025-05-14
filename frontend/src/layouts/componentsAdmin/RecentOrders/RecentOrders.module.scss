@@ -1,9 +1,86 @@
+.container {
+    background: #ffffff;
+    width: 100%;
+    border-radius: 24px; /* Bo góc lớn hơn */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 32px; /* Tăng padding để giao diện rộng rãi hơn */
+    margin-top: 32px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #e5e7eb; /* Đường phân cách */
+}
+
+.title {
+    font-size: 18px; /* Tăng kích thước tiêu đề */
+    font-weight: bold;
+    color: #1f2937; /* Màu xám đậm */
+}
+
+.search-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #374151;
+    outline: none;
+    transition: border-color 0.3s;
+
+    &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+}
+
+.search-button {
+    padding: 8px 16px;
+    background-color: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #2563eb;
+    }
+}
+
+.status-select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #374151;
+    background-color: #ffffff;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s;
+
+    &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+}
+
 .table-container {
     max-width: 100%;
     overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+    margin-top: 24px;
 }
 
-.table_fixed {
+.table-fixed {
     width: 100%;
     table-layout: auto; /* Để tự động tính toán chiều rộng các cột */
     border-collapse: collapse;
@@ -16,10 +93,16 @@
     }
 
     th {
+        font-size: 14px;
         font-weight: bold;
+        color: #6b7280; /* Màu xám nhạt */
+        text-transform: uppercase;
+        letter-spacing: 0.1em; /* Tăng khoảng cách chữ */
     }
 
     td {
+        font-size: 14px;
+        color: #374151; /* Màu xám đậm */
         word-wrap: break-word;
     }
 
@@ -67,4 +150,95 @@
             width: 20%; /* Cột Số tiền */
         }
     }
+
+    .table-body {
+        background-color: #ffffff;
+
+        .table-row {
+            transition: background-color 0.3s;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #f9fafb; /* Màu xám nhạt khi hover */
+            }
+        }
+
+        .table-cell {
+            color: #374151;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px; /* Kích thước chữ nhỏ hơn cho trạng thái */
+        }
+
+        .status-delivered {
+            background-color: #e0f2fe;
+            color: #3b82f6;
+        }
+
+        .status-canceled {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-processing {
+            background-color: #fefcbf;
+            color: #f59e0b;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #6b7280;
+            padding: 16px;
+        }
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.pagination-button {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #374151;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover:not(:disabled) {
+        background-color: #3b82f6;
+        color: #ffffff;
+        border-color: #3b82f6;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    &.active {
+        background-color: #3b82f6;
+        color: #ffffff;
+        border-color: #3b82f6;
+    }
+
+    &.ellipsis {
+        background-color: transparent;
+        cursor: default;
+        border: none;
+    }
+}
+
+.loading {
+    text-align: center;
+    font-size: 16px;
+    color: #6b7280;
+    padding: 20px;
 }
