@@ -3,7 +3,6 @@ import OrderDetails from '../pages/admin/OrderDetails/OrderDetails';
 const routes = {
     main: '/',
 
-
     home: '/home',
     // productdetail: '/productdetail',
 
@@ -32,6 +31,7 @@ const routes = {
     AllProduct: '/AllProduct',
 
     updateProfile: '/updateProfile',
+    invoice: '/invoice',
 };
 
 export default routes;

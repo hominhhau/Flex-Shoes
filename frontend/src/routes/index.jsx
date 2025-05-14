@@ -28,6 +28,7 @@ import AllProduct from '../pages/admin/Allproduct/Allproduct';
 
 import SidebarChat from '../pages/chatbot/SidebarChat';
 import CustomerInfo from '../pages/admin/CustomerInfo';
+import Invoice from '../pages/admin/Invoice';
 
 const publicRoutes = [
     { path: config.routes.main, component: Home },
@@ -57,8 +58,9 @@ const publicRoutes = [
     { path: config.routes.addNewProduct, component: AddNewProduct },
     { path: '/payment-failed', component: Home },
     { path: '/admin-chat', component: SidebarChat },
-    {path : config.routes.updateProfile, component: FormProfile},
+    { path: config.routes.updateProfile, component: FormProfile },
     { path: config.routes.infoCustomer, component: CustomerInfo },
+    { path: config.routes.invoice, component: Invoice },
 ];
 const privateRoutes = [];
 export { privateRoutes, publicRoutes };

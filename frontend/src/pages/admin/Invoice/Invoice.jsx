@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SlArrowRight, SlCalender } from 'react-icons/sl';
 import classNames from 'classnames/bind';
-import styles from './Dashboard.module.scss';
+import styles from './Invoice.module.scss';
 
 import OrderSummary from '../../../layouts/componentsAdmin/OrderSummary';
 import RecentOrders from '../../../layouts/componentsAdmin/RecentOrders';
@@ -9,7 +9,7 @@ import { Api_InvoiceAdmin } from '../../../../apis/Api_invoiceAdmin';
 
 const cx = classNames.bind(styles);
 
-function Dashboard() {
+function Invoice() {
     const today = new Date();
     const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
 
@@ -17,7 +17,7 @@ function Dashboard() {
     const [totalShipping, setTotalShipping] = useState(0);
     const [totalRevenue, setTotalRevenue] = useState(0);
 
-    // Fetch API data for dashboard overview
+    // Fetch API data for Invoice overview
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -31,7 +31,7 @@ function Dashboard() {
                 const totalRevenueResponse = await Api_InvoiceAdmin.getTotalRevenue();
                 setTotalRevenue(totalRevenueResponse.data);
             } catch (error) {
-                console.error('Error fetching dashboard data:', error);
+                console.error('Error fetching Invoice data:', error);
             }
         };
 
@@ -43,9 +43,9 @@ function Dashboard() {
             <div className="p-[24px]">
                 <div className="flex justify-between">
                     <div>
-                        <p className="font-bold text-[24px]">Dashboard</p>
+                        <p className="font-bold text-[24px]">Invoice</p>
                         <div className={cx('tab')}>
-                            Home <SlArrowRight size={10} className="mx-3" /> Dashboard
+                            Home <SlArrowRight size={10} className="mx-3" /> Invoice
                         </div>
                     </div>
                     <div className="flex items-end">
@@ -53,16 +53,13 @@ function Dashboard() {
                         {formattedDate}
                     </div>
                 </div>
-                <div className="flex mt-5 col-span-3 gap-6">
-                    {/* Pass data to OrderSummary components */}
-                    <OrderSummary name={'Total Orders'} price={totalOrders} rate={50} />
-                    <OrderSummary name={'Total Orders in Shipping'} price={totalShipping} rate={50} />
-                    <OrderSummary name={'Total Revenue'} price={`$ ${totalRevenue}`} rate={50} />
+
+                <div>
+                    <RecentOrders />
                 </div>
-                <div>{/* <RecentOrders /> */}</div>
             </div>
         </div>
     );
 }
 
-export default Dashboard;
+export default Invoice;
