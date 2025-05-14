@@ -32,9 +32,9 @@
 .form input[type='password'] {
     width: calc(100% - 20px);
     margin-bottom: 20px;
-    background-color: #e7e7e3;
+    // background-color: #e7e7e3;
     height: 50px;
-    border: 2px solid black;
+    border: 1px solid black;
     border-radius: 10px;
     padding-left: 20px;
     outline: none;
@@ -92,12 +92,11 @@ input[type='checkbox']:checked::after {
     border: 2px solid black;
     border-radius: 10px;
 }
-.content-body{
+.content-body {
     ul {
         margin-left: 40px;
         list-style-type: disc;
     }
-    
 }
 .content-bottom a {
     color: black;
@@ -124,25 +123,25 @@ input[type='checkbox']:checked::after {
     background-color: black;
     color: white;
     display: flex;
-    justify-content: space-between;
-    align-items: center; 
+    justify-content: flex-end;
+    align-items: center;
     border: none;
     border-radius: 5px;
     padding: 0 10px;
     cursor: pointer;
     font-size: 16px;
     &:hover {
-        background-color: #4a69e2; 
+        background-color: #4a69e2;
     }
     .text {
         margin-left: auto;
     }
 }
-.custom-icon{
+.custom-icon {
     display: flex;
     justify-content: center;
     align-items: center;
     &:hover {
-        background-color: white; 
+        background-color: white;
     }
 }
