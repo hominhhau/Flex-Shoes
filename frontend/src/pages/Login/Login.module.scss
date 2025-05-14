@@ -6,8 +6,8 @@
     background-color: #e7e7e3;
 }
 .form-login {
-    padding: 50px;
-    width: 45%;
+    padding-right: 50px;
+    width: 50%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -41,6 +41,7 @@
 }
 .form button[type='submit'] {
     width: 100%;
+    margin-top: 10px;
     margin-bottom: 20px;
     height: 50px;
     border: 1px solid #ccc;
