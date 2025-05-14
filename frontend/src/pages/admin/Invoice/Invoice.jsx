@@ -39,8 +39,8 @@ function Invoice() {
     }, []);
 
     return (
-        <div className="w-full pl-[260px] mt-[96px]">
-            <div className="p-[24px]">
+        <div className="w-full pl-[260px] mt-[100px]">
+            <div className="p-[20px]">
                 <div className="flex justify-between">
                     <div>
                         <p className="font-bold text-[24px]">Invoice</p>
@@ -54,7 +54,7 @@ function Invoice() {
                     </div>
                 </div>
 
-                <div>
+                <div className="mt-5">
                     <RecentOrders />
                 </div>
             </div>

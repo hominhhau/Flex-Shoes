@@ -30,6 +30,9 @@ const AllProduct = () => {
     const [selectedGender, setSelectedGender] = useState('all');
     const [filteredProducts, setFilteredProducts] = useState([]);
 
+    const today = new Date();
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -100,10 +103,16 @@ const AllProduct = () => {
 
     return (
         <div className={cx('wrapper')}>
-            <div>
-                <p className="font-bold text-[24px]">Dashboard</p>
-                <div className={cx('tab')}>
-                    Home <SlArrowRight size={10} className="mx-3" /> All Products
+            <div className="flex justify-between mb-5">
+                <div>
+                    <p className="font-bold text-[24px]">All Products</p>
+                    <div className={cx('tab')}>
+                        Home <SlArrowRight size={10} className="mx-3" /> All Products
+                    </div>
+                </div>
+                <div className="flex items-end ">
+                    <SlCalender className="mr-5 mb-2" />
+                    {formattedDate}
                 </div>
             </div>
             <div className={cx('header')}>

@@ -26,6 +26,9 @@ const OrderDetails = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [isError, setIsError] = useState(false);
 
+    const today = new Date();
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
+
     // Chuẩn hóa trạng thái đơn hàng
     const normalizeStatus = (status) => {
         if (!status) return 'Processing';
@@ -125,11 +128,17 @@ const OrderDetails = () => {
     const shippingFee = invoice.deliveryMethod === 'Standard Delivery' ? 6 : 0;
     return (
         <div className={cx('wrapper')}>
-            <div>
-                <p className="font-bold text-[24px]">Invoice</p>
-                <div className={cx('tab')}>
-                    Home <SlArrowRight size={10} className="mx-3" /> Invoice <SlArrowRight size={10} className="mx-3" />{' '}
-                    Invoice Detail
+            <div className="flex justify-between mb-5">
+                <div>
+                    <p className="font-bold text-[24px]">Invoice</p>
+                    <div className={cx('tab')}>
+                        Home <SlArrowRight size={10} className="mx-3" /> Invoice
+                        <SlArrowRight size={10} className="mx-3" /> Invoice Detail
+                    </div>
+                </div>
+                <div className="flex items-end ">
+                    <SlCalender className="mr-5 mb-2" />
+                    {formattedDate}
                 </div>
             </div>
             <div className={cx('contentOrder')}>

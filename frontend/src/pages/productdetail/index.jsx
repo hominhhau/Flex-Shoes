@@ -22,6 +22,9 @@ const ProductDetail = () => {
     const [uniqueColors, setUniqueColors] = useState([]);
     const [uniqueSizes, setUniqueSizes] = useState([]);
 
+    const today = new Date();
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
+
     // Fetch product details
     useEffect(() => {
         const fetchProduct = async () => {

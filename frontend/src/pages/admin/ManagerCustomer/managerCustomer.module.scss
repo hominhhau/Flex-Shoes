@@ -1,8 +1,12 @@
+.tab {
+    display: flex;
+    align-items: center;
+}
 /* Tổng container */
 .page-wrapper {
     margin-top: 100px; /* Khoảng cách từ header */
     margin-left: 280px; /* Khoảng cách từ sidebar */
-    padding: 20px;
+    padding: 20px 20px 20px 0; /* Padding cho container */
 }
 
 /* Container của bảng */
@@ -91,7 +95,9 @@
     color: #007bff;
     cursor: pointer;
     border-radius: 4px;
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+        background-color 0.3s,
+        color 0.3s;
 }
 
 .page-button.active {
@@ -167,7 +173,6 @@
 
 .save-button:hover {
     background-color: #0056b3; /* Màu xanh đậm khi hover */
-    
 }
 
 .cancel-button {

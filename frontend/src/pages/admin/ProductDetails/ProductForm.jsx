@@ -23,6 +23,8 @@ const ProductForm = () => {
     const [isError, setIsError] = useState(false);
     const [isAnnounce, setIsAnnounce] = useState(false);
     const [loading, setLoading] = useState(true); // Add loading state
+    const today = new Date();
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -139,11 +141,17 @@ const ProductForm = () => {
 
     return (
         <>
-            <div className={cx('tab-1')}>
-                <p className="font-bold text-[24px]">Invoice</p>
-                <div className={cx('tab')}>
-                    Home <SlArrowRight size={10} className="mx-3" /> All Products
-                    <SlArrowRight size={10} className="mx-3" /> Products Detail
+            <div className="flex justify-between mb-5">
+                <div className={cx('tab-1')}>
+                    <p className="font-bold text-[24px]">All Products</p>
+                    <div className={cx('tab')}>
+                        Home <SlArrowRight size={10} className="mx-3" /> All Products
+                        <SlArrowRight size={10} className="mx-3" /> Products Detail
+                    </div>
+                </div>
+                <div className="flex items-end ">
+                    <SlCalender className="mr-5 mb-2" />
+                    {formattedDate}
                 </div>
             </div>
             <form className={cx('formContainer')} onSubmit={handleSummit}>
