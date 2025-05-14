@@ -1,7 +1,7 @@
 .wrapper {
     display: flex;
     align-items: center;
-    padding: 6px 16px;
+    padding: 16px 26px;
     cursor: pointer;
 
     &:hover {
@@ -9,8 +9,8 @@
     }
 }
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
 }

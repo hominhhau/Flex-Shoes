@@ -21,12 +21,10 @@ export const Api_Product = {
     getProductDetail: async (id) => ApiManager.get(`/inventory/getAllProducts/${id}`),
 
     // Tìm kiếm sản phẩm theo tên
-    searchProduct: async (name) => ApiManager.get(`/api/product/search?name=${encodeURIComponent(name)}`),
+    searchProduct: async (name) => ApiManager.get(`/inventory/searchProduct?name=${encodeURIComponent(name)}`),
 
     // Lấy tất cả sản phẩm cho admin
     getAllProducts: async () => ApiManager.get('/api/products/admin'),
-
-    searchProduct: async (name) => ApiManager.get(`api/product/search?name=${encodeURIComponent(name)}`),
     //getAllProducts: async () => ApiManager.get(`api/products/admin`),
     getAllProducts: async () => ApiManager.get(`/inventory/getAllProducts`),
 };

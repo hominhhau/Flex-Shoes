@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDebounce } from '../../../hooks';
 // import request from '~/utils/request';
 // import * as searchServices from '~/services/searchService';
-import { Api_Inventory } from '../../../../apis/Api_Inventory';
+import { Api_Product } from '../../../../apis/Api_Product';
 
 import classNames from 'classnames/bind';
 import styles from './Search.module.scss';
@@ -40,8 +40,19 @@ function Search() {
         // Axios search result
         const fetchApi = async () => {
             setLoading(true);
-            const result = await Api_Inventory.searchProduct(debounced);
-            setSearchResult(result);
+            try {
+                const res = await Api_Product.searchProduct(debounced);
+                console.log('API trả về:', res); // 👈 kiểm tra log
+
+                if (Array.isArray(res.data)) {
+                    setSearchResult(res.data); // ✅ dùng res.data là mảng
+                } else {
+                    setSearchResult([]); // fallback nếu không phải mảng
+                }
+            } catch (error) {
+                console.error('Lỗi gọi API tìm kiếm:', error);
+                setSearchResult([]);
+            }
             setLoading(false);
         };
         fetchApi();
@@ -88,7 +99,7 @@ function Search() {
                             {
                                 // Search result
                                 searchResult.map((result) => (
-                                    <div key={result.productId} onClick={() => handleProductClick(result.productId)}>
+                                    <div key={result._id} onClick={() => handleProductClick(result._id)}>
                                         <ProductSearch data={result} />
                                     </div>
                                 ))
