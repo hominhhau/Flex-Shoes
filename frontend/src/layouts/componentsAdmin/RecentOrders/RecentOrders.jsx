@@ -16,7 +16,7 @@ function RecentOrders() {
     const [ordersPerPage] = useState(5); // Number of orders per page
     const [searchQuery, setSearchQuery] = useState(''); // Search input value
     const [orderStatus, setOrderStatus] = useState('All'); // Order status
-    const [allOrders, setAllOrders] = useState([]); 
+    const [allOrders, setAllOrders] = useState([]);
 
     // Function to fetch recent invoices via API
     const fetchRecentOrders = async () => {
@@ -60,7 +60,7 @@ function RecentOrders() {
                 setOrders(allOrders);
             } else {
                 // If a specific status is selected, filter the list by status
-                const filteredOrders = allOrders.filter(order => order.orderStatus === orderStatus);
+                const filteredOrders = allOrders.filter((order) => order.orderStatus === orderStatus);
                 setOrders(filteredOrders);
             }
         } catch (error) {
@@ -73,7 +73,7 @@ function RecentOrders() {
     useEffect(() => {
         searchByStatus();
     }, [orderStatus]);
-    
+
     // Handle initial component render
     useEffect(() => {
         fetchRecentOrders();
@@ -111,7 +111,7 @@ function RecentOrders() {
 
     if (loading) return <div className="text-center">Loading...</div>;
 
-    if (orders.length === 0) return <div className="text-center">No recent orders found.</div>;
+    // if (orders.length === 0) return <div className="text-center">No recent orders found.</div>;
 
     return (
         <div className="bg-white w-full rounded-3xl shadow-md p-12 mt-8">
@@ -123,12 +123,12 @@ function RecentOrders() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Enter customer ID..."
+                        placeholder="Enter search ..."
                         className="border border-gray-300 px-4 py-2 rounded-xl focus:border-blue-500"
                     />
                     <button
                         onClick={searchById} // Search by ID
-                        className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
+                        className="px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
                     >
                         Search
                     </button>
@@ -139,7 +139,7 @@ function RecentOrders() {
                             setOrderStatus(e.target.value); // Update status
                             searchByStatus(); // Call search function on change
                         }}
-                        className="border border-gray-300 px-4 py-2 rounded-xl"
+                        className="border border-gray-300 px-4 py-3 rounded-xl"
                     >
                         <option value="All">All</option>
                         <option value="Delivered">Delivered</option>
@@ -152,41 +152,70 @@ function RecentOrders() {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Order ID</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Date</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/3">Customer Name</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Status</th>
-                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">Amount</th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">
+                                Order ID
+                            </th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">
+                                Date
+                            </th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/3">
+                                Customer Name
+                            </th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">
+                                Status
+                            </th>
+                            <th className="py-6 text-left font-bold text-gray-500 uppercase tracking-wider w-1/5">
+                                Amount
+                            </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 ">
-                        {currentOrders.map((order, index) => (
-                            <tr
-                                key={index}
-                                className="hover:bg-gray-50"
-                                onClick={() => {
-                                    navigator(config.routes.OrderDetails, { state: { invoiceId: order.invoiceId } });
-                                }}
-                            >
-                                <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">{order.invoiceId}</td>
-                                <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">{order.issueDate}</td>
-                                <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">{order.receiverName}</td>
-                                <td className="cursor-pointer py-6 whitespace-nowrap">
-                                    <span
-                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-medium ${
-                                            order.orderStatus === 'Delivered'
-                                                ? 'text-blue-500'
-                                                : order.orderStatus === 'Canceled'
-                                                ? 'text-red-500'
-                                                : 'text-orange-500'
-                                        }`}
-                                    >
-                                        {order.orderStatus}
-                                    </span>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {currentOrders.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="text-center py-8 text-gray-500">
+                                    No matching orders found.
                                 </td>
-                                <td className="py-4 whitespace-nowrap text-gray-900"> ${Number(order.total).toFixed(2)}</td>
                             </tr>
-                        ))}
+                        ) : (
+                            currentOrders.map((order, index) => (
+                                <tr
+                                    key={index}
+                                    className="hover:bg-gray-50"
+                                    onClick={() => {
+                                        navigator(config.routes.OrderDetails, {
+                                            state: { invoiceId: order.invoiceId },
+                                        });
+                                    }}
+                                >
+                                    <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">
+                                        {order.invoiceId}
+                                    </td>
+                                    <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">
+                                        {order.issueDate}
+                                    </td>
+                                    <td className="cursor-pointer py-6 whitespace-nowrap text-gray-900">
+                                        {order.receiverName}
+                                    </td>
+                                    <td className="cursor-pointer py-6 whitespace-nowrap">
+                                        <span
+                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-medium ${
+                                                order.orderStatus === 'Delivered'
+                                                    ? 'text-blue-500'
+                                                    : order.orderStatus === 'Canceled'
+                                                      ? 'text-red-500'
+                                                      : 'text-orange-500'
+                                            }`}
+                                        >
+                                            {order.orderStatus}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 whitespace-nowrap text-gray-900">
+                                        {' '}
+                                        ${Number(order.total).toFixed(2)}
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -205,7 +234,11 @@ function RecentOrders() {
                     <button
                         key={index}
                         className={`px-4 py-2 mx-2 rounded-xl border border-gray-300 ${
-                            page === '...' ? 'bg-transparent' : currentPage === page ? 'bg-blue-500 text-white' : 'hover:bg-blue-500 hover:text-white'
+                            page === '...'
+                                ? 'bg-transparent'
+                                : currentPage === page
+                                  ? 'bg-blue-500 text-white'
+                                  : 'hover:bg-blue-500 hover:text-white'
                         }`}
                         onClick={() => page !== '...' && handlePageChange(page)}
                         disabled={page === '...'}

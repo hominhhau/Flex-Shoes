@@ -4,6 +4,7 @@ import styles from './AllProduct.module.scss';
 import { Api_Inventory } from '../../../../apis/Api_Inventory';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
+import { SlArrowRight, SlCalender } from 'react-icons/sl';
 
 const cx = classNames.bind(styles);
 
@@ -99,6 +100,12 @@ const AllProduct = () => {
 
     return (
         <div className={cx('wrapper')}>
+            <div>
+                <p className="font-bold text-[24px]">Dashboard</p>
+                <div className={cx('tab')}>
+                    Home <SlArrowRight size={10} className="mx-3" /> All Products
+                </div>
+            </div>
             <div className={cx('header')}>
                 <h1>All Products</h1>
                 <div className={cx('filter-container')}>

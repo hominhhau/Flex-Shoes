@@ -149,10 +149,6 @@ export function ProductDetails({ product, brand, category, setProduct, setQuanti
 
     return (
         <section className={cx('inputSection')}>
-            <nav className={cx('breadcrumb')}>
-                <span>Home</span> <span>All Products</span> <span>Product Details</span>
-            </nav>
-
             <div className={cx('fieldGroup')}>
                 <label htmlFor="productName" className={cx('fieldLabel')}>
                     Product Name

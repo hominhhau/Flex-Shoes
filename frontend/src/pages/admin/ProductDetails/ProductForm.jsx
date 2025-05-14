@@ -7,6 +7,7 @@ import { ImageUploader } from './ImageUploader';
 import { Api_Inventory } from '../../../../apis/Api_Inventory';
 import config1 from '../../../config';
 import Modal from '../../../components/Modal';
+import { SlArrowRight, SlCalender } from 'react-icons/sl';
 
 const cx = classNames.bind(styles);
 
@@ -138,6 +139,13 @@ const ProductForm = () => {
 
     return (
         <>
+            <div className={cx('tab-1')}>
+                <p className="font-bold text-[24px]">Invoice</p>
+                <div className={cx('tab')}>
+                    Home <SlArrowRight size={10} className="mx-3" /> All Products
+                    <SlArrowRight size={10} className="mx-3" /> Products Detail
+                </div>
+            </div>
             <form className={cx('formContainer')} onSubmit={handleSummit}>
                 <div className={cx('formContent')}>
                     <ProductDetails

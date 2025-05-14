@@ -1,34 +1,40 @@
+/* Container chính */
 .formContainer {
-    // align-items: end;
     border-radius: 16px;
     background: #fff;
     display: flex;
     flex-direction: column;
     justify-content: start;
-    padding-top: 120px;
-    padding-left: 400px;
-    height: 10000px;
-
+    margin-left: 280px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    padding: 40px 20px;
+    height: auto; /* Đổi height cố định thành auto để responsive */
+    min-height: 600px; /* Đảm bảo chiều cao tối thiểu */
 }
 
+/* Nội dung form */
 .formContent {
     display: flex;
-    align-items: start;
+    align-items: flex-start; /* Sửa space-between thành flex-start để tránh lỗi căn chỉnh */
     gap: 40px 47px;
     justify-content: start;
     flex-wrap: wrap;
 }
 
+/* Phần nhập liệu */
 .inputSection {
     border-radius: 16px;
     background: #fff;
     display: flex;
-    min-width: 200px;
+    min-width: 300px; /* Giảm min-width để phù hợp với màn hình nhỏ */
     flex-direction: column;
     justify-content: start;
-    width: 500px;
+    width: 600px;
+    max-width: 100%; /* Đảm bảo không vượt quá container */
 }
 
+/* Nhóm trường */
 .fieldGroup {
     display: flex;
     width: 100%;
@@ -40,11 +46,15 @@
     margin-top: 0;
 }
 
+/* Nhãn trường */
 .fieldLabel {
     color: #232321;
-    font: 600 20px Rubik, sans-serif;
+    font:
+        600 20px Rubik,
+        sans-serif;
 }
 
+/* Wrapper input */
 .inputWrapper {
     display: flex;
     margin-top: 16px;
@@ -52,22 +62,18 @@
     flex-direction: column;
 }
 
-.textInput {
-    border-radius: 8px;
-    border: 1px solid #232321;
-    min-height: 48px;
-    width: 100%;
-    padding: 15px 16px;
-}
-
+/* Input văn bản */
+.textInput,
 .selectInput {
     border-radius: 8px;
     border: 1px solid #232321;
     min-height: 48px;
     width: 100%;
     padding: 15px 16px;
+    box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
 }
 
+/* Textarea */
 .textArea {
     border-radius: 8px;
     border: 1px solid #232321;
@@ -77,25 +83,31 @@
     resize: none;
 }
 
+/* Nhóm hai cột */
 .twoColumnGroup {
     display: flex;
     gap: 24px;
     width: 100%;
+    flex-wrap: wrap; /* Cho phép wrap trên màn hình nhỏ */
 }
 
+/* Nhóm ba cột */
 .threeColumnGroup {
     display: flex;
     gap: 16px;
     width: 100%;
     align-items: flex-start;
     padding-top: 16px;
+    flex-wrap: wrap; /* Cho phép wrap trên màn hình nhỏ */
 }
 
+/* Trường cột */
 .columnField {
     flex: 1;
     min-width: 120px;
 }
 
+/* Input tag */
 .tagInput {
     border-radius: 8px;
     border: 1px solid #232321;
@@ -104,12 +116,14 @@
     padding: 12px;
 }
 
+/* Danh sách tag */
 .tagList {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
 }
 
+/* Tag */
 .tag {
     border-radius: 20px;
     background: #36323b;
@@ -117,6 +131,7 @@
     padding: 6px 12px;
 }
 
+/* Phần hình ảnh */
 .imageSection {
     border-radius: 16px;
     background: #fff;
@@ -124,21 +139,25 @@
     min-width: 200px;
     flex-direction: column;
     width: 400px;
+    max-width: 100%; /* Đảm bảo không vượt quá container */
 }
 
+/* Hình ảnh chính */
 .mainImage {
     border-radius: 16px;
     background: #fafafa;
     padding: 8px;
-    min-height: 444px;
+    min-height: 300px; /* Giảm chiều cao tối thiểu */
 }
 
+/* Hình ảnh sản phẩm */
 .productImage {
     width: 100%;
     border-radius: 8px;
     object-fit: contain;
 }
 
+/* Vùng kéo thả */
 .dropZone {
     border-radius: 8px;
     border: 1px dashed #232321;
@@ -147,27 +166,36 @@
     margin-top: 16px;
 }
 
+/* Icon tải lên */
 .uploadIcon {
     width: 64px;
     height: 64px;
 }
 
+/* Văn bản tải lên */
 .uploadText {
     margin-top: 16px;
     color: #70706e;
-    font: 16px Open Sans, sans-serif;
+    font:
+        16px Open Sans,
+        sans-serif;
 }
 
+/* Gợi ý tải lên */
 .uploadHint {
     color: #70706e;
     margin-top: 8px;
-    font: 14px Open Sans, sans-serif;
+    font:
+        14px Open Sans,
+        sans-serif;
 }
 
+/* Danh sách thumbnail */
 .thumbnailList {
     margin-top: 24px;
 }
 
+/* Mục thumbnail */
 .thumbnailItem {
     display: flex;
     gap: 16px;
@@ -176,12 +204,10 @@
     padding: 16px;
     margin-top: 12px;
     align-items: center;
+    max-width: 100%;
 }
 
-.thumbnailItem:first-child {
-    margin-top: 0;
-}
-
+/* Thumbnail */
 .thumbnail {
     width: 64px;
     height: 64px;
@@ -189,15 +215,20 @@
     object-fit: cover;
 }
 
+/* Thông tin thumbnail */
 .thumbnailInfo {
     flex: 1;
 }
 
+/* Tên thumbnail */
 .thumbnailName {
     color: #232321;
-    font: 600 16px Open Sans, sans-serif;
+    font:
+        600 16px Open Sans,
+        sans-serif;
 }
 
+/* Thanh tiến trình */
 .progressBar {
     margin-top: 16px;
     height: 4px;
@@ -206,143 +237,109 @@
     width: 50%;
 }
 
+/* Icon xóa */
 .deleteIcon {
     width: 32px;
     height: 32px;
     cursor: pointer;
 }
 
-.actionButtons {
+/* Nút hành động */
+.actionButtons,
+.buttonContainer {
     display: flex;
     margin-top: 40px;
     gap: 16px;
     width: 100%;
     max-width: 457px;
-    // center
     margin-left: auto;
     margin-right: auto;
+    flex-wrap: wrap; /* Cho phép wrap trên màn hình nhỏ */
 }
 
+/* Nút chung */
 .button {
     flex: 1;
     border-radius: 8px;
     min-height: 48px;
     border: none;
-    font: 500 14px Rubik, sans-serif;
+    font:
+        500 14px Rubik,
+        sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.25px;
     cursor: pointer;
 }
 
+/* Nút cập nhật */
 .updateButton {
     background: #232321;
     color: #fff;
 }
 
-.buttonContainer {
-    display: flex;
-    gap: 16px;
-    margin-top: 40px;
-    width: 100%;
-    max-width: 457px;
-    // center
-    margin-left: auto;
-    margin-right: auto;
-
-}
-
+/* Nút thêm */
 .addButton {
     background: #232321;
     color: #fff;
     padding: 10px 16px;
     border-radius: 8px;
     margin-bottom: 20px;
-
 }
 
+/* Nút xóa */
 .deleteButton {
     background: #d00000;
     color: #fff;
 }
 
+/* Nút hủy */
 .cancelButton {
     background: transparent;
     border: 1px solid #232321;
     color: #232321;
 }
 
-@media (max-width: 991px) {
-    .formContainer {
-        padding: 0 20px;
-    }
-
-    .formContent,
-    .inputSection,
-    .fieldGroup,
-    .inputWrapper,
-    .textInput,
-    .textArea,
-    .tagInput,
-    .imageSection,
-    .thumbnailItem {
-        max-width: 100%;
-    }
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-}
-
+/* Nút gửi */
 .submitButton {
-    composes: button;
     background-color: rgb(0, 208, 111);
     color: #fff;
     border: none;
 }
 
-.cancelButton {
-    composes: button;
-    background: transparent;
-    border: 1px solid #232321;
-    color: #232321;
-}
-
+/* Container bảng */
 .container {
     width: 100%;
     padding: 16px;
     background-color: #f9f9f9;
 }
 
+/* Tiêu đề */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
-
 }
 
+/* Tiêu đề chính */
 .title {
     font-size: 24px;
     font-weight: bold;
 }
 
+/* Đường phân cách */
 .divider {
     border-bottom: 1px solid #ddd;
     margin-bottom: 16px;
 }
 
+/* Container bảng */
 .tableContainer {
     display: grid;
     gap: 8px;
 }
 
+/* Tiêu đề bảng */
 .tableHeader {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -351,11 +348,13 @@
     padding: 8px;
 }
 
+/* Ô tiêu đề */
 .headerCell {
     padding: 8px;
     text-align: center;
 }
 
+/* Hàng bảng */
 .tableRow {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -364,12 +363,14 @@
     align-items: center;
 }
 
+/* Ô bảng */
 .cell {
     padding: 8px;
     text-align: center;
     gap: 8px;
 }
 
+/* Input số lượng */
 .quantityInput {
     width: 50px;
     padding: 5px;
@@ -377,11 +378,14 @@
     border-radius: 4px;
 }
 
+/* Ô hành động */
 .actionCell {
     display: flex;
     gap: 8px;
+    justify-content: center;
 }
 
+/* Nút hành động */
 .actionButton {
     padding: 4px 8px;
     border: none;
@@ -389,16 +393,7 @@
     cursor: pointer;
 }
 
-.updateButton {
-    background-color: #4caf50;
-    color: white;
-}
-
-.deleteButton {
-    background-color: #f44336;
-    color: white;
-}
-
+/* Nút AI */
 .aiButton {
     display: inline-block;
     margin-bottom: 8px;
@@ -430,8 +425,169 @@
     0% {
         box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
     }
-
     100% {
         box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
+    }
+}
+
+/* Tab */
+.tab-1 {
+    margin-left: 280px;
+    margin-top: 120px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+}
+
+/* Ẩn thị giác */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+    .formContainer {
+        margin-left: 280px; /* Giảm margin trái */
+        padding: 30px 15px;
+    }
+
+    .inputSection,
+    .imageSection {
+        width: 100%; /* Chuyển sang full width */
+        min-width: 0;
+    }
+
+    .mainImage {
+        min-height: 250px; /* Giảm chiều cao hình ảnh chính */
+    }
+}
+
+@media (max-width: 991px) {
+    .formContainer {
+        margin-left: 280px; /* Xóa margin trái */
+        margin-top: 20px;
+        padding: 20px;
+    }
+
+    .formContent {
+        gap: 20px;
+    }
+
+    .twoColumnGroup,
+    .threeColumnGroup {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .columnField {
+        min-width: 100%;
+    }
+
+    .tableHeader,
+    .tableRow {
+        grid-template-columns: 1fr 1fr 1fr; /* Ẩn cột cuối trên tablet */
+    }
+
+    .actionCell {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 767px) {
+    .formContainer {
+        margin-left: 280px; /* Xóa margin trái */
+        padding: 15px;
+        margin-right: 0;
+    }
+
+    .formContent {
+        gap: 15px;
+    }
+
+    .fieldLabel {
+        font-size: 18px; /* Giảm kích thước chữ */
+    }
+
+    .textInput,
+    .selectInput,
+    .textArea,
+    .tagInput {
+        min-height: 40px; /* Giảm chiều cao input */
+    }
+
+    .mainImage {
+        min-height: 200px;
+    }
+
+    .uploadIcon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .tableHeader,
+    .tableRow {
+        grid-template-columns: 1fr 1fr; /* Chỉ hiển thị 2 cột */
+    }
+
+    .headerCell:nth-child(3),
+    .headerCell:nth-child(4),
+    .cell:nth-child(3),
+    .cell:nth-child(4) {
+        display: none; /* Ẩn cột 3 và 4 */
+    }
+}
+
+@media (max-width: 576px) {
+    .formContainer {
+        margin-left: 280px; /* Xóa margin trái */
+        padding: 10px;
+    }
+
+    .fieldLabel {
+        font-size: 16px;
+    }
+
+    .textInput,
+    .selectInput {
+        padding: 10px 12px;
+    }
+
+    .textArea {
+        height: 80px;
+    }
+
+    .actionButtons,
+    .buttonContainer {
+        flex-direction: column;
+        max-width: 100%;
+    }
+
+    .button {
+        min-height: 40px;
+    }
+
+    .tableHeader,
+    .tableRow {
+        grid-template-columns: 1fr; /* Chỉ 1 cột trên mobile nhỏ */
+    }
+
+    .headerCell:nth-child(2),
+    .cell:nth-child(2) {
+        display: none; /* Ẩn cột 2 */
+    }
+
+    .title {
+        font-size: 20px;
     }
 }
