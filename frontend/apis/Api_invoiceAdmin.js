@@ -11,31 +11,30 @@ export const ApiManager = axios.create({
 });
 
 // Interceptor để tự động gắn token vào mỗi request
-ApiManager.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    },
-);
+ApiManager.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
 
 // Interceptor để bắt lỗi 401 và xử lý tự động
 ApiManager.interceptors.response.use(
-    (response) => response,
-    (error) => {
+    response => response,
+    error => {
         if (error.response && error.response.status === 401) {
             console.warn('Token hết hạn hoặc không hợp lệ!');
             localStorage.removeItem('token');
             window.location.href = '/login'; // hoặc navigate đến trang login
         }
         return Promise.reject(error);
-    },
+    }
 );
+
+
 
 export const Api_InvoiceAdmin = {
     // Lấy danh sách 10 hóa đơn gần nhất
@@ -64,15 +63,29 @@ export const Api_InvoiceAdmin = {
     },
 
     // Tìm kiếm hóa đơn dựa trên ID, tên khách hàng, hoặc trạng thái đơn hàng
-    searchInvoices: async (params) => {
+
+    searchInvoices: async (filters) => {
+        const params = {};
+        // Chỉ gửi một tham số lọc tại một thời điểm
+        if (filters.id) {
+            params.id = filters.id;
+        } else if (filters.customerName) {
+            params.customerName = filters.customerName;
+        } else if (filters.orderStatus) {
+            params.orderStatus = filters.orderStatus;
+        }
+
         const queryString = new URLSearchParams(params).toString();
-        return ApiManager.get(`/invoices/search?${queryString}`);
+        return ApiManager.get(`invoices/search?${queryString}`);
     },
 
     delete: async (id) => ApiManager.delete(`invoiceDetail/delete/${id}`),
 
-    updateQuantityAfterCheckout: async (data) => ApiManager.put(`api/product/updateQuantityAfterCheckout`, data),
+    updateQuantityAfterCheckout: async (data) => ApiManager.put(`/inventory/purchase`, data),
 
     // Lấy danh sách sản phẩm đã mua của một customer
     getPurchasedProducts: async (customerId) => ApiManager.get(`/invoices/findByCustomerId/${customerId}`),
+
+    getOrderCountByMonthsInYear: async (year) => ApiManager.get(`/invoices/stats/orders-by-month/${year}`),
+    getRevenueByMonthsInYear: async (year) => ApiManager.get(`/invoices/stats/revenue-by-month/${year}`),
 };
