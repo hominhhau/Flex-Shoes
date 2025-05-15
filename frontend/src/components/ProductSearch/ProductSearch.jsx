@@ -13,7 +13,7 @@ function ProductSearch({ data }) {
         <Link className={cx('wrapper')}>
             <Image
                 className={cx('avatar')}
-                src={data.images[0]}
+                src={data.image?.[0]?.imageID?.URL || 'https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png'}
                 alt="logo"
                 fallBack="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png"
             />
@@ -23,7 +23,9 @@ function ProductSearch({ data }) {
                     <span>{data.productName}</span>
                     {/* {data.tick && <FontAwesomeIcon className={cx('check')} icon={faCheckCircle} />} */}
                 </h4>
-                <span className={cx('username')}>{data.description}</span>
+                <span className={cx('username')}>
+                    {data.description?.length > 60 ? `${data.description.slice(0, 60)}...` : data.description}
+                </span>
             </div>
         </Link>
     );

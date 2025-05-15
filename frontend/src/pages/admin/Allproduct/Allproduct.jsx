@@ -4,6 +4,7 @@ import styles from './AllProduct.module.scss';
 import { Api_Inventory } from '../../../../apis/Api_Inventory';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
+import { SlArrowRight, SlCalender } from 'react-icons/sl';
 
 const cx = classNames.bind(styles);
 
@@ -28,6 +29,9 @@ const AllProduct = () => {
     const [selectedBrand, setSelectedBrand] = useState('all');
     const [selectedGender, setSelectedGender] = useState('all');
     const [filteredProducts, setFilteredProducts] = useState([]);
+
+    const today = new Date();
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -99,6 +103,18 @@ const AllProduct = () => {
 
     return (
         <div className={cx('wrapper')}>
+            <div className="flex justify-between mb-5">
+                <div>
+                    <p className="font-bold text-[24px]">All Products</p>
+                    <div className={cx('tab')}>
+                        Home <SlArrowRight size={10} className="mx-3" /> All Products
+                    </div>
+                </div>
+                <div className="flex items-end ">
+                    <SlCalender className="mr-5 mb-2" />
+                    {formattedDate}
+                </div>
+            </div>
             <div className={cx('header')}>
                 <h1>All Products</h1>
                 <div className={cx('filter-container')}>

@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './managerCustomer.module.scss';
 import { useNavigate } from 'react-router-dom';
-
-
+import { SlArrowRight, SlCalender } from 'react-icons/sl';
 
 import { Api_ManagerCustomer } from '../../../../apis/Api_ManagerCustomer';
 import config from '../../../config';
-
 
 const cx = classNames.bind(styles);
 
 function ManagerCustomer() {
     const navigate = useNavigate();
     const [data, setData] = useState([]);
+    const today = new Date();
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -51,7 +51,19 @@ function ManagerCustomer() {
 
     return (
         <div className={cx('page-wrapper')}>
-            <div className={cx('table-container')}>
+            <div className="flex justify-between mb-5">
+                <div>
+                    <p className="font-bold text-[24px]">Customer</p>
+                    <div className={cx('tab')}>
+                        Home <SlArrowRight size={10} className="mx-3" /> Customer
+                    </div>
+                </div>
+                <div className="flex items-end ">
+                    <SlCalender className="mr-5 mb-2" />
+                    {formattedDate}
+                </div>
+            </div>
+            <div className={cx('table-container', 'rounded-3xl')}>
                 <table className={cx('table')}>
                     <thead>
                         <tr>

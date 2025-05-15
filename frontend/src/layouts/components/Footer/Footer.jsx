@@ -20,16 +20,6 @@ function Footer() {
                             <h2 className="text-[48px] font-bold">JOIN OUR KICKSPLUS CLUB & GET 15% OFF</h2>
                             <p className="text-[20px]">Sign up for free! Join the community.</p>
                         </div>
-                        <div className="flex md:w-auto mt-8 justify-around text-black">
-                            <input
-                                type="email"
-                                placeholder="Email address"
-                                className=" md:w-[30rem] mr-4 rounded-[12px] pl-4"
-                            />
-                            <Button viewProduct className="w-[130px] h-[4rem]">
-                                SUBMIT
-                            </Button>
-                        </div>
                     </div>
                     <div className="mx-auto">
                         <LogoWhiteIcon />
