@@ -9,7 +9,7 @@
 }
 
 .list-container {
-  @apply w-full;
+  @apply w-full relative; /* Modified: Added relative for sticky pagination */
 }
 
 .loading {
@@ -25,7 +25,7 @@
 }
 
 .invoice-table {
-  @apply w-full border-collapse;
+  @apply w-full border-collapse min-h-[400px]; /* Modified: Added min-height to prevent layout shift */
 }
 
 .invoice-row {
@@ -110,4 +110,34 @@
 
 .grand-total-amount {
   @apply font-bold text-green-600;
+}
+
+/* Added: Styles for pagination */
+.pagination-container {
+  @apply flex justify-center mt-6 bg-white py-4;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-button {
+  @apply px-4 py-2 mx-1 bg-white border border-gray-300 rounded-md text-gray-700;
+  &:hover:not(:disabled) {
+    @apply bg-green-100;
+  }
+  &:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
+
+.pagination-item {
+  @apply px-4 py-2 mx-1 bg-white border border-gray-300 rounded-md text-gray-700;
+  &:hover:not(.active-page) {
+    @apply bg-green-100;
+  }
+}
+
+.active-page {
+  @apply bg-green-500 text-white border-green-500;
 }

@@ -63,15 +63,29 @@ export const Api_InvoiceAdmin = {
     },
 
     // Tìm kiếm hóa đơn dựa trên ID, tên khách hàng, hoặc trạng thái đơn hàng
-    searchInvoices: async (params) => {
+
+    searchInvoices: async (filters) => {
+        const params = {};
+        // Chỉ gửi một tham số lọc tại một thời điểm
+        if (filters.id) {
+            params.id = filters.id;
+        } else if (filters.customerName) {
+            params.customerName = filters.customerName;
+        } else if (filters.orderStatus) {
+            params.orderStatus = filters.orderStatus;
+        }
+
         const queryString = new URLSearchParams(params).toString();
         return ApiManager.get(`invoices/search?${queryString}`);
     },
 
     delete: async (id) => ApiManager.delete(`invoiceDetail/delete/${id}`),
 
-    updateQuantityAfterCheckout: async (data) => ApiManager.put(`api/product/updateQuantityAfterCheckout`, data),
+    updateQuantityAfterCheckout: async (data) => ApiManager.put(`/inventory/purchase`, data),
 
     // Lấy danh sách sản phẩm đã mua của một customer
     getPurchasedProducts: async (customerId) => ApiManager.get(`/invoices/findByCustomerId/${customerId}`),
+
+    getOrderCountByMonthsInYear: async (year) => ApiManager.get(`/invoices/stats/orders-by-month/${year}`),
+    getRevenueByMonthsInYear: async (year) => ApiManager.get(`/invoices/stats/revenue-by-month/${year}`),
 };

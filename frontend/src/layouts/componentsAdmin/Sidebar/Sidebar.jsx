@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faClipboardList, faInbox, faTable, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCartShopping, faClipboardList, faInbox, faTable, faUser } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.scss';
 import { Link } from 'react-router-dom';
 import { LogoIcon } from '../../../icons';
@@ -16,6 +16,12 @@ function Sildebar() {
                     <div className={cx('menu-wrapper')}>
                         <FontAwesomeIcon icon={faTable} />
                         <button className={cx('menu-item')}>Dashboard</button>
+                    </div>
+                </Link>
+                <Link to="/invoice">
+                    <div className={cx('menu-wrapper')}>
+                        <FontAwesomeIcon icon={faCartShopping} />
+                        <button className={cx('menu-item')}>Invoice</button>
                     </div>
                 </Link>
                 <Link to="/AllProduct">

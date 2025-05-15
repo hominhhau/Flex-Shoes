@@ -2,9 +2,10 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #f1f1f1;
-    padding-left: 270px;
-    margin-top: 96px;
+    // background-color: #f1f1f1;
+    padding-left: 280px;
+    margin-top: 120px;
+    padding-right: 20px;
 
     .header {
         width: 100%;
@@ -16,7 +17,7 @@
         height: auto;
         margin-bottom: 20px;
         background-color: white;
-        border-radius: 10px;
+        border-radius: 15px;
 
         .contentTop {
             height: 100px;
@@ -25,17 +26,16 @@
             margin-bottom: 20px;
         }
 
-        .orderID{    
+        .orderID {
             width: 400px;
-            .id{
+            .id {
                 display: flex;
             }
-            .schedula{
+            .schedula {
                 display: flex;
-                flex-direction: row;   
+                flex-direction: row;
             }
-    }
-
+        }
 
         .orderStatus {
             display: flex;
@@ -53,14 +53,14 @@
 
         .orderStatus button {
             text-align: center;
-            margin-right: 20px;
+            margin-right: 25px;
             height: 40px;
             width: 50px;
             border-radius: 10px;
             background-color: #f1f1f1;
 
             &:hover {
-                background-color: #4A69E2;
+                background-color: #4a69e2;
                 color: white;
             }
         }
@@ -80,41 +80,36 @@
             display: flex;
             justify-content: flex-start;
             flex-direction: row;
-            
         }
 
-        .cardIcon  {
+        .cardIcon {
             border-radius: 10px;
             width: 60px;
             height: 60px;
             padding: 15px;
-            background-color: #4A69E2;
+            background-color: #4a69e2;
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 10px;
 
-            
-
             .icon {
                 width: 40px;
                 height: 40px;
                 border-radius: 10px;
-               
- 
             }
-           
-
         }
     }
 
     .contentProduct {
-        border-radius: 10px;
+        border-radius: 15px;
         height: auto;
         background-color: white;
-        
-        h2{
+        padding: 20px;
+
+        h2 {
             font-size: 25px;
+            margin-bottom: 20px;
         }
 
         .totalProduct table {
@@ -123,27 +118,27 @@
         }
 
         .totalProduct table th {
-            padding: 10px;
+            // padding: 10px;
             text-align: left;
         }
 
         .totalProduct table td {
-
-            padding: 10px;
+            // padding: 10px;
             text-align: left;
         }
 
         .totalProduct table tr:nth-child(even) {
             background-color: #f2f2f2;
-
         }
 
         .totalPayment {
+            margin-top: 80px;
             height: auto;
             display: flex;
             flex-direction: row;
             justify-content: flex-end;
             background-color: white;
+            text-align: right;
         }
 
         .totalPayment table {
@@ -155,5 +150,9 @@
             text-align: left;
         }
     }
+}
 
+.tab {
+    display: flex;
+    align-items: center;
 }
