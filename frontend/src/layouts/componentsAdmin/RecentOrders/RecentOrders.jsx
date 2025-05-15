@@ -24,17 +24,11 @@ function RecentOrders() {
   // Fetch recent invoices on component mount
   useEffect(() => {
     const fetchRecentOrders = async () => {
-      try {
-        setLoading(true);
-        const response = await Api_InvoiceAdmin.getRecentInvoices();
-        setOrders(response.data);
-        setAllOrders(response.data);
-      } catch (error) {
-        console.error('Error fetching recent invoices:', error);
-        alert('Unable to load invoice list');
-      } finally {
-        setLoading(false);
-      }
+      setLoading(true);
+      const response = await Api_InvoiceAdmin.getRecentInvoices();
+      setOrders(response.data);
+      setAllOrders(response.data);
+      setLoading(false);
     };
 
     fetchRecentOrders();
@@ -42,43 +36,37 @@ function RecentOrders() {
 
   // Search function for individual criteria
   const searchOrders = async () => {
-    try {
-      setLoading(true);
-      let filters = {};
+    setLoading(true);
+    let filters = {};
 
-      if (searchType === 'id') {
-        if (searchQuery && !isNaN(searchQuery) && /^[0-9]+$/.test(searchQuery)) {
-          filters = { id: parseInt(searchQuery) };
-        } else {
-          alert('Please enter a valid ID (numbers only)');
-          setLoading(false);
-          return;
-        }
-      } else if (searchType === 'customerName') {
-        if (searchQuery) {
-          filters = { customerName: searchQuery };
-        } else {
-          alert('Please enter a customer name');
-          setLoading(false);
-          return;
-        }
-      } else if (searchType === 'status' && orderStatus !== 'All') {
-        filters = { orderStatus };
+    if (searchType === 'id') {
+      if (searchQuery && !isNaN(searchQuery) && /^[0-9]+$/.test(searchQuery)) {
+        filters = { id: parseInt(searchQuery) };
       } else {
-        const response = await Api_InvoiceAdmin.getRecentInvoices();
-        setOrders(response.data);
+        alert('Please enter a valid ID (numbers only)');
         setLoading(false);
         return;
       }
-
-      const response = await Api_InvoiceAdmin.searchInvoices(filters);
-      setOrders(response.data.length > 0 ? response.data : []);
-    } catch (error) {
-      console.error('Error searching invoices:', error);
-      alert(`No invoices found for ${searchType === 'id' ? 'ID' : searchType === 'customerName' ? 'customer name' : 'status'}`);
-    } finally {
+    } else if (searchType === 'customerName') {
+      if (searchQuery) {
+        filters = { customerName: searchQuery };
+      } else {
+        alert('Please enter a customer name');
+        setLoading(false);
+        return;
+      }
+    } else if (searchType === 'status' && orderStatus !== 'All') {
+      filters = { orderStatus };
+    } else {
+      const response = await Api_InvoiceAdmin.getRecentInvoices();
+      setOrders(response.data);
       setLoading(false);
+      return;
     }
+
+    const response = await Api_InvoiceAdmin.searchInvoices(filters);
+    setOrders(response.data.length > 0 ? response.data : []);
+    setLoading(false);
   };
 
   // Trigger search when orderStatus changes

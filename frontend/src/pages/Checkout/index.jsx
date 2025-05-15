@@ -246,62 +246,84 @@ const CheckoutForm = () => {
       if (selectedPaymentMethod === 'Bank Transfer') {
         if (paymentResponse?.URL) {
           window.location.href = paymentResponse.URL;
+          return; // Exit early to prevent further processing
         } else {
           throw new Error('No payment URL received from VNPay.');
         }
       }
 
       if (selectedPaymentMethod === 'Cash on Delivery' || paymentResponse?.status === 'success') {
+        console.log('Updating inventory with cart data:', JSON.stringify(handleCartData, null, 2));
         updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout({ items: handleCartData });
         console.log('Updated quantity response:', JSON.stringify(updateQuantity, null, 2));
 
-        if (updateQuantity?.status === 'fail') {
-          setErrors({ inventory: `Failed to update inventory: ${updateQuantity?.message || 'Unknown server error'}` });
+        if (updateQuantity?.data?.status === 'fail') {
+          setErrors({ inventory: `Failed to update inventory: ${updateQuantity?.data?.message || 'Unknown server error'}` });
           setIsCompleted(true);
           return;
         }
-        if (!updateQuantity?.updated) {
-          console.warn('Response does not contain updated property:', updateQuantity);
+
+        if (!updateQuantity?.data?.updated) {
+          console.warn('Inventory update response does not indicate success:', updateQuantity);
+          setErrors({ inventory: 'Inventory update did not complete successfully.' });
           setIsCompleted(true);
           return;
         }
       }
 
       // Update cart by removing checked items
-      const newCartData = cartData.filter(
-        (product) =>
-          !checkedItems.some(
-            (item) =>
-              item.id === product.id &&
-              item.size === product.size &&
-              item.color === product.color
-          )
-      );
-      // Save to sessionStorage
-      sessionStorage.setItem('cart', JSON.stringify(newCartData));
-      console.log('Updated cart saved to sessionStorage:', newCartData);
+      console.log('Starting cart update process...');
+      console.log('Current cartData:', JSON.stringify(cartData, null, 2));
+      console.log('Checked items to remove:', JSON.stringify(checkedItems, null, 2));
+
+      const newCartData = cartData.filter((product) => {
+        const isRemoved = checkedItems.some(
+          (item) =>
+            item.id === product.id &&
+            item.size === product.size &&
+            item.color === product.color
+        );
+        console.log(`Checking product: ${JSON.stringify(product)} - Removed: ${isRemoved}`);
+        return !isRemoved;
+      });
+
+      console.log('New cartData after filtering:', JSON.stringify(newCartData, null, 2));
+
+      // Save updated cart to sessionStorage
+      try {
+        sessionStorage.setItem('cart', JSON.stringify(newCartData));
+        console.log('Cart successfully saved to sessionStorage:', JSON.stringify(newCartData, null, 2));
+      } catch (storageError) {
+        console.error('Failed to save cart to sessionStorage:', storageError);
+        setErrors({ general: 'Failed to update cart in storage. Please try again.' });
+        setIsFailed(true);
+        return;
+      }
 
       // Update local state to reflect new cart
+      const updatedItemCount = newCartData.reduce((sum, item) => sum + item.quantity, 0);
+      const updatedTotalAmount = newCartData.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      console.log('Updating checkoutData with:', {
+        cartData: newCartData,
+        itemCount: updatedItemCount,
+        totalAmount: updatedTotalAmount,
+        checkedItems: [],
+      });
+
       setCheckoutData((prev) => {
-        const updatedCartData = newCartData;
-        const updatedItemCount = newCartData.reduce((sum, item) => sum + item.quantity, 0);
-        const updatedTotalAmount = newCartData.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        console.log('Updating checkoutData:', {
-          cartData: updatedCartData,
-          itemCount: updatedItemCount,
-          totalAmount: updatedTotalAmount,
-          checkedItems: [],
-        });
-        return {
+        const newState = {
           ...prev,
-          cartData: updatedCartData,
+          cartData: newCartData,
           itemCount: updatedItemCount,
           totalAmount: updatedTotalAmount,
           checkedItems: [],
         };
+        console.log('New checkoutData state:', JSON.stringify(newState, null, 2));
+        return newState;
       });
 
       // Dispatch custom event to notify other components of cart update
+      console.log('Dispatching cartUpdated event with new cart:', JSON.stringify(newCartData, null, 2));
       window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { cart: newCartData } }));
 
       setIsCompleted(true);
@@ -339,6 +361,7 @@ const CheckoutForm = () => {
       }
     } finally {
       setIsLoading(false);
+      console.log('Checkout process completed. isLoading set to false.');
     }
   }, [
     email,
@@ -596,4 +619,4 @@ const CheckoutForm = () => {
   );
 };
 
-export default React.memo(CheckoutForm);
+export default CheckoutForm;
