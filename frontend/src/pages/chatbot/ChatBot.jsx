@@ -5,7 +5,6 @@ import { getMessages, sendMessages } from "../../redux/chatSlice";
 import { useNavigate } from 'react-router-dom';
 
 const ChatBot = () => {
-  // const senderID = localStorage.getItem('customerId') ? localStorage.getItem('customerId') : 1;  // khi login sẽ lấy từ user
   const senderID = 1;  // khi login sẽ lấy từ user
   const [isOpen, setIsOpen] = useState(false);
   const messages = useSelector((state) => state.chat.message);

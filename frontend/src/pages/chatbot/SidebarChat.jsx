@@ -7,7 +7,6 @@ import ChatAdmin from "./ChatAdmin";
 import { Api_ManagerCustomer } from '../../../apis/Api_ManagerCustomer';
 
 export default function SidebarChat() {
-    // const senders = useSelector((state) => state.chat.senders);
     const [lastMessages, setLastMessages] = useState([])
     const [senders, setSenders] = useState([
         {
@@ -24,15 +23,14 @@ export default function SidebarChat() {
 
     const dispatch = useDispatch();
     const fetchListSender = async () => {
-        // let sender = await dispatch(getAllSender());
         // { customerId: "KH001", customerName: "Nguyễn Thị Quỳnh Giang", email: "nguyenthiquynhgiang@gmail.com", phoneNumber: "123-456-7890", address: "TPHCM" },
-        // try {
-        //     const customers = await Api_ManagerCustomer.getAllCustomers();
-        //     // setSenders(customers);
-        //     console.log('Customers:', customers);
-        // } catch (error) {
-        //     console.error('Failed to fetch customers:', error);
-        // }
+        try {
+            const customers = await Api_ManagerCustomer.getAllCustomers();
+            // setSenders(customers);
+            console.log('Customers:', customers);
+        } catch (error) {
+            console.error('Failed to fetch customers:', error);
+        }
     };
 
     // Gọi last message của từng sender
@@ -54,7 +52,6 @@ export default function SidebarChat() {
 
 
     useEffect(() => {
-        // dispatch(getAllSender());
         lastMessage(senders)
         const interval = setInterval(fetchListSender, 1000); // Lặp lại mỗi 1 giây
         return () => clearInterval(interval); // Cleanup khi component unmount
