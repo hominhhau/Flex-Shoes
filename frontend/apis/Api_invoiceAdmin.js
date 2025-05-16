@@ -103,12 +103,12 @@ export const Api_InvoiceAdmin = {
 
     // Lấy danh sách sản phẩm đã mua của một customer
     getPurchasedProducts: async (customerId) => ApiManager.get(`/invoices/findByCustomerId/${customerId}`),
-/**
-     * Lấy số lượng đơn hàng theo tháng trong một năm, có thể lọc theo khoảng thời gian
-     * @param {number} year - Năm cần thống kê
-     * @param {Object} params - Tham số lọc { startDate: 'yyyy-MM-dd', endDate: 'yyyy-MM-dd' }
-     * @returns {Promise} Trả về danh sách số lượng đơn hàng theo tháng
-     */
+    /**
+         * Lấy số lượng đơn hàng theo tháng trong một năm, có thể lọc theo khoảng thời gian
+         * @param {number} year - Năm cần thống kê
+         * @param {Object} params - Tham số lọc { startDate: 'yyyy-MM-dd', endDate: 'yyyy-MM-dd' }
+         * @returns {Promise} Trả về danh sách số lượng đơn hàng theo tháng
+         */
     getOrderCountByMonthsInYear: async (year, params = {}) => {
         return ApiManager.get(`/invoices/stats/orders-by-month/${year}`, { params });
     },
@@ -122,4 +122,21 @@ export const Api_InvoiceAdmin = {
     getRevenueByMonthsInYear: async (year, params = {}) => {
         return ApiManager.get(`/invoices/stats/revenue-by-month/${year}`, { params });
     },
+
+
+    getOrderCountByYears: async (params) => {
+        return axios.get(`/invoices/stats/orders-by-year`, { params });
+    },
+    getRevenueByYears: async (params) => {
+        return axios.get(`/invoices/stats/revenue-by-year`, { params });
+    },
+
+    // /stats/orders-by-day
+
+   getRevenueByDays: async (params) => {
+        return await axios.get(`/invoices/stats/revenue-by-day`, { params });
+    },
+    getOrderCountByDays: async (params) => {
+        return await axios.get(`/invoices/stats/orders-by-day`, { params });
+    }
 };

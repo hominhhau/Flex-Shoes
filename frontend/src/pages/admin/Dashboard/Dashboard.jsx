@@ -34,8 +34,8 @@ function Dashboard() {
     const [orderData, setOrderData] = useState([]);
     const [revenueData, setRevenueData] = useState([]);
     const [statsType, setStatsType] = useState('year'); // day, month, year, range
-    const [startDate, setStartDate] = useState(''); // For day filter
-    const [endDate, setEndDate] = useState(''); // For day filter
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [month, setMonth] = useState(1);
     const [year, setYear] = useState(today.getFullYear());
     const [startYear, setStartYear] = useState(today.getFullYear() - 1);
@@ -65,7 +65,7 @@ function Dashboard() {
             setError(null);
             try {
                 let params = {};
-                let yearForCharts = year;
+                let chartYear = year;
 
                 if (statsType === 'day') {
                     if (!startDate || !endDate) {
@@ -84,7 +84,7 @@ function Dashboard() {
                         startDate: startDate,
                         endDate: endDate,
                     };
-                    yearForCharts = end.getFullYear();
+                    chartYear = end.getFullYear();
                 } else if (statsType === 'month') {
                     if (!month || !year) {
                         setError('Please select both month and year');
@@ -97,7 +97,7 @@ function Dashboard() {
                         startDate: formatToLocalDate(start),
                         endDate: formatToLocalDate(end),
                     };
-                    yearForCharts = year;
+                    chartYear = year;
                 } else if (statsType === 'year') {
                     if (!year) {
                         setError('Please select a year');
@@ -110,7 +110,7 @@ function Dashboard() {
                         startDate: formatToLocalDate(start),
                         endDate: formatToLocalDate(end),
                     };
-                    yearForCharts = year;
+                    chartYear = year;
                 } else if (statsType === 'range') {
                     if (startYear > endYear) {
                         setError('Start year cannot be later than end year');
@@ -123,28 +123,55 @@ function Dashboard() {
                         startDate: formatToLocalDate(start),
                         endDate: formatToLocalDate(end),
                     };
-                    yearForCharts = endYear;
+                    chartYear = endYear;
                 }
+
+                console.log('Fetching data with params:', params);
+
+                // Determine which API endpoints to call based on statsType
+                let orderCountResponse, revenueResponse;
+                if (statsType === 'day' || statsType === 'month') {
+                    // Use daily stats for day and month filters
+                    [orderCountResponse, revenueResponse] = await Promise.all([
+                        Api_InvoiceAdmin.getOrderCountByDays(params),
+                        Api_InvoiceAdmin.getRevenueByDays(params),
+                    ]);
+                } else if (statsType === 'year') {
+                    // Use monthly stats for year filter
+                    [orderCountResponse, revenueResponse] = await Promise.all([
+                        Api_InvoiceAdmin.getOrderCountByMonthsInYear(chartYear, params),
+                        Api_InvoiceAdmin.getRevenueByMonthsInYear(chartYear, params),
+                    ]);
+                } else if (statsType === 'range') {
+                    // Use yearly stats for range filter
+                    [orderCountResponse, revenueResponse] = await Promise.all([
+                        Api_InvoiceAdmin.getOrderCountByYears(params),
+                        Api_InvoiceAdmin.getRevenueByYears(params),
+                    ]);
+                }
+
+                console.log('Order count response:', orderCountResponse.data);
+                console.log('Revenue response:', revenueResponse.data);
+
+                // Ensure data is an array
+                const orderDataArray = Array.isArray(orderCountResponse.data) ? orderCountResponse.data : [];
+                const revenueDataArray = Array.isArray(revenueResponse.data) ? revenueResponse.data : [];
 
                 const [
                     totalOrdersResponse,
                     totalShippingResponse,
                     totalRevenueResponse,
-                    orderCountResponse,
-                    revenueResponse,
                 ] = await Promise.all([
                     Api_InvoiceAdmin.getTotalOrders(params),
                     Api_InvoiceAdmin.getTotalShipping(params),
                     Api_InvoiceAdmin.getTotalRevenue(params),
-                    Api_InvoiceAdmin.getOrderCountByMonthsInYear(yearForCharts, params),
-                    Api_InvoiceAdmin.getRevenueByMonthsInYear(yearForCharts, params),
                 ]);
 
                 setTotalOrders(totalOrdersResponse.data || 0);
                 setTotalShipping(totalShippingResponse.data || 0);
                 setTotalRevenue(totalRevenueResponse.data || 0);
-                setOrderData(orderCountResponse.data || []);
-                setRevenueData(revenueResponse.data || []);
+                setOrderData(orderDataArray);
+                setRevenueData(revenueDataArray);
             } catch (error) {
                 setError(error.response?.data?.message || 'Failed to fetch dashboard data');
                 console.error('Error fetching dashboard data:', error);
@@ -156,13 +183,68 @@ function Dashboard() {
         fetchData();
     }, [statsType, startDate, endDate, month, year, startYear, endYear]);
 
+    // Chart label and title generator based on statsType
+    const getChartLabels = () => {
+        // Ensure orderData is an array before mapping
+        if (!Array.isArray(orderData)) {
+            console.warn('orderData is not an array:', orderData);
+            return [];
+        }
+
+        if (statsType === 'day' || statsType === 'month') {
+            return orderData.map((item) => item.date || '');
+        } else if (statsType === 'year') {
+            return orderData.map((item) => `Month ${item.month}` || '');
+        } else if (statsType === 'range') {
+            return orderData.map((item) => item.year?.toString() || '');
+        }
+        return [];
+    };
+
+    const getChartTitle = () => {
+        if (statsType === 'day') {
+            return `Order Count by Day (${startDate} to ${endDate})`;
+        } else if (statsType === 'month') {
+            return `Order Count by Day (Month ${month}/${year})`;
+        } else if (statsType === 'year') {
+            return `Order Count by Month (${year})`;
+        } else if (statsType === 'range') {
+            return `Order Count by Year (${startYear} to ${endYear})`;
+        }
+        return 'Order Count';
+    };
+
+    const getRevenueChartTitle = () => {
+        if (statsType === 'day') {
+            return `Revenue by Day (${startDate} to ${endDate})`;
+        } else if (statsType === 'month') {
+            return `Revenue by Day (Month ${month}/${year})`;
+        } else if (statsType === 'year') {
+            return `Revenue by Month (${year})`;
+        } else if (statsType === 'range') {
+            return `Revenue by Year (${startYear} to ${endYear})`;
+        }
+        return 'Revenue';
+    };
+
+    const getXAxisLabel = () => {
+        if (statsType === 'day' || statsType === 'month') {
+            return 'Date';
+        } else if (statsType === 'year') {
+            return 'Month';
+        } else if (statsType === 'range') {
+            return 'Year';
+        }
+        return 'Time';
+    };
+
     // Bar chart configuration for order count
     const orderChartData = {
-        labels: orderData.map((item) => `Month ${item.month}`),
+        labels: getChartLabels(),
         datasets: [
             {
                 label: 'Order Count',
-                data: orderData.map((item) => item.count),
+                data: Array.isArray(orderData) ? orderData.map((item) => item.count || 0) : [],
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
@@ -176,7 +258,7 @@ function Dashboard() {
             legend: { position: 'top' },
             title: {
                 display: true,
-                text: `Order Count by Month (${year})`,
+                text: getChartTitle(),
             },
         },
         scales: {
@@ -184,17 +266,17 @@ function Dashboard() {
                 beginAtZero: true,
                 title: { display: true, text: 'Orders' },
             },
-            x: { title: { display: true, text: 'Month' } },
+            x: { title: { display: true, text: getXAxisLabel() } },
         },
     };
 
     // Line chart configuration for revenue
     const revenueChartData = {
-        labels: revenueData.map((item) => `Month ${item.month}`),
+        labels: getChartLabels(),
         datasets: [
             {
                 label: 'Revenue',
-                data: revenueData.map((item) => item.revenue),
+                data: Array.isArray(revenueData) ? revenueData.map((item) => item.revenue || 0) : [],
                 fill: false,
                 borderColor: 'rgba(255, 99, 132, 1)',
                 tension: 0.1,
@@ -208,7 +290,7 @@ function Dashboard() {
             legend: { position: 'top' },
             title: {
                 display: true,
-                text: `Revenue by Month (${year})`,
+                text: getRevenueChartTitle(),
             },
         },
         scales: {
@@ -216,7 +298,7 @@ function Dashboard() {
                 beginAtZero: true,
                 title: { display: true, text: 'Revenue ($)' },
             },
-            x: { title: { display: true, text: 'Month' } },
+            x: { title: { display: true, text: getXAxisLabel() } },
         },
     };
 
@@ -373,10 +455,10 @@ function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Recent Orders
+                        {/* Recent Orders */}
                         <div className={cx('recent-orders')}>
                             <RecentOrders />
-                        </div> */}
+                        </div>
                     </>
                 )}
             </div>
