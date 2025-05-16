@@ -55,7 +55,7 @@ function Dashboard() {
   const [error, setError] = useState(null);
 
   // Generate year options (from 2020 to current year + 1)
-  const yearOptions = Array.from({ length: today.getFullYear() - 2019 + 1 }, (_, i) => 2020 + i);
+  const yearOptions = Array.from({ length: today.getFullYear() - 2019  }, (_, i) => 2020 + i);
 
   // Month options (1-12)
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
