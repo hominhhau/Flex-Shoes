@@ -1,4 +1,38 @@
 .tab {
     display: flex;
     align-items: center;
+    font-size: 14px;
+    color: #6b7280; /* Màu xám cho breadcrumb */
+    margin-top: 8px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1f2937; /* Màu xám đậm */
+}
+
+.date {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.date svg {
+    margin-right: 8px;
+    margin-bottom: 2px;
 }

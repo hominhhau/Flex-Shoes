@@ -149,8 +149,8 @@ const ProductForm = () => {
                         <SlArrowRight size={10} className="mx-3" /> Products Detail
                     </div>
                 </div>
-                <div className="flex items-end ">
-                    <SlCalender className="mr-5 mb-2" />
+                <div className="flex items-end mr-7">
+                    <SlCalender className="mr-6 mb-2" />
                     {formattedDate}
                 </div>
             </div>

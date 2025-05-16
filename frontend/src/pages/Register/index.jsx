@@ -1,15 +1,13 @@
 import classnames from 'classnames/bind';
-import { WiDirectionRight } from "react-icons/wi";
-import { FcGoogle } from "react-icons/fc";
-import { FaApple, FaFacebook, FaPlusSquare } from "react-icons/fa";
+import { WiDirectionRight } from 'react-icons/wi';
+import { FcGoogle } from 'react-icons/fc';
+import { FaApple, FaFacebook, FaPlusSquare } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
-import {Api_Auth} from '../../../apis/Api_Auth';
+import { Api_Auth } from '../../../apis/Api_Auth';
 import styles from './Register.module.scss';
-import Modal  from '../../components/Modal/Modal'; 
-
+import Modal from '../../components/Modal/Modal';
 
 const cx = classnames.bind(styles);
 
@@ -18,17 +16,17 @@ function Register() {
     const navigate = useNavigate();
     const [userInfor, setUserInfor] = useState({
         email: '',
-        gender:'',
-        phoneNumber:'',
-        registerDate: new Date()
-    })
-    const [fname, setFname] = useState('')
-    const [lname, setLname] = useState('')
-    const [addresses, setAddresses] = useState([''])
+        gender: '',
+        phoneNumber: '',
+        registerDate: new Date(),
+    });
+    const [fname, setFname] = useState('');
+    const [lname, setLname] = useState('');
+    const [addresses, setAddresses] = useState(['']);
     const [loginDetails, setLoginDetails] = useState({
         userName: '',
-        password: ''
-    })
+        password: '',
+    });
     const [isSuccess, setIsSuccess] = useState(false);
     const [isError, setIsError] = useState(false);
     const [validFields, setValidFields] = useState({
@@ -38,27 +36,26 @@ function Register() {
         phoneNumber: true,
         address: true,
         userName: true,
-        password: true
+        password: true,
     });
 
-    const [messageError, setMessageError] = useState("");
-
+    const [messageError, setMessageError] = useState('');
 
     const onChangeFName = (e) => {
         const value = e.target.value;
         const regex = /^[A-Za-z\s]{1,30}$/;
         setFname(value);
-        setUserInfor({ ...userInfor, firstName: value }); 
+        setUserInfor({ ...userInfor, firstName: value });
         setValidFields({ ...validFields, fname: regex.test(value) });
     };
     const onChangeLName = (e) => {
         const value = e.target.value;
         const regex = /^[A-Za-z\s]{1,30}$/;
         setLname(value);
-        setUserInfor({ ...userInfor, lastName: value }); 
+        setUserInfor({ ...userInfor, lastName: value });
         setValidFields({ ...validFields, lname: regex.test(value) });
     };
-    
+
     const onChangeEmail = (e) => {
         const value = e.target.value;
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -87,7 +84,6 @@ function Register() {
     // Hàm để thêm một ô input mới
     const handleAddAddress = () => {
         setAddresses([...addresses, '']); // Thêm một phần tử trống vào danh sách
-        
     };
 
     // Hàm để cập nhật giá trị của một ô input
@@ -98,21 +94,19 @@ function Register() {
     };
     // Hàm xử lý khi radio button thay đổi
     const handleChange = (e) => {
-        setUserInfor({ ...userInfor, gender: e.target.value })
-        
+        setUserInfor({ ...userInfor, gender: e.target.value });
     };
 
     //Hàm xử lý register
     const handleRegister = async () => {
         try {
-
             const registerData = {
                 ...loginDetails,
                 ...userInfor,
                 firstName: fname,
                 lastName: lname,
                 address: addresses,
-                roles: ['ROLE_USER']
+                roles: ['ROLE_USER'],
             };
             console.log('Register data:', registerData);
             const response = await Api_Auth.registerAccount(registerData);
@@ -123,44 +117,45 @@ function Register() {
             console.error('Register failed:', err.message);
             // setIsError(true);
         }
-    }
-   
+    };
 
     //Hàm xử lý submit
     const handleSubmit = (e) => {
         e.preventDefault();
         handleRegister();
-
-    }
+    };
     const handleLoginRedirect = () => {
-        navigate("/login"); 
+        navigate('/login');
     };
 
     const handleTryAgain = () => {
         setIsError(false);
     };
 
-
-
     return (
         <div className={cx('container-register')}>
             <div className={cx('form-register')}>
                 <div className={cx('content-header')}>
                     <h1>Register</h1>
-                    <p>Sign up with</p>
+                    {/* <p>Sign up with</p>
                     <div className={cx('option')}>
                         <button className={cx('custom-icon')}><FcGoogle size={25} /></button>
                         <button className={cx('custom-icon')}><FaApple size={25} /></button>
                         <button className={cx('custom-icon')}><FaFacebook size={25} color='blue' /></button>
                     </div>
-                    <h2>OR</h2>
+                    <h2>OR</h2> */}
                 </div>
                 <div className={cx('form')}>
                     <form onSubmit={handleSubmit}>
                         <div className={cx('form-group')}>
                             <h2>Your Name</h2>
-                            {!validFields.fname && <p style={{ color: 'red' }}>First name must be 1-30 characters and contain only letters</p>}
-                            <input type="text"
+                            {!validFields.fname && (
+                                <p style={{ color: 'red' }}>
+                                    First name must be 1-30 characters and contain only letters
+                                </p>
+                            )}
+                            <input
+                                type="text"
                                 name="fname"
                                 id="fname"
                                 value={userInfor.fname}
@@ -168,10 +163,15 @@ function Register() {
                                 pattern="^[A-Za-z\s]{1,30}$"
                                 required
                                 placeholder="First Name"
-                                style={{ borderColor: validFields.fname ? 'black' : 'red' }} 
+                                style={{ borderColor: validFields.fname ? 'black' : 'red' }}
                             />
-                            {!validFields.lname && <p style={{ color: 'red' }}>Last name must be 1-30 characters and contain only letters</p>}
-                            <input type="text"
+                            {!validFields.lname && (
+                                <p style={{ color: 'red' }}>
+                                    Last name must be 1-30 characters and contain only letters
+                                </p>
+                            )}
+                            <input
+                                type="text"
                                 name="lname"
                                 id="lname"
                                 placeholder="Last Name"
@@ -181,8 +181,11 @@ function Register() {
                                 onChange={onChangeLName}
                                 style={{ borderColor: validFields.lname ? 'black' : 'red' }}
                             />
-                            {!validFields.email && <p style={{ color: 'red' }}>Email must be in the form of example: example@gmail.com</p>}
-                            <input type="email"
+                            {!validFields.email && (
+                                <p style={{ color: 'red' }}>Email must be in the form of example: example@gmail.com</p>
+                            )}
+                            <input
+                                type="email"
                                 name="email"
                                 id="email"
                                 placeholder="Email"
@@ -191,8 +194,11 @@ function Register() {
                                 onChange={onChangeEmail}
                                 style={{ borderColor: validFields.email ? 'black' : 'red' }}
                             />
-                            {!validFields.phoneNumber && <p style={{ color: 'red' }}>Phone number must be start with 0 and have 10-11 digits</p>}
-                            <input type="text"
+                            {!validFields.phoneNumber && (
+                                <p style={{ color: 'red' }}>Phone number must be start with 0 and have 10-11 digits</p>
+                            )}
+                            <input
+                                type="text"
                                 name="phoneNumber"
                                 id="phoneNumber"
                                 placeholder="Phone Number"
@@ -202,17 +208,17 @@ function Register() {
                                 onChange={onChangePhoneNumber}
                                 style={{ borderColor: validFields.phoneNumber ? 'black' : 'red' }}
                             />
-
                         </div>
                         <div className={cx('form-group')}>
-
-                            <div className='flex justify-between items-center' >
+                            <div className="flex justify-between items-center">
                                 <h2>Your Address</h2>
-                                <button onClick={handleAddAddress} type='button'><FaPlusSquare className='mb-8 mr-10' size={20} /></button>
+                                <button onClick={handleAddAddress} type="button">
+                                    <FaPlusSquare className="mb-8 mr-10" size={20} />
+                                </button>
                             </div>
 
                             {addresses.map((address, index) => (
-                                <div key={index} className='mb-2'>
+                                <div key={index} className="mb-2">
                                     <input
                                         type="text"
                                         value={address}
@@ -224,53 +230,66 @@ function Register() {
                         </div>
                         <div className={cx('form-group')}>
                             <h2>Gender</h2>
-                            <input type="radio" 
-                                    name="gender" 
-                                    value="MEN" 
-                                    id="radMale"
-                                    checked={userInfor.gender === "MEN"}
-                                    onChange={handleChange}
-                                />&nbsp;&nbsp;
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="MEN"
+                                id="radMale"
+                                checked={userInfor.gender === 'MEN'}
+                                onChange={handleChange}
+                            />
+                            &nbsp;&nbsp;
                             <label htmlFor="radMale">MEN</label>&nbsp;&nbsp;
-                            <input type="radio" 
-                                    name="gender" 
-                                    value="WOMEN" 
-                                    id='radFemale'
-                                    checked={userInfor.gender === "WOMEN"}
-                                    onChange={handleChange}
-                             />&nbsp;&nbsp;
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="WOMEN"
+                                id="radFemale"
+                                checked={userInfor.gender === 'WOMEN'}
+                                onChange={handleChange}
+                            />
+                            &nbsp;&nbsp;
                             <label htmlFor="radFemale">WOMEN</label>&nbsp;&nbsp;
-                            <input type="radio" 
-                                    name="gender" 
-                                    value="UNISEX" 
-                                    id="radOrther"
-                                    checked={userInfor.gender === "UNISEX"}
-                                    onChange={handleChange}
-                             />&nbsp;&nbsp;
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="UNISEX"
+                                id="radOrther"
+                                checked={userInfor.gender === 'UNISEX'}
+                                onChange={handleChange}
+                            />
+                            &nbsp;&nbsp;
                             <label htmlFor="radOrther">UNISEX</label>&nbsp;&nbsp;
                         </div>
                         <div className={cx('form-group')}>
                             <h2>Login Details</h2>
-                            {!validFields.userName && <p style={{ color: 'red' }}>User name must be 10-20 characters and contain only letters, numbers, hyphens, and slashes</p>}
-                            <input type="text" 
-                                    name="userName" 
-                                    id="userName" 
-                                    placeholder="Username"
-                                    required
-                                    pattern="^[A-Za-z0-9\-\/]{10,20}$"
-                                    value={loginDetails.userName}
-                                    onChange={onChangeUserName}
-                                    style={{ borderColor: validFields.userName ? 'black' : 'red' }}
-                                    />
-                            <input type="password" 
-                                    name="password" 
-                                    id="password" 
-                                    placeholder="Password"
-                                    required
-                                    pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@.?])[A-Za-z\d.?@]{8,}$"
-                                    value={loginDetails.password}
-                                    onChange={onChangePassword}
-                                    style={{ borderColor: validFields.password ? 'black' : 'red' }}
+                            {!validFields.userName && (
+                                <p style={{ color: 'red' }}>
+                                    User name must be 10-20 characters and contain only letters, numbers, hyphens, and
+                                    slashes
+                                </p>
+                            )}
+                            <input
+                                type="text"
+                                name="userName"
+                                id="userName"
+                                placeholder="Username"
+                                required
+                                pattern="^[A-Za-z0-9\-\/]{10,20}$"
+                                value={loginDetails.userName}
+                                onChange={onChangeUserName}
+                                style={{ borderColor: validFields.userName ? 'black' : 'red' }}
+                            />
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="Password"
+                                required
+                                pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@.?])[A-Za-z\d.?@]{8,}$"
+                                value={loginDetails.password}
+                                onChange={onChangePassword}
+                                style={{ borderColor: validFields.password ? 'black' : 'red' }}
                             />
                             <p>
                                 Minimum 8 characters with at least one uppercase, one lowercase, one special character
@@ -278,22 +297,25 @@ function Register() {
                             </p>
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="checkbox" name="policy1" id='chkPolicy1' />&nbsp;&nbsp;
+                            <input type="checkbox" name="policy1" id="chkPolicy1" />
+                            &nbsp;&nbsp;
                             <label htmlFor="chkPolicy1">
                                 By clicking 'Log In' you agree to our website KicksClub Terms & Conditions, Kicks
                                 Privacy Notice and Terms & Conditions
                             </label>
                         </div>
                         <div className={cx('form-group')}>
-                            <input type="checkbox" name="polyci2" id='chkPolicy2' /> &nbsp;&nbsp;
+                            <input type="checkbox" name="polyci2" id="chkPolicy2" /> &nbsp;&nbsp;
                             <label htmlFor="chkPolicy2">
                                 Keep me logged in - applies to all log in options below. More info
                             </label>
                         </div>
                         <div className={cx('form-group')}>
-                            <button type="submit" className={cx('custom-button') }>
-                                <span className={cx("text")}>REGISTER</span>
-                                <span className={cx("icon")}><WiDirectionRight size={50} /></span>
+                            <button type="submit" className={cx('custom-button')}>
+                                <span className={cx('text')}>REGISTER</span>
+                                <span className={cx('icon')}>
+                                    <WiDirectionRight size={50} />
+                                </span>
                             </button>
                         </div>
                     </form>
@@ -320,8 +342,6 @@ function Register() {
                         adiClub.
                     </p>
                 </div>
-
-
             </div>
             {isSuccess && (
                 <Modal
@@ -333,23 +353,20 @@ function Register() {
                     contentConfirm={'OK'}
                 />
             )}
-            {
-                isError && (
-                    <Modal
-                        valid={false}
-                        title="Registration Failed!"
-                        message={messageError}
-                        isConfirm={true}
-                        isCancel={true}
-                        onConfirm={handleTryAgain}
-                        onCancel={handleLoginRedirect}
-                        contentConfirm={'Try again'}
-                        contentCancel="Login page"
-                    />
-                )
-            }
+            {isError && (
+                <Modal
+                    valid={false}
+                    title="Registration Failed!"
+                    message={messageError}
+                    isConfirm={true}
+                    isCancel={true}
+                    onConfirm={handleTryAgain}
+                    onCancel={handleLoginRedirect}
+                    contentConfirm={'Try again'}
+                    contentCancel="Login page"
+                />
+            )}
         </div>
-        
     );
 }
 

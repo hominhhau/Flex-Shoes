@@ -30,7 +30,6 @@ function Login() {
     };
     const handleLogin = async () => {
         try {
-
             const data = await Api_Auth.login(username, password);
 
             localStorage.setItem('token', data.response.token);
@@ -106,7 +105,7 @@ function Login() {
                         </div>
                     </form>
                 </div>
-                <div className={cx('option')}>
+                {/* <div className={cx('option')}>
                     <button className={cx('custom-icon')}>
                         <FcGoogle size={25} />
                     </button>
@@ -116,7 +115,7 @@ function Login() {
                     <button className={cx('custom-icon')}>
                         <FaFacebook size={25} color="blue" />
                     </button>
-                </div>
+                </div> */}
                 <div className={cx('content-bottom')}>
                     <p>
                         Don't have an account?
