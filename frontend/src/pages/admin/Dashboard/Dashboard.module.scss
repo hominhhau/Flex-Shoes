@@ -1,23 +1,13 @@
-.tab {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #6b7280; /* Màu xám cho breadcrumb */
-    margin-top: 8px;
+.wrapper {
+    padding: 20px;
+    margin-top: 80px; /* Adjust for fixed header */
+    margin-left: 280px; /* Adjust for sidebar */
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-}
-
-.chart-container {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
 }
 
 .header {
@@ -30,7 +20,18 @@
 .title {
     font-size: 24px;
     font-weight: bold;
-    color: #1f2937; /* Màu xám đậm */
+    color: #1f2937;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.arrow {
+    margin: 0 8px;
 }
 
 .date {
@@ -40,54 +41,126 @@
     color: #6b7280;
 }
 
-.date svg {
+.calendar-icon {
     margin-right: 8px;
-    margin-bottom: 2px;
 }
 
-.summary-container {
+/* Filter Section */
+.filter-section {
+    margin-bottom: 30px;
+}
+
+.filter-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.filter-controls {
     display: flex;
-    gap: 24px;
-    margin-bottom: 40px;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-.chart-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    width: 100%;
-    justify-content: center; /* Căn giữa nội dung */
-    margin: 0 auto; /* Căn giữa toàn bộ grid */
-}
-
-.select-year {
-    margin-bottom: 20px;
-    text-align: center; /* Căn giữa nhãn và select */
-}
-
-.select-year label {
-    font-size: 16px;
-    margin-right: 12px;
-    color: #374151; /* Màu xám đậm */
-}
-
-.select-year select {
+.select,
+.date-input,
+.month-select,
+.year-select {
     padding: 8px;
     border: 1px solid #d1d5db;
     border-radius: 4px;
-    font-size: 16px; /* Tăng kích thước chữ của select */
+    font-size: 14px;
     color: #374151;
     background-color: #ffffff;
     cursor: pointer;
 }
 
-.select-year select:focus {
+.select:focus,
+.date-input:focus,
+.month-select:focus,
+.year-select:focus {
     outline: none;
-    border-color: #3b82f6; /* Màu xanh khi focus */
+    border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Tăng kích thước chữ cho nhãn trục và tiêu đề biểu đồ (nếu cần áp dụng CSS trực tiếp) */
-.chart-container canvas {
-    font-size: 14px; /* Điều chỉnh kích thước chữ mặc định của Chart.js */
+.date-range,
+.month-range,
+.year-single,
+.year-range {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.to-label {
+    font-size: 14px;
+    color: #374151;
+}
+
+.error {
+    color: #dc2626;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Summary Section */
+.summary-container {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.summary-container > * {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* Chart Section */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.chart-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Recent Orders */
+.recent-orders {
+    margin-top: 40px;
+}
+
+.loading {
+    text-align: center;
+    font-size: 16px;
+    padding: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wrapper {
+        padding: 10px;
+    }
+
+    .filter-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .summary-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from 'react';
-import { SlArrowRight, SlCalender } from 'react-icons/sl';
+import { FaArrowRight, FaCalendarAlt } from 'react-icons/fa';
 import classNames from 'classnames/bind';
 import styles from './Dashboard.module.scss';
 import { Bar, Line } from 'react-chartjs-2';
@@ -15,10 +14,9 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-
 import OrderSummary from '../../../layouts/componentsAdmin/OrderSummary';
 import RecentOrders from '../../../layouts/componentsAdmin/RecentOrders';
-import { Api_InvoiceAdmin } from '../../../../apis/Api_invoiceAdmin';
+import { Api_InvoiceAdmin } from '../../../../apis/Api_InvoiceAdmin';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
@@ -28,46 +26,143 @@ const cx = classNames.bind(styles);
 function Dashboard() {
     const today = new Date();
     const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
+
+    // State for stats and filters
     const [totalOrders, setTotalOrders] = useState(0);
     const [totalShipping, setTotalShipping] = useState(0);
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [orderData, setOrderData] = useState([]);
     const [revenueData, setRevenueData] = useState([]);
-    const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+    const [statsType, setStatsType] = useState('year'); // day, month, year, range
+    const [startDate, setStartDate] = useState(''); // For day filter
+    const [endDate, setEndDate] = useState(''); // For day filter
+    const [month, setMonth] = useState(1);
+    const [year, setYear] = useState(today.getFullYear());
+    const [startYear, setStartYear] = useState(today.getFullYear() - 1);
+    const [endYear, setEndYear] = useState(today.getFullYear());
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Generate year options (from 2020 to current year + 1)
+    const yearOptions = Array.from(
+        { length: today.getFullYear() - 2019 + 1 },
+        (_, i) => 2020 + i
+    );
+
+    // Month options (1-12)
+    const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
+
+    // Utility function to format date to YYYY-MM-DD
+    const formatToLocalDate = (date) => {
+        const pad = (num) => String(num).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    };
 
     // Fetch API data for dashboard overview and charts
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                const totalOrdersResponse = await Api_InvoiceAdmin.getTotalOrders();
-                setTotalOrders(totalOrdersResponse.data);
+                let params = {};
+                let yearForCharts = year;
 
-                const totalShippingResponse = await Api_InvoiceAdmin.getTotalShipping();
-                setTotalShipping(totalShippingResponse.data);
+                if (statsType === 'day') {
+                    if (!startDate || !endDate) {
+                        setError('Please select both start and end date');
+                        setLoading(false);
+                        return;
+                    }
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    if (start > end) {
+                        setError('Start date cannot be later than end date');
+                        setLoading(false);
+                        return;
+                    }
+                    params = {
+                        startDate: startDate,
+                        endDate: endDate,
+                    };
+                    yearForCharts = end.getFullYear();
+                } else if (statsType === 'month') {
+                    if (!month || !year) {
+                        setError('Please select both month and year');
+                        setLoading(false);
+                        return;
+                    }
+                    const start = new Date(year, month - 1, 1);
+                    const end = new Date(year, month, 0);
+                    params = {
+                        startDate: formatToLocalDate(start),
+                        endDate: formatToLocalDate(end),
+                    };
+                    yearForCharts = year;
+                } else if (statsType === 'year') {
+                    if (!year) {
+                        setError('Please select a year');
+                        setLoading(false);
+                        return;
+                    }
+                    const start = new Date(year, 0, 1);
+                    const end = new Date(year, 11, 31);
+                    params = {
+                        startDate: formatToLocalDate(start),
+                        endDate: formatToLocalDate(end),
+                    };
+                    yearForCharts = year;
+                } else if (statsType === 'range') {
+                    if (startYear > endYear) {
+                        setError('Start year cannot be later than end year');
+                        setLoading(false);
+                        return;
+                    }
+                    const start = new Date(startYear, 0, 1);
+                    const end = new Date(endYear, 11, 31);
+                    params = {
+                        startDate: formatToLocalDate(start),
+                        endDate: formatToLocalDate(end),
+                    };
+                    yearForCharts = endYear;
+                }
 
-                const totalRevenueResponse = await Api_InvoiceAdmin.getTotalRevenue();
-                setTotalRevenue(totalRevenueResponse.data);
+                const [
+                    totalOrdersResponse,
+                    totalShippingResponse,
+                    totalRevenueResponse,
+                    orderCountResponse,
+                    revenueResponse,
+                ] = await Promise.all([
+                    Api_InvoiceAdmin.getTotalOrders(params),
+                    Api_InvoiceAdmin.getTotalShipping(params),
+                    Api_InvoiceAdmin.getTotalRevenue(params),
+                    Api_InvoiceAdmin.getOrderCountByMonthsInYear(yearForCharts, params),
+                    Api_InvoiceAdmin.getRevenueByMonthsInYear(yearForCharts, params),
+                ]);
 
-                const orderCountResponse = await Api_InvoiceAdmin.getOrderCountByMonthsInYear(selectedYear);
-                setOrderData(orderCountResponse.data);
-
-                const revenueResponse = await Api_InvoiceAdmin.getRevenueByMonthsInYear(selectedYear);
-                setRevenueData(revenueResponse.data);
+                setTotalOrders(totalOrdersResponse.data || 0);
+                setTotalShipping(totalShippingResponse.data || 0);
+                setTotalRevenue(totalRevenueResponse.data || 0);
+                setOrderData(orderCountResponse.data || []);
+                setRevenueData(revenueResponse.data || []);
             } catch (error) {
+                setError(error.response?.data?.message || 'Failed to fetch dashboard data');
                 console.error('Error fetching dashboard data:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
-    }, [selectedYear]);
+    }, [statsType, startDate, endDate, month, year, startYear, endYear]);
 
     // Bar chart configuration for order count
     const orderChartData = {
-        labels: orderData.map(item => `Tháng ${item.month}`),
+        labels: orderData.map((item) => `Month ${item.month}`),
         datasets: [
             {
-                label: 'Số lượng đơn hàng',
-                data: orderData.map(item => item.count),
+                label: 'Order Count',
+                data: orderData.map((item) => item.count),
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
@@ -78,38 +173,28 @@ function Dashboard() {
     const orderChartOptions = {
         responsive: true,
         plugins: {
-            legend: {
-                position: 'top',
-            },
+            legend: { position: 'top' },
             title: {
                 display: true,
-                text: `Số lượng đơn hàng theo tháng (${selectedYear})`,
+                text: `Order Count by Month (${year})`,
             },
         },
         scales: {
             y: {
                 beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Số đơn hàng',
-                },
+                title: { display: true, text: 'Orders' },
             },
-            x: {
-                title: {
-                    display: true,
-                    text: '',
-                },
-            },
+            x: { title: { display: true, text: 'Month' } },
         },
     };
 
     // Line chart configuration for revenue
     const revenueChartData = {
-        labels: revenueData.map(item => `Tháng ${item.month}`),
+        labels: revenueData.map((item) => `Month ${item.month}`),
         datasets: [
             {
-                label: 'Doanh thu',
-                data: revenueData.map(item => item.revenue),
+                label: 'Revenue',
+                data: revenueData.map((item) => item.revenue),
                 fill: false,
                 borderColor: 'rgba(255, 99, 132, 1)',
                 tension: 0.1,
@@ -120,85 +205,180 @@ function Dashboard() {
     const revenueChartOptions = {
         responsive: true,
         plugins: {
-            legend: {
-                position: 'top',
-            },
+            legend: { position: 'top' },
             title: {
                 display: true,
-                text: `Doanh thu theo tháng (${selectedYear})`,
+                text: `Revenue by Month (${year})`,
             },
         },
         scales: {
             y: {
                 beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Doanh thu ($)',
-                },
+                title: { display: true, text: 'Revenue ($)' },
             },
-            x: {
-                title: {
-                    display: true,
-                    text: '',
-                },
-            },
+            x: { title: { display: true, text: 'Month' } },
         },
     };
 
-    // Handle year change
-    const handleYearChange = (e) => {
-        setSelectedYear(parseInt(e.target.value));
+    // Handle filter changes
+    const handleStatsTypeChange = (e) => {
+        setStatsType(e.target.value);
+        setStartDate('');
+        setEndDate('');
+        setMonth(1);
+        setYear(today.getFullYear());
+        setStartYear(today.getFullYear() - 1);
+        setEndYear(today.getFullYear());
     };
 
-    // Generate year options (e.g., from 2020 to current year)
-    const yearOptions = Array.from({ length: today.getFullYear() - 2019 }, (_, i) => 2020 + i);
-
     return (
-        <div className="w-full pl-[260px] mt-[100px]">
-            <div className="p-[20px]">
-                <div className="flex justify-between">
+        <div className={cx('wrapper')}>
+            <div className={cx('container')}>
+                {/* Header */}
+                <div className={cx('header')}>
                     <div>
-                        <p className="font-bold text-[24px]">Dashboard</p>
-                        <div className={cx('tab')}>
-                            Home <SlArrowRight size={10} className="mx-3" /> Dashboard
+                        <h1 className={cx('title')}>Dashboard</h1>
+                        <div className={cx('breadcrumb')}>
+                            Home <FaArrowRight size={10} className={cx('arrow')} /> Dashboard
                         </div>
                     </div>
-                    <div className="flex items-end">
-                        <SlCalender className="mr-5 mb-2" />
+                    <div className={cx('date')}>
+                        <FaCalendarAlt className={cx('calendar-icon')} />
                         {formattedDate}
                     </div>
                 </div>
-                <div className="flex mt-5 col-span-3 gap-6">
-                    <OrderSummary name={'Total Orders'} price={totalOrders} rate={50} />
-                    <OrderSummary name={'Total Orders in Shipping'} price={totalShipping} rate={50} />
-                    <OrderSummary name={'Total Revenue'} price={`$ ${totalRevenue}`} rate={50} />
-                </div>
-                <div className="mt-10">
-                    <div className="mb-5">
-                        <label htmlFor="yearSelect" className="mr-3">Chọn năm:</label>
+
+                {/* Filter Section */}
+                <div className={cx('filter-section')}>
+                    <h2 className={cx('filter-title')}>Filter Statistics</h2>
+                    <div className={cx('filter-controls')}>
                         <select
-                            id="yearSelect"
-                            value={selectedYear}
-                            onChange={handleYearChange}
-                            className="p-2 border rounded"
+                            value={statsType}
+                            onChange={handleStatsTypeChange}
+                            className={cx('select')}
                         >
-                            {yearOptions.map(year => (
-                                <option key={year} value={year}>{year}</option>
-                            ))}
+                            <option value="day">By Day</option>
+                            <option value="month">By Month</option>
+                            <option value="year">By Year</option>
+                            <option value="range">By Year Range</option>
                         </select>
+                        {statsType === 'day' && (
+                            <div className={cx('date-range')}>
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className={cx('date-input')}
+                                    placeholder="Start Date"
+                                />
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className={cx('date-input')}
+                                    placeholder="End Date"
+                                />
+                            </div>
+                        )}
+                        {statsType === 'month' && (
+                            <div className={cx('month-range')}>
+                                <select
+                                    value={month}
+                                    onChange={(e) => setMonth(Number(e.target.value))}
+                                    className={cx('month-select')}
+                                >
+                                    {monthOptions.map((monthOption) => (
+                                        <option key={monthOption} value={monthOption}>
+                                            Month {monthOption}
+                                        </option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={year}
+                                    onChange={(e) => setYear(Number(e.target.value))}
+                                    className={cx('year-select')}
+                                >
+                                    {yearOptions.map((yearOption) => (
+                                        <option key={yearOption} value={yearOption}>
+                                            {yearOption}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {statsType === 'year' && (
+                            <div className={cx('year-single')}>
+                                <select
+                                    value={year}
+                                    onChange={(e) => setYear(Number(e.target.value))}
+                                    className={cx('year-select')}
+                                >
+                                    {yearOptions.map((yearOption) => (
+                                        <option key={yearOption} value={yearOption}>
+                                            {yearOption}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {statsType === 'range' && (
+                            <div className={cx('year-range')}>
+                                <select
+                                    value={startYear}
+                                    onChange={(e) => setStartYear(Number(e.target.value))}
+                                    className={cx('year-select')}
+                                >
+                                    {yearOptions.map((yearOption) => (
+                                        <option key={yearOption} value={yearOption}>
+                                            {yearOption}
+                                        </option>
+                                    ))}
+                                </select>
+                                <span className={cx('to-label')}>to</span>
+                                <select
+                                    value={endYear}
+                                    onChange={(e) => setEndYear(Number(e.target.value))}
+                                    className={cx('year-select')}
+                                >
+                                    {yearOptions.map((yearOption) => (
+                                        <option key={yearOption} value={yearOption}>
+                                            {yearOption}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="bg-white p-5 rounded shadow">
-                            <Bar data={orderChartData} options={orderChartOptions} />
-                        </div>
-                        <div className="bg-white p-5 rounded shadow">
-                            <Line data={revenueChartData} options={revenueChartOptions} />
-                        </div>
-                    </div>
+                    {error && <div className={cx('error')}>{error}</div>}
                 </div>
-                {/* <div>
-                    <RecentOrders />
-                </div> */}
+
+                {/* Summary Section */}
+                {loading ? (
+                    <div className={cx('loading')}>Loading...</div>
+                ) : (
+                    <>
+                        <div className={cx('summary-container')}>
+                            <OrderSummary name="Total Orders" price={totalOrders} rate={50} />
+                            <OrderSummary name="Total Orders in Shipping" price={totalShipping} rate={50} />
+                            <OrderSummary name="Total Revenue" price={`$${totalRevenue.toFixed(2)}`} rate={50} />
+                        </div>
+
+                        {/* Chart Section */}
+                        <div className={cx('chart-grid')}>
+                            <div className={cx('chart-container')}>
+                                <Bar data={orderChartData} options={orderChartOptions} />
+                            </div>
+                            <div className={cx('chart-container')}>
+                                <Line data={revenueChartData} options={revenueChartOptions} />
+                            </div>
+                        </div>
+
+                        {/* Recent Orders
+                        <div className={cx('recent-orders')}>
+                            <RecentOrders />
+                        </div> */}
+                    </>
+                )}
             </div>
         </div>
     );
