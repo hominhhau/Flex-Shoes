@@ -118,10 +118,10 @@ function Register() {
             const response = await Api_Auth.registerAccount(registerData);
             setIsSuccess(true);
         } catch (err) {
-            setMessageError(err.response.data.message);
+            // setMessageError(err.response.data.message);
 
             console.error('Register failed:', err.message);
-            setIsError(true);
+            // setIsError(true);
         }
     }
    
