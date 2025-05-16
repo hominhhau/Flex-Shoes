@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
 import styles from './Dashboard.module.scss';
 import { Bar, Line } from 'react-chartjs-2';
+import { SlArrowRight, SlCalender } from 'react-icons/sl';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,7 +19,6 @@ import {
   Legend,
 } from 'chart.js';
 import OrderSummary from '../../../layouts/componentsAdmin/OrderSummary';
-import RecentOrders from '../../../layouts/componentsAdmin/RecentOrders';
 import { Api_InvoiceAdmin } from '../../../../apis/Api_InvoiceAdmin';
 
 // Register Chart.js components
@@ -29,6 +29,14 @@ const cx = classNames.bind(styles);
 function Dashboard() {
   const today = new Date();
   const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
+
+  // Utility function to format date to YYYY-MM-DD
+  const formatToLocalDate = (date) => {
+    const pad = (num) => String(num).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  };
+
+  const todayFormatted = formatToLocalDate(today); // Format today's date
 
   // State for stats and filters
   const [totalOrders, setTotalOrders] = useState(0);
@@ -45,19 +53,12 @@ function Dashboard() {
   const [endYear, setEndYear] = useState(today.getFullYear());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [filterApplied, setFilterApplied] = useState(false);
 
   // Generate year options (from 2020 to current year + 1)
   const yearOptions = Array.from({ length: today.getFullYear() - 2019 + 1 }, (_, i) => 2020 + i);
 
   // Month options (1-12)
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
-
-  // Utility function to format date to YYYY-MM-DD
-  const formatToLocalDate = (date) => {
-    const pad = (num) => String(num).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-  };
 
   // Utility function to get all days in a month
   const getDaysInMonth = (month, year) => {
@@ -82,6 +83,54 @@ function Dashboard() {
     return days;
   };
 
+  // Validate dates and years
+  const validateDates = (start, end, type = 'date') => {
+    if (!start || !end) return true; // Allow empty dates for initial state
+    if (type === 'date') {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      return startDate <= endDate;
+    } else if (type === 'year') {
+      return start <= end;
+    }
+    return true;
+  };
+
+  // Handle date changes with validation
+  const handleStartDateChange = (value) => {
+    if (endDate && new Date(value) > new Date(endDate)) {
+      toast.error('Start date cannot be later than end date', { position: 'top-right' });
+      return;
+    }
+    setStartDate(value);
+  };
+
+  const handleEndDateChange = (value) => {
+    if (startDate && new Date(value) < new Date(startDate)) {
+      toast.error('End date cannot be earlier than start date', { position: 'top-right' });
+      return;
+    }
+    setEndDate(value);
+  };
+
+  const handleStartYearChange = (value) => {
+    const newStartYear = Number(value);
+    if (newStartYear > endYear) {
+      toast.error('Start year cannot be later than end year', { position: 'top-right' });
+      return;
+    }
+    setStartYear(newStartYear);
+  };
+
+  const handleEndYearChange = (value) => {
+    const newEndYear = Number(value);
+    if (newEndYear < startYear) {
+      toast.error('End year cannot be earlier than start year', { position: 'top-right' });
+      return;
+    }
+    setEndYear(newEndYear);
+  };
+
   // Fetch API data
   const fetchData = async () => {
     setLoading(true);
@@ -91,15 +140,15 @@ function Dashboard() {
       let chartYear = year;
 
       if (statsType === 'day') {
-        if (!startDate || !endDate) {
-          throw new Error('Please select both start and end date');
-        }
-        const start = new Date(startDate);
-        const end = new Date(endDate);
+        // Use today's date if startDate or endDate is not set
+        const effectiveStartDate = startDate || todayFormatted;
+        const effectiveEndDate = endDate || todayFormatted;
+        const start = new Date(effectiveStartDate);
+        const end = new Date(effectiveEndDate);
         if (start > end) {
           throw new Error('Start date cannot be later than end date');
         }
-        params = { startDate, endDate };
+        params = { startDate: effectiveStartDate, endDate: effectiveEndDate };
         chartYear = end.getFullYear();
       } else if (statsType === 'month') {
         if (!month || !year) {
@@ -177,7 +226,7 @@ function Dashboard() {
           if (index !== -1) fullRevenueData[index].revenue = item.revenue || 0;
         });
       } else if (statsType === 'day') {
-        const days = getDaysInRange(startDate, endDate);
+        const days = getDaysInRange(params.startDate, params.endDate);
         fullOrderData = days.map((date) => ({ date, count: 0 }));
         fullRevenueData = days.map((date) => ({ date, revenue: 0 }));
         orderDataArray.forEach((item) => {
@@ -205,27 +254,19 @@ function Dashboard() {
       setOrderData(fullOrderData);
       setRevenueData(fullRevenueData);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Failed to fetch dashboard data';
+      const errorMessage = error.response?.data?.message || error.message || 'Unable to load dashboard data';
       setError(errorMessage);
       toast.error(errorMessage, { position: 'top-right' });
-      console.error('Error fetching dashboard data:', error);
+      console.error('Error loading dashboard data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle Apply button click
-  const handleApplyFilter = () => {
-    setFilterApplied(true);
-    fetchData();
-  };
-
-  // Fetch data when filterApplied changes
+  // Fetch data when filter criteria change
   useEffect(() => {
-    if (filterApplied) {
-      fetchData();
-    }
-  }, [filterApplied, statsType, startDate, endDate, month, year, startYear, endYear]);
+    fetchData();
+  }, [statsType, startDate, endDate, month, year, startYear, endYear]);
 
   // Chart label and title generator
   const getChartLabels = () => {
@@ -244,7 +285,7 @@ function Dashboard() {
   };
 
   const getChartTitle = () => {
-    if (statsType === 'day') return `Order Count by Day (${startDate} to ${endDate})`;
+    if (statsType === 'day') return `Order Count by Day (${startDate || todayFormatted} to ${endDate || todayFormatted})`;
     if (statsType === 'month') return `Order Count by Day (Month ${month}/${year})`;
     if (statsType === 'year') return `Order Count by Month (${year})`;
     if (statsType === 'range') return `Order Count by Year (${startYear} to ${endYear})`;
@@ -252,7 +293,7 @@ function Dashboard() {
   };
 
   const getRevenueChartTitle = () => {
-    if (statsType === 'day') return `Revenue by Day (${startDate} to ${endDate})`;
+    if (statsType === 'day') return `Revenue by Day (${startDate || todayFormatted} to ${endDate || todayFormatted})`;
     if (statsType === 'month') return `Revenue by Day (Month ${month}/${year})`;
     if (statsType === 'year') return `Revenue by Month (${year})`;
     if (statsType === 'range') return `Revenue by Year (${startYear} to ${endYear})`;
@@ -260,7 +301,7 @@ function Dashboard() {
   };
 
   const getXAxisLabel = () => {
-    if (statsType === 'day' || statsType === 'month') return 'Date';
+    if (statsType === 'day' || statsType === 'month') return 'Day';
     if (statsType === 'year') return 'Month';
     if (statsType === 'range') return 'Year';
     return 'Time';
@@ -320,14 +361,19 @@ function Dashboard() {
 
   // Handle filter changes
   const handleStatsTypeChange = (e) => {
-    setStatsType(e.target.value);
-    setStartDate('');
-    setEndDate('');
+    const newStatsType = e.target.value;
+    setStatsType(newStatsType);
+    if (newStatsType === 'day') {
+      setStartDate(todayFormatted);
+      setEndDate(todayFormatted);
+    } else {
+      setStartDate('');
+      setEndDate('');
+    }
     setMonth(today.getMonth() + 1);
     setYear(today.getFullYear());
     setStartYear(today.getFullYear() - 1);
     setEndYear(today.getFullYear());
-    setFilterApplied(false); // Reset filter
   };
 
   return (
@@ -343,7 +389,7 @@ function Dashboard() {
           <div>
             <h1 className={cx('title')}>Dashboard</h1>
             <div className={cx('breadcrumb')}>
-              Home <FaArrowRight size={10} className={cx('arrow')} /> Dashboard
+              Home <SlArrowRight size={10} className={cx('arrow')} /> Dashboard
             </div>
           </div>
           <div className={cx('date')}>
@@ -383,7 +429,7 @@ function Dashboard() {
                     <input
                       type="date"
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={(e) => handleStartDateChange(e.target.value)}
                       className={cx('date-input')}
                     />
                   </div>
@@ -392,7 +438,7 @@ function Dashboard() {
                     <input
                       type="date"
                       value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
+                      onChange={(e) => handleEndDateChange(e.target.value)}
                       className={cx('date-input')}
                     />
                   </div>
@@ -459,7 +505,7 @@ function Dashboard() {
                     <label className={cx('filter-label')}>Start Year</label>
                     <select
                       value={startYear}
-                      onChange={(e) => setStartYear(Number(e.target.value))}
+                      onChange={(e) => handleStartYearChange(e.target.value)}
                       className={cx('year-select')}
                     >
                       {yearOptions.map((yearOption) => (
@@ -474,7 +520,7 @@ function Dashboard() {
                     <label className={cx('filter-label')}>End Year</label>
                     <select
                       value={endYear}
-                      onChange={(e) => setEndYear(Number(e.target.value))}
+                      onChange={(e) => handleEndYearChange(e.target.value)}
                       className={cx('year-select')}
                     >
                       {yearOptions.map((yearOption) => (
@@ -487,14 +533,6 @@ function Dashboard() {
                 </div>
               </div>
             )}
-
-            <button
-              onClick={handleApplyFilter}
-              className={cx('apply-button')}
-              disabled={loading}
-            >
-              Apply Filter
-            </button>
           </div>
         </motion.div>
 
@@ -534,8 +572,6 @@ function Dashboard() {
             </div>
           )}
         </motion.div>
-
-       
       </div>
       <ToastContainer />
     </motion.div>

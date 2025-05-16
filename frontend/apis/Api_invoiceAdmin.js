@@ -125,18 +125,18 @@ export const Api_InvoiceAdmin = {
 
 
     getOrderCountByYears: async (params) => {
-        return axios.get(`/invoices/stats/orders-by-year`, { params });
+       return ApiManager.get(`/invoices/stats/orders-by-year`, { params });
     },
     getRevenueByYears: async (params) => {
-        return axios.get(`/invoices/stats/revenue-by-year`, { params });
+       return ApiManager.get(`/invoices/stats/revenue-by-year`, { params });
     },
 
     // /stats/orders-by-day
 
-   getRevenueByDays: async (params) => {
-        return await axios.get(`/invoices/stats/revenue-by-day`, { params });
-    },
     getOrderCountByDays: async (params) => {
-        return await axios.get(`/invoices/stats/orders-by-day`, { params });
-    }
+        return ApiManager.get(`/invoices/stats/orders-by-day`, { params });
+    },
+    getRevenueByDays: async (params) => {
+        return ApiManager.get(`/invoices/stats/revenue-by-day`, { params });
+    },
 };
