@@ -1,25 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Smile, Paperclip, Send } from "lucide-react";
-import "./SidebarChat.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllSender, getLastMessage, updateMessageStatus } from "../../redux/chatSlice";
 import ChatAdmin from "./ChatAdmin";
 import { Api_ManagerCustomer } from '../../../apis/Api_ManagerCustomer';
 
-export default function SidebarChat() {
+function SidebarChat() {
     const [lastMessages, setLastMessages] = useState([])
-    const [senders, setSenders] = useState([
-        {
-            clientId: 1,
-            name: "Nguyễn Văn A",
-            phoneNumber: "0123456789",
-            dateOfBirth: "2000-01-01",
-            time: "2023-10-01T12:00:00Z",
-        }
-    ])
+    const [senders, setSenders] = useState([])
     const [searchInput, setSearchInput] = useState("");
     const [conversations, setConversations] = useState([]);
     const [info, setInfo] = useState({});
+    const [isShowChat, setIsShowChat] = useState(false);
 
     const dispatch = useDispatch();
     const fetchListSender = async () => {
@@ -106,6 +98,7 @@ export default function SidebarChat() {
     }, [lastMessages]);
 
     const handleShowChat = async (sender) => {
+        setIsShowChat(true)
         // Gửi yêu cầu cập nhật trạng thái đọc
         try {
             await dispatch(updateMessageStatus({ clientId: sender.id }))
@@ -167,86 +160,99 @@ export default function SidebarChat() {
     };
 
     return (
-        <div className="container-fluid vh-100 p-0">
-            <div className="row h-100 g-0 ">
-                {/* Left SidebarChat */}
+        <div className="w-full pl-[260px] mt-[100px]">
+            <div className="p-[20px]">
+                <div className="container-fluid vh-100 p-0">
+                    <div className="row h-100 g-0 ">
+                        {/* Left SidebarChat */}
 
-                <div
-                    className="col-3 border-end bg-white"
-                    style={{ maxWidth: "300px" }}
-                >
-                    {/* Profile and Search */}
-                    <div className="p-3 border-bottom">
-                        <div className="d-flex align-items-center ">
-                            <img
-                                src="/placeholder.svg"
-                                className="rounded-circle"
-                                alt=""
-                                style={{ width: "32px", height: "32px" }}
-                            />
-                            <div className="input-group ms-2">
-                                <input
-                                    type="text"
-                                    className="form-control form-control-sm bg-light"
-                                    placeholder="Tìm kiếm"
-                                    value={searchInput}
-                                    onChange={(e) => {
-                                        setSearchInput(e.target.value);
-                                        handleSearchRealtime(e.target.value);
-                                    }}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                                />
-                                <span
-                                    className="input-group-text bg-light border-start-0 cursor-pointer"
-                                    onClick={() => handleSearch()}
-                                >
-                                    <Search size={16} />
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Conversations List */}
-                    <div
-                        className="overflow-auto"
-                        style={{ height: "calc(100vh - 60px)" }}
-                    >
-                        {conversations.map((chat) => (
-                            <div
-                                key={chat.id}
-                                className="d-flex align-items-center p-2 border-bottom hover-bg-light cursor-pointer"
-                                onClick={() => handleShowChat(chat)}
-
-                            >
-                                <img
-                                    src={chat.avatar || "/placeholder.svg"}
-                                    className="rounded-circle"
-                                    alt=""
-                                    style={{ width: "48px", height: "48px" }}
-                                />
-
-                                <div className="ms-2 overflow-hidden ">
-                                    <div className="d-flex align-items-center gap-5">
-                                        <div className="text-truncate fw-medium ">{chat.name}</div>
-                                        <small className="text-muted ms-auto">{chat.time}</small>
-                                    </div>
-                                    <div className={`text-truncate small ${chat.message && chat.state === 0
-                                        ? 'fw-semibold text-dark'
-                                        : 'text-secondary'
-                                        }`}>
-                                        {chat.message || "Không có tin nhắn"}
+                        <div
+                            className="col-3 border-end bg-white"
+                            style={{ maxWidth: "300px" }}
+                        >
+                            {/* Profile and Search */}
+                            <div className="p-3 border-bottom">
+                                <div className="d-flex align-items-center ">
+                                    <img
+                                        src="/placeholder.svg"
+                                        className="rounded-circle"
+                                        alt=""
+                                        style={{ width: "32px", height: "32px" }}
+                                    />
+                                    <div className="input-group ms-2">
+                                        <input
+                                            type="text"
+                                            className="form-control form-control-sm bg-light"
+                                            placeholder="Tìm kiếm"
+                                            value={searchInput}
+                                            onChange={(e) => {
+                                                setSearchInput(e.target.value);
+                                                handleSearchRealtime(e.target.value);
+                                            }}
+                                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                        />
+                                        <span
+                                            className="input-group-text bg-light border-start-0 cursor-pointer"
+                                            onClick={() => handleSearch()}
+                                        >
+                                            <Search size={16} />
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                </div>
 
-                {/* Main Chat Area */}
-                <div className="col-9 bg-light">
-                    <ChatAdmin info={info} />
+                            {/* Conversations List */}
+                            <div
+                                className="overflow-auto"
+                                style={{ height: "calc(100vh - 60px)" }}
+                            >
+                                {conversations.map((chat) => (
+                                    <div
+                                        key={chat.id}
+                                        className="d-flex align-items-center p-2 border-bottom hover-bg-light cursor-pointer"
+                                        onClick={() => handleShowChat(chat)}
+
+                                    >
+                                        <img
+                                            src={chat.avatar || "/placeholder.svg"}
+                                            className="rounded-circle"
+                                            alt=""
+                                            style={{ width: "48px", height: "48px" }}
+                                        />
+
+                                        <div className="ms-2 overflow-hidden ">
+                                            <div className="d-flex align-items-center gap-5">
+                                                <div className="text-truncate fw-medium ">{chat.name}</div>
+                                                <small className="text-muted ms-auto">{chat.time}</small>
+                                            </div>
+                                            <div className={`text-truncate small ${chat.message && chat.state === 0
+                                                ? 'fw-semibold text-dark'
+                                                : 'text-secondary'
+                                                }`}>
+                                                {chat.message || "Không có tin nhắn"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Main Chat Area */}
+                        {isShowChat ? (
+                            <div className="col-9 bg-light">
+                                <ChatAdmin info={info} />
+                            </div>
+                        ) : (
+                            <div className="col-9 bg-light d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                                <h3 className="text-muted">Chào mừng bạn trở lại</h3>
+                            </div>
+                        )}
+
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
+
+export default SidebarChat;

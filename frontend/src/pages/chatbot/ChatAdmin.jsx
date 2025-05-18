@@ -123,7 +123,7 @@ export default function ChatAdmin(props) {
             </div>
 
             {/* Message Input */}
-            <div className="bg-white p-2 border-top">
+            <div className="bg-white p-4 border-top">
 
                 <div className="d-flex align-items-center">
                     <button className="btn btn-light me-2">
