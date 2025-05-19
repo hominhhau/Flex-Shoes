@@ -11,7 +11,11 @@ import { ChevronLeft, ChevronRight } from '../../components/Chevron';
 
 const cx = classNames.bind(styles);
 
-const images = ['./src/assets/slide/slide1.png', './src/assets/slide/slide2.jpg', './src/assets/slide/slide3.png'];
+const images = [
+    'https://uploads3-toturial.s3.ap-southeast-2.amazonaws.com/slide1.png',
+    'https://uploads3-toturial.s3.ap-southeast-2.amazonaws.com/slide2.jpg',
+    'https://uploads3-toturial.s3.ap-southeast-2.amazonaws.com/slide3.png',
+];
 
 function SlideShow() {
     const [currentIndex, setCurrentIndex] = useState(0);

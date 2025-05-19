@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8888/api/v1';
+const BASE_URL = 'https://api.flexshoes.io.vn/api/v1';
 // const BASE_URL = 'http://localhost:8085';
 
 export const ApiManager = axios.create({

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8888/api/v1';
+const BASE_URL = 'https://api.flexshoes.io.vn/api/v1';
 
 // Tạo một instance của axios
 export const ApiManager = axios.create({
@@ -39,20 +39,19 @@ ApiManager.interceptors.response.use(
 
 export const Api_Profile = {
     getProfile: async (userID) => {
-        return ApiManager.get(`/profile/${userID}`,{
-                
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization' : `Bearer ${localStorage.getItem('token')}`,
-                },
+        return ApiManager.get(`/profile/${userID}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
         });
     },
     updateProfile: async (userID, data) => {
-        return ApiManager.put(`/profile/update/${userID}`, data,{
+        return ApiManager.put(`/profile/update/${userID}`, data, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization' : `Bearer ${localStorage.getItem('token')}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
-    });
+        });
     },
 };

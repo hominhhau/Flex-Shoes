@@ -47,9 +47,9 @@ function Home() {
                 <div className={cx('content-categories')}>
                     <CategoriesShow />
                 </div>
-                <div className={cx('content-reviews')}>
+                {/* <div className={cx('content-reviews')}>
                     <Reviews />
-                </div>
+                </div> */}
             </div>
         </div>
     );

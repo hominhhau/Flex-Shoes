@@ -8,19 +8,19 @@ import Button from '../../../components/Button';
 const categories = [
     {
         name: 'LIFESTYLE SHOES',
-        image: './src/assets/images/categories/cate2.png',
+        image: 'https://uploads3-toturial.s3.ap-southeast-2.amazonaws.com/cate2.png',
     },
     {
         name: 'BASKETBALL SHOES',
-        image: './src/assets/images/categories/cate1.png',
+        image: 'https://uploads3-toturial.s3.ap-southeast-2.amazonaws.com/cate1.png',
     },
     {
         name: 'RUNNING SHOES',
-        image: './src/assets/images/categories/cate1.png',
+        image: 'https://uploads3-toturial.s3.ap-southeast-2.amazonaws.com/cate1.png',
     },
     {
         name: 'FOOTBALL SHOES',
-        image: './src/assets/images/categories/cate2.png',
+        image: 'https://uploads3-toturial.s3.ap-southeast-2.amazonaws.com/cate2.png',
     },
 ];
 

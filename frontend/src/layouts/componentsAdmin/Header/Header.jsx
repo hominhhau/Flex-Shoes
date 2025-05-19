@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import { LogoIcon } from '../../../icons';
 import { useNavigate } from 'react-router-dom';
 
-
 // Tippy is a headless tooltip library powered by Popper.j
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
@@ -19,7 +18,7 @@ import axios from 'axios';
 const cx = classNames.bind(styles);
 
 function Header() {
-    const [error, setError] = useState("");
+    const [error, setError] = useState('');
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
     const userMenu = [
@@ -39,17 +38,17 @@ function Header() {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                "http://localhost:8888/api/v1/users/logout",
+                'https://api.flexshoes.io.vn/api/v1/users/logout',
                 {}, // hoặc data nếu có payload logout
                 {
                     headers: {
-                        "Content-Type": "application/json",
-                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                     withCredentials: true,
-                }
+                },
             );
-    
+
             // Xóa token và role khỏi localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('role');
@@ -62,7 +61,7 @@ function Header() {
             setError('Logout failed');
         }
     };
-    
+
     return (
         <div className={cx('header')}>
             <div className={cx('logo')}>

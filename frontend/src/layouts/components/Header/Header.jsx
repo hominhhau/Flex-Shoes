@@ -14,7 +14,6 @@ import { Api_Auth } from '../../../../apis/Api_Auth';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-
 import config from '../../../config';
 import styles from './Header.module.scss';
 import { LogoIcon } from '../../../icons';
@@ -33,7 +32,7 @@ const cx = classNames.bind(styles);
 function Header({ user }) {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn, role, setRole } = useAuth();
-    
+
     const customerID = localStorage.getItem('customerId');
     const userMenu = [
         {
@@ -59,17 +58,17 @@ function Header({ user }) {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                "http://localhost:8888/api/v1/users/logout",
+                'https://api.flexshoes.io.vn/api/v1/users/logout',
                 {}, // hoặc data nếu có payload logout
                 {
                     headers: {
-                        "Content-Type": "application/json",
-                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                     withCredentials: true,
-                }
+                },
             );
-    
+
             // Xóa token và role khỏi localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('role');
@@ -114,7 +113,7 @@ function Header({ user }) {
                 <div className={cx('search')}>
                     <Search />
                 </div>
-               
+
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>
