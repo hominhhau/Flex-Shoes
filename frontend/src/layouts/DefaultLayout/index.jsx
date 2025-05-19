@@ -16,9 +16,8 @@ function DefaultLayout({ children }) {
                 <div className={cx('container')}>
                     <div className={cx('content')}>{children}</div> {/* Phần động */}
                 </div>
-                {/* Footer */}
-                <Footer /> {/* Phần tĩnh */}
             </div>
+            <Footer />
         </>
     );
 }

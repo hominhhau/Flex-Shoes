@@ -12,8 +12,8 @@ const cx = classNames.bind(styles);
 
 function Footer() {
     return (
-        <footer className="bg-blue-600 text-white w-[1320px] my-20 rounded-[48px]">
-            <div className="bg-blue-600 p-8 h-[340px] flex items-center rounded-t-[48px]">
+        <footer className="bg-blue-600 text-white w-100 my-20">
+            <div className="bg-blue-600 p-8 h-[340px] flex items-center">
                 <div className="container mx-auto px-4 flex items-center">
                     <div className="flex flex-col md:flex-col items-start w-[50%]">
                         <div className="mb-4 md:mb-0">
@@ -26,7 +26,7 @@ function Footer() {
                     </div>
                 </div>
             </div>
-            <div className=" w-full py-8 bg-[#232321] h-[538px] rounded-[48px]">
+            <div className=" w-full pt-8 bg-[#232321] h-[438px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                     <div className="p-10">
                         <h3 className="text-[36px] font-bold text-[#FFA52F] mb-4">About us</h3>
