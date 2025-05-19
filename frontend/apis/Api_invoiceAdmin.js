@@ -40,14 +40,32 @@ export const Api_InvoiceAdmin = {
     // Lấy danh sách 10 hóa đơn gần nhất
     getRecentInvoices: async () => ApiManager.get('invoices/recent'),
 
-    // Lấy tổng số đơn hàng
-    getTotalOrders: async () => ApiManager.get('invoices/total'),
+    /**
+     * Lấy tổng số đơn hàng, có thể lọc theo khoảng thời gian
+     * @param {Object} params - Tham số lọc { startDate: 'yyyy-MM-dd', endDate: 'yyyy-MM-dd' }
+     * @returns {Promise} Trả về tổng số đơn hàng
+     */
+    getTotalOrders: async (params = {}) => {
+        return ApiManager.get('/invoices/total', { params });
+    },
 
-    // Lấy tổng số đơn hàng đang vận chuyển
-    getTotalShipping: async () => ApiManager.get('invoices/shipping'),
+    /**
+     * Lấy tổng số đơn hàng đang vận chuyển, có thể lọc theo khoảng thời gian
+     * @param {Object} params - Tham số lọc { startDate: 'yyyy-MM-dd', endDate: 'yyyy-MM-dd' }
+     * @returns {Promise} Trả về tổng số đơn hàng đang vận chuyển
+     */
+    getTotalShipping: async (params = {}) => {
+        return ApiManager.get('/invoices/shipping', { params });
+    },
 
-    // Lấy tổng tiền của tất cả hóa đơn
-    getTotalRevenue: async () => ApiManager.get('invoices/total-amount'),
+    /**
+     * Lấy tổng doanh thu của tất cả hóa đơn, có thể lọc theo khoảng thời gian
+     * @param {Object} params - Tham số lọc { startDate: 'yyyy-MM-dd', endDate: 'yyyy-MM-dd' }
+     * @returns {Promise} Trả về tổng doanh thu
+     */
+    getTotalRevenue: async (params = {}) => {
+        return ApiManager.get('/invoices/total-amount', { params });
+    },
 
     getInvoiceById: async (id) => ApiManager.get(`invoices/findById/${id}`),
 
@@ -85,7 +103,40 @@ export const Api_InvoiceAdmin = {
 
     // Lấy danh sách sản phẩm đã mua của một customer
     getPurchasedProducts: async (customerId) => ApiManager.get(`/invoices/findByCustomerId/${customerId}`),
+    /**
+         * Lấy số lượng đơn hàng theo tháng trong một năm, có thể lọc theo khoảng thời gian
+         * @param {number} year - Năm cần thống kê
+         * @param {Object} params - Tham số lọc { startDate: 'yyyy-MM-dd', endDate: 'yyyy-MM-dd' }
+         * @returns {Promise} Trả về danh sách số lượng đơn hàng theo tháng
+         */
+    getOrderCountByMonthsInYear: async (year, params = {}) => {
+        return ApiManager.get(`/invoices/stats/orders-by-month/${year}`, { params });
+    },
 
-    getOrderCountByMonthsInYear: async (year) => ApiManager.get(`/invoices/stats/orders-by-month/${year}`),
-    getRevenueByMonthsInYear: async (year) => ApiManager.get(`/invoices/stats/revenue-by-month/${year}`),
+    /**
+     * Lấy doanh thu theo tháng trong một năm, có thể lọc theo khoảng thời gian
+     * @param {number} year - Năm cần thống kê
+     * @param {Object} params - Tham số lọc { startDate: 'yyyy-MM-dd', endDate: 'yyyy-MM-dd' }
+     * @returns {Promise} Trả về danh sách doanh thu theo tháng
+     */
+    getRevenueByMonthsInYear: async (year, params = {}) => {
+        return ApiManager.get(`/invoices/stats/revenue-by-month/${year}`, { params });
+    },
+
+
+    getOrderCountByYears: async (params) => {
+       return ApiManager.get(`/invoices/stats/orders-by-year`, { params });
+    },
+    getRevenueByYears: async (params) => {
+       return ApiManager.get(`/invoices/stats/revenue-by-year`, { params });
+    },
+
+    // /stats/orders-by-day
+
+    getOrderCountByDays: async (params) => {
+        return ApiManager.get(`/invoices/stats/orders-by-day`, { params });
+    },
+    getRevenueByDays: async (params) => {
+        return ApiManager.get(`/invoices/stats/revenue-by-day`, { params });
+    },
 };

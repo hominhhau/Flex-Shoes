@@ -20,8 +20,8 @@ const errorFieldMapping = {
       message.includes('bắt buộc')
         ? 'Phone number is required'
         : message.includes('không hợp lệ')
-        ? 'Invalid phone number format'
-        : message,
+          ? 'Invalid phone number format'
+          : message,
   },
   receiverName: {
     frontendField: 'name',
@@ -29,8 +29,8 @@ const errorFieldMapping = {
       message.includes('bắt buộc')
         ? 'Full name is required'
         : message.includes('105')
-        ? 'Full name cannot exceed 105 characters'
-        : message,
+          ? 'Full name cannot exceed 105 characters'
+          : message,
   },
   receiverAddress: {
     frontendField: 'address',
@@ -38,8 +38,8 @@ const errorFieldMapping = {
       message.includes('bắt buộc')
         ? 'Address is required'
         : message.includes('105')
-        ? 'Address cannot exceed 105 characters'
-        : message,
+          ? 'Address cannot exceed 105 characters'
+          : message,
   },
   issueDate: {
     frontendField: 'issueDate',
@@ -52,8 +52,8 @@ const errorFieldMapping = {
       message.includes('bắt buộc')
         ? 'Total is required'
         : message.includes('lớn hơn hoặc bằng 0')
-        ? 'Total must be greater than or equal to 0'
-        : message,
+          ? 'Total must be greater than or equal to 0'
+          : message,
   },
 };
 
@@ -203,14 +203,15 @@ const CheckoutForm = () => {
       if (!customerID) {
         throw new Error('Customer ID not found. Please log in again.');
       }
-
+      const now = new Date();
+      const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const invoiceData = {
         invoiceDetails: checkedItems.map((product) => ({
           productId: product.id,
           id: product.id,
           quantity: product.quantity,
         })),
-        issueDate: new Date().toISOString(),
+        issueDate: vietnamTime.toISOString(),
         receiverNumber: phone,
         receiverName: `${firstName} ${lastName}`,
         receiverAddress: address,
@@ -555,8 +556,8 @@ const CheckoutForm = () => {
             cartData={cartData}
             checkedItems={checkedItems}
             isCheckoutVisible={false}
-            toggleCheckoutVisibility={() => {}}
-            handleCheckout={() => {}}
+            toggleCheckoutVisibility={() => { }}
+            handleCheckout={() => { }}
           />
         </div>
         <div className={cx('shoppingBag')}>
@@ -573,12 +574,12 @@ const CheckoutForm = () => {
                   size={product.size || 'Size'}
                   price={product.price}
                   initialQuantity={product.quantity}
-                  onQuantityChange={() => {}}
+                  onQuantityChange={() => { }}
                   allowQuantityChange={false}
-                  onCheckboxChange={() => {}}
+                  onCheckboxChange={() => { }}
                   product={product}
                   removeIcon={null}
-                  onRemove={() => {}}
+                  onRemove={() => { }}
                   isChecked={false}
                 />
               </div>

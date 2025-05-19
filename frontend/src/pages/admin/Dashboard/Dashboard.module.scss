@@ -1,93 +1,212 @@
-.tab {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #6b7280; /* Màu xám cho breadcrumb */
-    margin-top: 8px;
+.wrapper {
+  margin: 0 auto;
+  padding-left: 250px;
+  margin-top: 110px;
+
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.chart-container {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
+/* Header */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 
-.title {
+  .title {
     font-size: 24px;
-    font-weight: bold;
-    color: #1f2937; /* Màu xám đậm */
-}
+    font-weight: 600;
+    color: #333;
+  }
 
-.date {
+  .breadcrumb {
     display: flex;
     align-items: center;
-    font-size: 14px;
-    color: #6b7280;
-}
-
-.date svg {
-    margin-right: 8px;
-    margin-bottom: 2px;
-}
-
-.summary-container {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 40px;
-}
-
-.chart-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    width: 100%;
-    justify-content: center; /* Căn giữa nội dung */
-    margin: 0 auto; /* Căn giữa toàn bộ grid */
-}
-
-.select-year {
-    margin-bottom: 20px;
-    text-align: center; /* Căn giữa nhãn và select */
-}
-
-.select-year label {
+    gap: 8px;
     font-size: 16px;
-    margin-right: 12px;
-    color: #374151; /* Màu xám đậm */
+    color: #000000;
+
+    .arrow {
+      color: #000000;
+    }
+  }
+
+  .date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #555;
+
+    .calendar-icon {
+      color: #000000;
+    }
+  }
 }
 
-.select-year select {
-    padding: 8px;
-    border: 1px solid #d1d5db;
+/* Filter Section */
+.filter-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+
+  .filter-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #333;
+  }
+
+  .filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .filter-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #555;
+    }
+  }
+
+  .select,
+  .month-select,
+  .year-select,
+  .date-input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 16px; /* Tăng kích thước chữ của select */
-    color: #374151;
-    background-color: #ffffff;
-    cursor: pointer;
+    background: #fff;
+    transition: border-color 0.3s;
+
+    &:hover,
+    &:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+  }
+
+  .date-range,
+  .month-range,
+  .year-range {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .to-label {
+    font-size: 14px;
+    color: #666;
+    align-self: center;
+  }
 }
 
-.select-year select:focus {
-    outline: none;
-    border-color: #3b82f6; /* Màu xanh khi focus */
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+/* Summary Section */
+.summary-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-/* Tăng kích thước chữ cho nhãn trục và tiêu đề biểu đồ (nếu cần áp dụng CSS trực tiếp) */
-.chart-container canvas {
-    font-size: 14px; /* Điều chỉnh kích thước chữ mặc định của Chart.js */
+/* Chart Section */
+.chart-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+
+  .chart-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #333;
+  }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .chart-container {
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 8px;
+  }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 16px;
+    color: #555;
+    height: 200px;
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid #007bff;
+      border-top: 3px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+/* Recent Orders */
+.recent-orders {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .date-range,
+  .month-range,
+  .year-range {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-container {
+    grid-template-columns: 1fr;
+  }
 }
