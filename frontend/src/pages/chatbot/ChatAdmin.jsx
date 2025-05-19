@@ -3,6 +3,7 @@ import { Search, Smile, Paperclip, Send } from "lucide-react";
 import "./SidebarChat.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessages } from "../../redux/chatSlice";
+import { SearchProductModal } from './SearchProduct'
 
 export default function ChatAdmin(props) {
     const senderID = props.info.clientId;
@@ -11,16 +12,18 @@ export default function ChatAdmin(props) {
     const avatar = props.info.avatar;
 
     const [input, setInput] = useState("");
+    const [showModal, setShowModal] = useState(false);
 
     const messages = useSelector((state) => state.chat.message);
     const messagesEndRef = useRef(null);
     const prevMessagesCount = useRef(messages.length);
     const dispatch = useDispatch();
 
-    const sendMessage = async () => {
+    const sendMessage = async (type) => {
         if (!input.trim()) return;
-        let res = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: input }));
-        if (res.payload.EC === 0) {
+        let res = await dispatch(sendMessages({ clientId: senderID, senderId: 1, message: input, type: type , productId: "" }));
+
+        if (res.meta.requestStatus === "fulfilled") {
             setInput("");
             await dispatch(getMessages({ senderID }));
         }
@@ -46,6 +49,16 @@ export default function ChatAdmin(props) {
         }
         prevMessagesCount.current = messages.length;
     }, [messages]);
+
+    const convertTime = (time) => {
+        const date = new Date(time);
+        return date.toLocaleTimeString("vi-VN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: "Asia/Ho_Chi_Minh",
+        });
+    };
 
     return (
         <div className=" ">
@@ -74,39 +87,73 @@ export default function ChatAdmin(props) {
                 {messages.map((msg, index) => (
                     <div
                         key={index}
-                        className={`p-2 my-1 max-w-[80%] rounded-lg ${msg.senderId === 2 ? "bg-blue-100 self-end ml-auto" : "bg-gray-200"}`}
+                        className={`d-flex my-1 ${msg.senderId !== 2 ? "justify-content-end" : "justify-content-start"}`}
                     >
-                        {msg.message}
+                        <div
+                            className={`p-3 rounded-3 text-break`}
+                            style={{
+                                maxWidth: "70%",
+                                backgroundColor: msg.senderId !== 2 ? "#0d6efd" : "#f1f1f1",
+                                color: msg.senderId !== 2 ? "white" : "black",
+                            }}
+                        >
+                            {msg.type === 'image' ? (
+                                <div className="d-flex flex-column align-items-center">
+                                    <img
+                                        src={msg.message}
+                                        alt="Hình ảnh"
+                                        className="rounded mb-2"
+                                        style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
+                                    />
+                                </div>
+                            ) : (
+                                <span>{msg.message}</span>
+                            )}
+                            {/* Thời gian gửi */}
+                            <div
+                                className={`text-end text-xs mt-1 ${msg.senderId !== 2 ? "text-white" : "text-secondary"
+                                    }`}
+                            >
+                                {convertTime(msg.createdAt)}
+                            </div>
+                        </div>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />
             </div>
 
             {/* Message Input */}
-            <div className="bg-white p-2 border-top">
+            <div className="bg-white p-4 border-top">
 
                 <div className="d-flex align-items-center">
                     <button className="btn btn-light me-2">
                         <Smile size={20} />
                     </button>
-                    <button className="btn btn-light me-2">
+                    <button className="btn btn-light me-2" onClick={() => setShowModal(true)}>
                         <Paperclip size={20} />
                     </button>
+
 
                     <input
                         className="flex-1 p-2 border rounded-lg outline-none"
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                        onKeyDown={(e) => e.key === "Enter" && sendMessage('text')}
                         placeholder="Nhập tin nhắn..."
                     />
-                    <button className="btn btn-primary ms-2" onClick={sendMessage}>
+                    <button className="btn btn-primary ms-2" onClick={() => sendMessage('text')}>
                         <Send size={20} />
                     </button>
                 </div>
             </div>
-        </div>
+
+            <SearchProductModal
+                senderID={senderID}
+                show={showModal}
+                handleClose={() => setShowModal(false)} />
+
+        </div >
 
     );
 }
