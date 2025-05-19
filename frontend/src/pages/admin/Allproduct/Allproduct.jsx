@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
-import styles from './AllProduct.module.scss';
+import styles from './Allproduct.module.scss';
 import { Api_Inventory } from '../../../../apis/Api_Inventory';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
