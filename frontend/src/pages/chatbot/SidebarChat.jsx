@@ -18,7 +18,7 @@ function SidebarChat() {
         // { customerId: "KH001", customerName: "Nguyễn Thị Quỳnh Giang", email: "nguyenthiquynhgiang@gmail.com", phoneNumber: "123-456-7890", address: "TPHCM" },
         try {
             const customers = await Api_ManagerCustomer.getAllCustomers();
-            // setSenders(customers);
+            setSenders(customers);
             console.log('Customers:', customers);
         } catch (error) {
             console.error('Failed to fetch customers:', error);
