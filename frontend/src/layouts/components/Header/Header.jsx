@@ -105,47 +105,43 @@ function Header({ user }) {
                         </button>
                     </Link>
                 </nav>
-                <Link to={config.routes.home}>
-                    <div className={cx('logo')}>
+
+                <div className={cx('logo')}>
+                    <Link to={config.routes.home}>
                         <LogoIcon />
-                    </div>
-                </Link>
-                <div className={cx('search')}>
-                    <Search />
+                    </Link>
                 </div>
+                <div className="flex w-[400px] justify-end">
+                    <div className={cx('search')}>
+                        <Search />
+                    </div>
 
-                <div className={cx('actions')}>
-                    {isLoggedIn ? (
-                        <>
-                            <Link to={config.routes.cart}>
-                                <button className={cx('action-btn')}>
-                                    <FontAwesomeIcon icon={faShoppingCart} />
-                                </button>
-                            </Link>
-                            <Menu items={userMenu}>
-                                <button className={cx('action-btn')}>
-                                    <FontAwesomeIcon icon={faUser} />
-                                </button>
-                            </Menu>
+                    <div className={cx('actions')}>
+                        {isLoggedIn ? (
+                            <>
+                                <Link to={config.routes.cart}>
+                                    <button className={cx('action-btn')}>
+                                        <FontAwesomeIcon icon={faShoppingCart} />
+                                    </button>
+                                </Link>
+                                <Menu items={userMenu}>
+                                    <button className={cx('action-btn')}>
+                                        <FontAwesomeIcon icon={faUser} />
+                                    </button>
+                                </Menu>
+                            </>
+                        ) : (
+                            <>
+                                <Link to={config.routes.register}>
+                                    <Button text>Register</Button>
+                                </Link>
 
-                            {/* <Image
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt1Sw-DyQXoPERYUk3wfWFmjZ6U9sCUNIFzA&s"
-                                className={cx('user-avatar')}
-                                alt="avatar"
-                                fallBack="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png"
-                            /> */}
-                        </>
-                    ) : (
-                        <>
-                            <Link to={config.routes.register}>
-                                <Button text>Register</Button>
-                            </Link>
-
-                            <Link to={config.routes.login}>
-                                <Button primary>Login</Button>
-                            </Link>
-                        </>
-                    )}
+                                <Link to={config.routes.login}>
+                                    <Button primary>Login</Button>
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </header>

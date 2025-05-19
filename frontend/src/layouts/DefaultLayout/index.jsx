@@ -9,16 +9,17 @@ const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
     return (
-        <div className={cx('wrapper')}>
-            {/* Header */}
-            <Header /> {/* Phần tĩnh */}
-            {/* Main Content */}
-            <div className={cx('container')}>
-                <div className={cx('content')}>{children}</div> {/* Phần động */}
+        <>
+            <Header />
+            <div className={cx('wrapper')}>
+                {/* Main Content */}
+                <div className={cx('container')}>
+                    <div className={cx('content')}>{children}</div> {/* Phần động */}
+                </div>
+                {/* Footer */}
+                <Footer /> {/* Phần tĩnh */}
             </div>
-            {/* Footer */}
-            <Footer /> {/* Phần tĩnh */}
-        </div>
+        </>
     );
 }
 

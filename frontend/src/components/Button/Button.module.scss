@@ -2,7 +2,7 @@
     font-family: var(--font-family);
     font-size: 1.6rem;
     font-weight: 700;
-    min-width: 100px;
+    min-width: 120px;
     padding: 9px 16px;
     border-radius: 12px;
     cursor: pointer;
@@ -15,7 +15,7 @@
 
     + .wrapper {
         // Cho nut dung sau cach nhau 1 khoang
-        margin-left: 8px;
+        margin-left: 18px;
     }
 
     // Button disabled
