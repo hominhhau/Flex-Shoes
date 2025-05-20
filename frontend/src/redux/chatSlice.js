@@ -9,14 +9,14 @@ const initialState = {
 };
 
 export const getMessages = createAsyncThunk('chat/getMessages', async (senderId, thunkAPI) => {
-    let response = await ApiManager.post(`http://localhost:8089/show`, { senderId });
+    let response = await ApiManager.post(`http://localhost:8089/chat/show`, { senderId });
     return response.DT;
 });
 
 export const sendMessages = createAsyncThunk(
     'chat/sendMessages',
     async ({ clientId, senderId, message, type, productId }, thunkAPI) => {
-        let response = await ApiManager.post('http://localhost:8089/send', {
+        let response = await ApiManager.post('http://localhost:8089/chat/send', {
             clientId,
             senderId,
             message,
@@ -27,18 +27,18 @@ export const sendMessages = createAsyncThunk(
     },
 );
 
-export const getAllSender = createAsyncThunk('chat/getAllSender', async (thunkAPI) => {
-    let response = await ApiManager.get('http://localhost:8089/getAllSender');
+export const chatGPT = createAsyncThunk('chat/chatGPT', async (message, thunkAPI) => {
+    let response = await ApiManager.post(`http://localhost:8089/chat/chatgpt`, {message: message});
     return response;
 });
 
 export const getLastMessage = createAsyncThunk('chat/getLastMessage', async (senderIds, thunkAPI) => {
-    let response = await ApiManager.get(`http://localhost:8089/getLastMessage?senderIds=${senderIds}`);
+    let response = await ApiManager.get(`http://localhost:8089/chat/getLastMessage?senderIds=${senderIds}`);
     return response;
 });
 
 export const updateMessageStatus = createAsyncThunk('chat/updateMessageStatus', async (senderId, thunkAPI) => {
-    let response = await ApiManager.post(`http://localhost:8089/updateMessageStatus`, senderId);
+    let response = await ApiManager.post(`http://localhost:8089/chat/updateMessageStatus`, senderId);
     return response;
 });
 
@@ -73,14 +73,6 @@ const chatSlice = createSlice({
             })
             .addCase(sendMessages.rejected, (state, action) => {});
 
-        //  getAllSender
-        builder
-            .addCase(getAllSender.pending, (state) => {})
-            .addCase(getAllSender.fulfilled, (state, action) => {
-                state.senders = action.payload || [];
-            })
-            .addCase(getAllSender.rejected, (state, action) => {});
-
         // getLastMessage
         builder
             .addCase(getLastMessage.pending, (state) => {})
@@ -110,6 +102,12 @@ const chatSlice = createSlice({
             .addCase(getNumberOfProductsById.pending, (state) => {})
             .addCase(getNumberOfProductsById.fulfilled, (state, action) => {})
             .addCase(getNumberOfProductsById.rejected, (state, action) => {});
+
+        // chatGPT
+        builder
+            .addCase(chatGPT.pending, (state) => {})
+            .addCase(chatGPT.fulfilled, (state, action) => {})
+            .addCase(chatGPT.rejected, (state, action) => {});
     },
 });
 

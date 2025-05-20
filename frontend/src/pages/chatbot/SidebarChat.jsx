@@ -112,28 +112,45 @@ function SidebarChat() {
         });
     };
 
-    const handleSearchRealtime = (keyword) => {
-        const lowerKeyword = keyword.toLowerCase();
-        const filtered = senders
-            .filter(sender =>
-                sender.name.toLowerCase().includes(lowerKeyword) ||
-                sender.phoneNumber.includes(lowerKeyword)
-            )
-            .map(sender => {
-                const lastMsg = lastMessages.find(m => m.senderId === sender.clientId);
-                return {
-                    id: sender.clientId,
-                    name: sender.name,
-                    phoneNumber: sender.phoneNumber,
-                    message: lastMsg?.message || "",
-                    time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
-                    avatar: "/placeholder.svg",
-                    state: lastMsg?.state || 0
-                };
-            });
+   const handleSearchRealtime = (keyword) => {
+    if (!keyword || typeof keyword !== "string") {
+        setConversations(senders.map(sender => {
+            const lastMsg = lastMessages.find(m => m.senderId === sender.userID);
+            return {
+                id: sender.userID,
+                name: sender.lastName + " " + sender.firstName,
+                phoneNumber: sender.phoneNumber,
+                message: lastMsg?.message || "",
+                time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
+                avatar: "/placeholder.svg",
+                state: lastMsg?.state || 0
+            };
+        }));
+        return;
+    }
 
-        setConversations(filtered);
-    };
+    const lowerKeyword = keyword.toLowerCase();
+
+    const filtered = senders
+        .filter(sender =>
+            `${sender.lastName} ${sender.firstName}`.toLowerCase().includes(lowerKeyword) ||
+            sender.phoneNumber.includes(lowerKeyword)
+        )
+        .map(sender => {
+            const lastMsg = lastMessages.find(m => m.senderId === sender.userID);
+            return {
+                id: sender.userID,
+                name: sender.lastName + " " + sender.firstName,
+                phoneNumber: sender.phoneNumber,
+                message: lastMsg?.message || "",
+                time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
+                avatar: "/placeholder.svg",
+                state: lastMsg?.state || 0
+            };
+        });
+
+    setConversations(filtered);
+};
 
     return (
         <div className="w-full pl-[260px] mt-[100px]">
@@ -153,9 +170,8 @@ function SidebarChat() {
                                         <input
                                             type="text"
                                             className="form-control form-control-sm bg-light"
-                                            placeholder="Tìm kiếm"
-                                            value mutlaka
-
+                                            placeholder="Tìm kiếm theo tên hoặc SĐT"
+                                            value={searchInput} 
                                             onChange={(e) => {
                                                 setSearchInput(e.target.value);
                                                 handleSearchRealtime(e.target.value);
