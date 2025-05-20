@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { Search, Smile, Paperclip, Send } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllSender, getLastMessage, updateMessageStatus } from '../../redux/chatSlice';
+import { getLastMessage, updateMessageStatus } from '../../redux/chatSlice';
 import ChatAdmin from './ChatAdmin';
 import { Api_ManagerCustomer } from '../../../apis/Api_ManagerCustomer';
 
@@ -14,90 +14,99 @@ function SidebarChat() {
     const [isShowChat, setIsShowChat] = useState(false);
 
     const dispatch = useDispatch();
+
     const fetchListSender = async () => {
         // { customerId: "KH001", customerName: "Nguyễn Thị Quỳnh Giang", email: "nguyenthiquynhgiang@gmail.com", phoneNumber: "123-456-7890", address: "TPHCM" },
         try {
             const customers = await Api_ManagerCustomer.getAllCustomers();
-            setSenders(customers);
-            console.log('Customers:', customers);
+            setSenders(customers.response);
         } catch (error) {
             console.error('Failed to fetch customers:', error);
         }
     };
 
-    // Gọi last message của từng sender
     const lastMessage = async (senders) => {
-        console.log('Sender', senders);
-        const senderIds = senders.map((s) => s.clientId).join(',');
-        console.log('Sender', senderIds);
-        let res = await dispatch(getLastMessage(senderIds));
+        if (!senders || senders.length === 0) return; // Kiểm tra senders không rỗng
+        try {
+            const senderIds = senders.map((s) => s.userID).join(',');
+            const res = await dispatch(getLastMessage(senderIds));
 
-        if (res.payload.EC === 0 && Array.isArray(res.payload.DT)) {
-            const formattedMessages = res.payload.DT.map((item) => ({
-                senderId: item.clientId,
-                message: item.message,
-                state: item.status,
-                timestamp: item.createdAt, // nếu cần dùng cho convertTime
-            }));
-            setLastMessages(formattedMessages);
+            if (res.payload.EC === 0 && Array.isArray(res.payload.DT)) {
+                const formattedMessages = res.payload.DT.map((item) => ({
+                    senderId: item.clientId,
+                    message: item.message,
+                    state: item.status,
+                    timestamp: item.createdAt,
+                }));
+                setLastMessages(formattedMessages);
+            }
+        } catch (error) {
+            console.error('Failed to fetch last messages:', error);
         }
     };
 
     useEffect(() => {
-        lastMessage(senders);
-        const interval = setInterval(fetchListSender, 1000); // Lặp lại mỗi 1 giây
-        return () => clearInterval(interval); // Cleanup khi component unmount
+        fetchListSender(); // Gọi lần đầu khi mount
+        const interval = setInterval(fetchListSender, 5000); // Tăng interval lên 5 giây
+        return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        lastMessage(senders); // Gọi lastMessage khi senders thay đổi
+    }, [senders]);
+
     const convertTime = (targetDate) => {
-        const diffInMilliseconds = new Date() - targetDate;
+        if (!targetDate) return 'đang hoạt động';
+        const diffInMilliseconds = new Date() - new Date(targetDate);
         const diffInSeconds = Math.floor(diffInMilliseconds / 1000);
         const diffInMinutes = Math.floor(diffInSeconds / 60);
         const diffInHours = Math.floor(diffInMinutes / 60);
         const diffInDays = Math.floor(diffInHours / 24);
 
-        // Nếu thời gian vượt quá 1 ngày, chỉ lấy ngày
-        if (diffInDays > 0) {
-            return `${diffInDays} ngày trước`;
-        } else if (diffInHours > 0) {
-            return `${diffInHours} giờ trước`;
-        } else if (diffInMinutes > 0) {
-            return `${diffInMinutes} phút trước`;
-        } else if (diffInSeconds > 0) {
-            return `${diffInSeconds} giây trước`;
-        } else {
-            return 'đang hoạt động';
-        }
+        if (diffInDays > 0) return `${diffInDays} ngày trước`;
+        if (diffInHours > 0) return `${diffInHours} giờ trước`;
+        if (diffInMinutes > 0) return `${diffInMinutes} phút trước`;
+        if (diffInSeconds > 0) return `${diffInSeconds} giây trước`;
+        return 'đang hoạt động';
     };
 
     useEffect(() => {
         const _conversations = senders.map((sender) => {
-            const lastMsg = lastMessages.find((m) => m.senderId === sender.clientId);
-            console.log('lastMsg ', lastMsg);
+            const lastMsg = lastMessages.find((m) => m.senderId === sender.userID);
 
             return {
-                id: sender.clientId,
-                name: sender.name,
+                id: sender.userID,
+                name: sender.lastName + ' ' + sender.firstName,
                 phoneNumber: sender.phoneNumber,
                 message: lastMsg?.message || '',
-                time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt)),
+                time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
                 avatar: '/placeholder.svg',
                 state: lastMsg?.state || 0,
             };
         });
 
         // Sắp xếp theo timestamp mới nhất
-        const sorted = [..._conversations].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const sorted = _conversations.sort(
+            (a, b) =>
+                new Date(
+                    b.time === 'đang hoạt động'
+                        ? Date.now()
+                        : lastMessages.find((m) => m.senderId === b.id)?.timestamp || 0,
+                ) -
+                new Date(
+                    a.time === 'đang hoạt động'
+                        ? Date.now()
+                        : lastMessages.find((m) => m.senderId === a.id)?.timestamp || 0,
+                ),
+        );
 
         setConversations(sorted);
-    }, [lastMessages]);
+    }, [senders, lastMessages]);
 
     const handleShowChat = async (sender) => {
         setIsShowChat(true);
-        // Gửi yêu cầu cập nhật trạng thái đọc
         try {
             await dispatch(updateMessageStatus({ clientId: sender.id }));
-            // Sau khi cập nhật, gọi lại lastMessage để load lại trạng thái
             await lastMessage(senders);
         } catch (error) {
             console.error('Failed to update message status:', error);
@@ -111,41 +120,45 @@ function SidebarChat() {
         });
     };
 
-    const handleSearch = () => {
-        const keyword = searchInput.toLowerCase();
-
-        const filtered = senders
-            .filter((sender) => sender.name.toLowerCase().includes(keyword) || sender.phoneNumber.includes(keyword))
-            .map((sender) => ({
-                id: sender.clientId,
-                name: sender.name,
-                phoneNumber: sender.phoneNumber,
-                dateOfBirth: sender.dateOfBirth,
-                message: 'sender.message',
-                time: convertTime(new Date(sender.createdAt || sender.time || new Date())), // fallback nếu thiếu `createdAt`
-                avatar: '/placeholder.svg',
-            }));
-
-        setConversations(filtered);
-    };
-
     const handleSearchRealtime = (keyword) => {
+        if (!keyword || typeof keyword !== 'string') {
+            setConversations(
+                senders.map((sender) => {
+                    const lastMsg = lastMessages.find((m) => m.senderId === sender.userID);
+                    return {
+                        id: sender.userID,
+                        name: sender.lastName + ' ' + sender.firstName,
+                        phoneNumber: sender.phoneNumber,
+                        message: lastMsg?.message || '',
+                        time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
+                        avatar: '/placeholder.svg',
+                        state: lastMsg?.state || 0,
+                    };
+                }),
+            );
+            return;
+        }
+
         const lowerKeyword = keyword.toLowerCase();
 
         const filtered = senders
             .filter(
                 (sender) =>
-                    sender.name.toLowerCase().includes(lowerKeyword) || sender.phoneNumber.includes(lowerKeyword),
+                    `${sender.lastName} ${sender.firstName}`.toLowerCase().includes(lowerKeyword) ||
+                    sender.phoneNumber.includes(lowerKeyword),
             )
-            .map((sender) => ({
-                id: sender.clientId,
-                name: sender.name,
-                phoneNumber: sender.phoneNumber,
-                dateOfBirth: sender.dateOfBirth,
-                message: 'sender.message',
-                time: convertTime(new Date(sender.createdAt || sender.time || new Date())),
-                avatar: '/placeholder.svg',
-            }));
+            .map((sender) => {
+                const lastMsg = lastMessages.find((m) => m.senderId === sender.userID);
+                return {
+                    id: sender.userID,
+                    name: sender.lastName + ' ' + sender.firstName,
+                    phoneNumber: sender.phoneNumber,
+                    message: lastMsg?.message || '',
+                    time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
+                    avatar: '/placeholder.svg',
+                    state: lastMsg?.state || 0,
+                };
+            });
 
         setConversations(filtered);
     };
@@ -154,13 +167,10 @@ function SidebarChat() {
         <div className="w-full pl-[260px] mt-[100px]">
             <div className="p-[20px]">
                 <div className="container-fluid vh-100 p-0">
-                    <div className="row h-100 g-0 ">
-                        {/* Left SidebarChat */}
-
+                    <div className="row h-100 g-0">
                         <div className="col-3 border-end bg-white" style={{ maxWidth: '300px' }}>
-                            {/* Profile and Search */}
                             <div className="p-3 border-bottom">
-                                <div className="d-flex align-items-center ">
+                                <div className="d-flex align-items-center">
                                     <img
                                         src="/placeholder.svg"
                                         className="rounded-circle"
@@ -171,17 +181,16 @@ function SidebarChat() {
                                         <input
                                             type="text"
                                             className="form-control form-control-sm bg-light"
-                                            placeholder="Tìm kiếm"
+                                            placeholder="Tìm kiếm theo tên hoặc SĐT"
                                             value={searchInput}
                                             onChange={(e) => {
                                                 setSearchInput(e.target.value);
                                                 handleSearchRealtime(e.target.value);
                                             }}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                         />
                                         <span
                                             className="input-group-text bg-light border-start-0 cursor-pointer"
-                                            onClick={() => handleSearch()}
+                                            onClick={() => handleSearchRealtime(searchInput)}
                                         >
                                             <Search size={16} />
                                         </span>
@@ -189,7 +198,6 @@ function SidebarChat() {
                                 </div>
                             </div>
 
-                            {/* Conversations List */}
                             <div className="overflow-auto" style={{ height: 'calc(100vh - 60px)' }}>
                                 {conversations.map((chat) => (
                                     <div
@@ -203,18 +211,13 @@ function SidebarChat() {
                                             alt=""
                                             style={{ width: '48px', height: '48px' }}
                                         />
-
-                                        <div className="ms-2 overflow-hidden ">
+                                        <div className="ms-2 overflow-hidden">
                                             <div className="d-flex align-items-center gap-5">
-                                                <div className="text-truncate fw-medium ">{chat.name}</div>
+                                                <div className="text-truncate fw-medium">{chat.name}</div>
                                                 <small className="text-muted ms-auto">{chat.time}</small>
                                             </div>
                                             <div
-                                                className={`text-truncate small ${
-                                                    chat.message && chat.state === 0
-                                                        ? 'fw-semibold text-dark'
-                                                        : 'text-secondary'
-                                                }`}
+                                                className={`text-truncate small ${chat.message && chat.state === 0 ? 'fw-semibold text-dark' : 'text-secondary'}`}
                                             >
                                                 {chat.message || 'Không có tin nhắn'}
                                             </div>
@@ -224,7 +227,6 @@ function SidebarChat() {
                             </div>
                         </div>
 
-                        {/* Main Chat Area */}
                         {isShowChat ? (
                             <div className="col-9 bg-light">
                                 <ChatAdmin info={info} />

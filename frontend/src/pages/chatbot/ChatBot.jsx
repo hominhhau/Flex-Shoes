@@ -5,7 +5,8 @@ import { getMessages, sendMessages } from "../../redux/chatSlice";
 import { useNavigate } from 'react-router-dom';
 
 const ChatBot = () => {
-  const senderID = 1;  // khi login sẽ lấy từ user
+  const user = JSON.parse(localStorage.getItem("customerId"));
+  const senderID = user;
   const [isOpen, setIsOpen] = useState(false);
   const messages = useSelector((state) => state.chat.message);
   const [input, setInput] = useState("");
@@ -17,7 +18,7 @@ const ChatBot = () => {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    let res = await dispatch(sendMessages({ clientId: senderID, senderId: 2, message: input, type: "text" , productId: "" }));
+    let res = await dispatch(sendMessages({ clientId: senderID, senderId: 2, message: input, type: "text", productId: "" }));
 
     if (res.meta.requestStatus === "fulfilled") {
       setInput("");
@@ -53,7 +54,7 @@ const ChatBot = () => {
 
   // Chuyển hướng đến trang chi tiết sản phẩm
 
-  const handleDetail = async(productId) => {
+  const handleDetail = async (productId) => {
     navigate(`/productdetail/${productId}`);
   }
 

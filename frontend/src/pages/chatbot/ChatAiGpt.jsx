@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { chatGPT } from "../../redux/chatSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const ChatAiGpt = () => {
     const [showChat, setShowChat] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
+    const dispatch = useDispatch();
 
     const toggleChat = () => setShowChat(!showChat);
 
@@ -16,11 +18,10 @@ const ChatAiGpt = () => {
         setInput('');
 
         try {
-            const res = await axios.post('http://localhost:8089/chatgpt', { message: input });
-            setMessages([...newMessages, { sender: 'bot', text: res.data.reply }]);
-            console.log('res ',res);
-            
+            const res = await dispatch(chatGPT(input));
+            setMessages([...newMessages, { sender: 'bot', text: res.payload.reply }]);
         } catch (err) {
+            console.log('err bot chat gpt: ', err);
             setMessages([...newMessages, { sender: 'bot', text: 'Bot gặp lỗi rồi 😢' }]);
         }
     };
