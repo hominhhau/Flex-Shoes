@@ -9,14 +9,14 @@ const initialState = {
 };
 
 export const getMessages = createAsyncThunk('chat/getMessages', async (senderId, thunkAPI) => {
-    let response = await ApiManager.post(`http://localhost:8089/chat/show`, { senderId });
+    let response = await ApiManager.post(`/chat/show`, { senderId });
     return response.DT;
 });
 
 export const sendMessages = createAsyncThunk(
     'chat/sendMessages',
     async ({ clientId, senderId, message, type, productId }, thunkAPI) => {
-        let response = await ApiManager.post('http://localhost:8089/chat/send', {
+        let response = await ApiManager.post('/chat/send', {
             clientId,
             senderId,
             message,
@@ -28,17 +28,17 @@ export const sendMessages = createAsyncThunk(
 );
 
 export const chatGPT = createAsyncThunk('chat/chatGPT', async (message, thunkAPI) => {
-    let response = await ApiManager.post(`http://localhost:8089/chat/chatgpt`, {message: message});
+    let response = await ApiManager.post(`/chat/chatgpt`, { message: message });
     return response;
 });
 
 export const getLastMessage = createAsyncThunk('chat/getLastMessage', async (senderIds, thunkAPI) => {
-    let response = await ApiManager.get(`http://localhost:8089/chat/getLastMessage?senderIds=${senderIds}`);
+    let response = await ApiManager.get(`/chat/getLastMessage?senderIds=${senderIds}`);
     return response;
 });
 
 export const updateMessageStatus = createAsyncThunk('chat/updateMessageStatus', async (senderId, thunkAPI) => {
-    let response = await ApiManager.post(`http://localhost:8089/chat/updateMessageStatus`, senderId);
+    let response = await ApiManager.post(`/chat/updateMessageStatus`, senderId);
     return response;
 });
 

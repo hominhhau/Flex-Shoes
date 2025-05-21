@@ -1,33 +1,30 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
+// Tạo context
 const AuthContext = createContext();
 
+// Provider để cung cấp trạng thái đăng nhập
 export const AuthProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [role, setRole] = useState(null); // null = chưa load role
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // Biến trạng thái đăng nhập
+    const [role, setRole] = useState(false); // Biến quyền hạn
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         const storedRoles = localStorage.getItem('role');
+        console.log('Token:', token);
         setIsLoggedIn(!!token);
 
         if (storedRoles) {
             const parsedRoles = JSON.parse(storedRoles);
-            const isAdmin = parsedRoles.some(r => r.authority === 'ROLE_ADMIN');
+            const isAdmin = parsedRoles.some((role) => role.authority === 'ROLE_ADMIN');
             setRole(isAdmin);
         } else {
             setRole(false);
         }
+    }, [isLoggedIn, role]);
 
-        setIsLoading(false);
-    }, []);
-
-    return (
-        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, role, setRole, isLoading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, role, setRole }}>{children}</AuthContext.Provider>;
 };
 
+// Hook để sử dụng AuthContext
 export const useAuth = () => useContext(AuthContext);

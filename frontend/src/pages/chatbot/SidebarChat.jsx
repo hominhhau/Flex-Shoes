@@ -80,7 +80,7 @@ function SidebarChat() {
                 phoneNumber: sender.phoneNumber,
                 message: lastMsg?.message || '',
                 time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
-                avatar: '/placeholder.svg',
+                avatar: 'https://i.imgur.com/cIRFqAL.png',
                 state: lastMsg?.state || 0,
             };
         });
@@ -131,7 +131,7 @@ function SidebarChat() {
                         phoneNumber: sender.phoneNumber,
                         message: lastMsg?.message || '',
                         time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
-                        avatar: '/placeholder.svg',
+                        avatar: 'https://i.imgur.com/cIRFqAL.png',
                         state: lastMsg?.state || 0,
                     };
                 }),
@@ -155,7 +155,7 @@ function SidebarChat() {
                     phoneNumber: sender.phoneNumber,
                     message: lastMsg?.message || '',
                     time: convertTime(new Date(lastMsg?.timestamp || sender.createdAt || Date.now())),
-                    avatar: '/placeholder.svg',
+                    avatar: 'https://i.imgur.com/cIRFqAL.png',
                     state: lastMsg?.state || 0,
                 };
             });
@@ -166,13 +166,16 @@ function SidebarChat() {
     return (
         <div className="w-full pl-[260px] mt-[100px]">
             <div className="p-[20px]">
-                <div className="container-fluid vh-100 p-0">
-                    <div className="row h-100 g-0">
-                        <div className="col-3 border-end bg-white" style={{ maxWidth: '300px' }}>
+                <div
+                    className="container-fluid p-0"
+                    style={{ height: '80vh', borderRadius: '10px', overflow: 'hidden' }}
+                >
+                    <div className="row g-0" style={{ height: '100%' }}>
+                        <div className="col-3 border-end bg-white" style={{ maxWidth: '300px', height: '100%' }}>
                             <div className="p-3 border-bottom">
                                 <div className="d-flex align-items-center">
                                     <img
-                                        src="/placeholder.svg"
+                                        src="https://i.imgur.com/cIRFqAL.png"
                                         className="rounded-circle"
                                         alt=""
                                         style={{ width: '32px', height: '32px' }}
@@ -180,7 +183,7 @@ function SidebarChat() {
                                     <div className="input-group ms-2">
                                         <input
                                             type="text"
-                                            className="form-control form-control-sm bg-light"
+                                            className="form-control form-control-sm bg-light fs-5"
                                             placeholder="Tìm kiếm theo tên hoặc SĐT"
                                             value={searchInput}
                                             onChange={(e) => {
@@ -206,7 +209,7 @@ function SidebarChat() {
                                         onClick={() => handleShowChat(chat)}
                                     >
                                         <img
-                                            src={chat.avatar || '/placeholder.svg'}
+                                            src={chat.avatar || 'https://i.imgur.com/cIRFqAL.png'}
                                             className="rounded-circle"
                                             alt=""
                                             style={{ width: '48px', height: '48px' }}
@@ -228,13 +231,13 @@ function SidebarChat() {
                         </div>
 
                         {isShowChat ? (
-                            <div className="col-9 bg-light">
+                            <div className="col-9 bg-light" style={{ height: '100%', borderRadius: '10px' }}>
                                 <ChatAdmin info={info} />
                             </div>
                         ) : (
                             <div
                                 className="col-9 bg-light d-flex justify-content-center align-items-center"
-                                style={{ height: '100vh' }}
+                                style={{ height: '100%', borderRadius: '10px' }}
                             >
                                 <h3 className="text-muted">Chào mừng bạn trở lại</h3>
                             </div>

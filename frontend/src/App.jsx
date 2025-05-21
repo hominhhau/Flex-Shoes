@@ -1,22 +1,18 @@
 import { Fragment } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { publicRoutes, } from './routes';
+import { publicRoutes } from './routes';
 // privateRoutes
 import DefaultLayout from './layouts/DefaultLayout';
 import AdminLayout from './layouts/AdminLayout';
 import ScrollToTop from './components/ScrollToTop';
 import { useAuth } from './hooks/useAuth';
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import ChatBot from '../src/pages/chatbot/ChatBot';
-import ChatAiGpt from '../src/pages/chatbot/ChatAiGpt'
+import ChatAiGpt from '../src/pages/chatbot/ChatAiGpt';
 
 function App() {
-    const { role, isLoading } = useAuth();
-    if (isLoading) {
-        // Chờ load xong role
-        return <div>Loading...</div>;
-    }
+    const { role } = useAuth();
 
     return (
         <Router>
@@ -45,7 +41,7 @@ function App() {
                                 key={index}
                                 path={route.path}
                                 element={
-                                    (!role && route.path === '/admin-chat') ? (
+                                    !role && route.path === '/admin-chat' ? (
                                         <Navigate to="/" replace />
                                     ) : (
                                         <Layout>

@@ -7,7 +7,6 @@ import { ImageUploader } from './ImageUploader';
 import { Api_Inventory } from '../../../../apis/Api_Inventory';
 import config1 from '../../../config';
 import Modal from '../../../components/Modal';
-import { SlArrowRight, SlCalender } from 'react-icons/sl';
 
 const cx = classNames.bind(styles);
 
@@ -23,8 +22,6 @@ const ProductForm = () => {
     const [isError, setIsError] = useState(false);
     const [isAnnounce, setIsAnnounce] = useState(false);
     const [loading, setLoading] = useState(true); // Add loading state
-    const today = new Date();
-    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -37,11 +34,9 @@ const ProductForm = () => {
                 const brandResp = await Api_Inventory.getBrand();
                 const categoryResp = await Api_Inventory.getCategory();
 
-                console.log('Data category detail:', categoryResp);
-
-                setProduct({ ...productResp.data });
-                setBrand(brandResp.data || []);
-                setCategory(categoryResp.data || []);
+                setProduct({ ...productResp });
+                setBrand(brandResp || []);
+                setCategory(categoryResp || []);
                 setQuantities(productResp.inventory);
             } catch (error) {
                 console.error('Error fetching product details:', error);
@@ -116,8 +111,7 @@ const ProductForm = () => {
         try {
             const response = await Api_Inventory.deleteProduct(productId);
             if (response) {
-                //setIsSuccess(true);
-                navigator(config1.routes.AllProduct);
+                setIsSuccess(true);
             }
         } catch (error) {
             console.error('Error deleting product:', error);
@@ -141,19 +135,6 @@ const ProductForm = () => {
 
     return (
         <>
-            <div className="flex justify-between mb-5">
-                <div className={cx('tab-1')}>
-                    <p className="font-bold text-[24px]">All Products</p>
-                    <div className={cx('tab')}>
-                        Home <SlArrowRight size={10} className="mx-3" /> All Products
-                        <SlArrowRight size={10} className="mx-3" /> Products Detail
-                    </div>
-                </div>
-                <div className="flex items-end mr-7">
-                    <SlCalender className="mr-6 mb-2" />
-                    {formattedDate}
-                </div>
-            </div>
             <form className={cx('formContainer')} onSubmit={handleSummit}>
                 <div className={cx('formContent')}>
                     <ProductDetails

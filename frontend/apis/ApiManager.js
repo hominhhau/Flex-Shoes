@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 
 const request = async (method, url, data = null, params = null, customHeaders = {}) => {
     try {
-        console.log(`Making ${method.toUpperCase()} request to ${url}`);
+        // console.log(`Making ${method.toUpperCase()} request to ${url}`);
         if (data) {
             if (data instanceof FormData) {
                 console.log('Request is FormData');
@@ -23,7 +23,7 @@ const request = async (method, url, data = null, params = null, customHeaders = 
                 console.log('Request data:', data);
             }
         }
-        if (params) console.log('Request params:', params);
+        // if (params) console.log('Request params:', params);
 
         const response = await axiosInstance({
             method,
@@ -36,7 +36,7 @@ const request = async (method, url, data = null, params = null, customHeaders = 
             },
         });
 
-        console.log('Response:', response.data);
+        // console.log('Response:', response.data);
         return response.data;
     } catch (error) {
         console.error('API call error:', error);

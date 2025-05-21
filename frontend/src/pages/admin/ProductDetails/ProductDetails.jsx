@@ -14,8 +14,8 @@ export function ProductDetails({ product, brand, category, setProduct, setQuanti
             try {
                 const colorRes = await Api_Inventory.getColor();
                 const sizeRes = await Api_Inventory.getSize();
-                setColors(colorRes.data);
-                setSizes(sizeRes.data);
+                setColors(colorRes);
+                setSizes(sizeRes);
             } catch (error) {
                 console.error('Lỗi khi load Color/Size:', error);
             }
@@ -149,6 +149,10 @@ export function ProductDetails({ product, brand, category, setProduct, setQuanti
 
     return (
         <section className={cx('inputSection')}>
+            <nav className={cx('breadcrumb')}>
+                <span>Home</span> <span>All Products</span> <span>Product Details</span>
+            </nav>
+
             <div className={cx('fieldGroup')}>
                 <label htmlFor="productName" className={cx('fieldLabel')}>
                     Product Name

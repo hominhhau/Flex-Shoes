@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { chatGPT } from "../../redux/chatSlice";
-import { useSelector, useDispatch } from "react-redux";
+import { chatGPT } from '../../redux/chatSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import './SidebarChat.scss';
 
 const ChatAiGpt = () => {
     const [showChat, setShowChat] = useState(false);
@@ -27,10 +28,7 @@ const ChatAiGpt = () => {
     };
 
     return (
-        <div
-            className="position-fixed end-0 me-4 mb-4"
-            style={{ bottom: '60px', zIndex: 1050 }}
-        >
+        <div className="position-fixed end-0 me-4 mb-4" style={{ bottom: '60px', zIndex: 1050 }}>
             {/* Nút mở chat */}
             {!showChat && (
                 <button
@@ -54,8 +52,9 @@ const ChatAiGpt = () => {
                         {messages.map((msg, i) => (
                             <div
                                 key={i}
-                                className={`mb-2 p-2 rounded ${msg.sender === 'user' ? 'bg-success text-white text-end' : 'bg-light'
-                                    }`}
+                                className={`mb-2 p-2 rounded ${
+                                    msg.sender === 'user' ? 'bg-success text-white text-end' : 'bg-light'
+                                }`}
                             >
                                 {msg.text}
                             </div>
@@ -65,13 +64,13 @@ const ChatAiGpt = () => {
                     <div className="card-footer d-flex">
                         <input
                             type="text"
-                            className="form-control me-2"
+                            className="form-control me-2 fs-5"
                             placeholder="Nhập tin nhắn..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                         />
-                        <button className="btn btn-primary" onClick={sendMessage}>
+                        <button className="btn btn-primary fs-5" onClick={sendMessage}>
                             Gửi
                         </button>
                     </div>

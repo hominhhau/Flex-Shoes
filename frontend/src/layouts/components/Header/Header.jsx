@@ -120,12 +120,12 @@ function Header({ user }) {
                         {isLoggedIn ? (
                             <>
                                 <Link to={config.routes.cart}>
-                                    <button className={cx('action-btn')}>
+                                    <button className={cx('action-btn', 'ml-8')}>
                                         <FontAwesomeIcon icon={faShoppingCart} />
                                     </button>
                                 </Link>
                                 <Menu items={userMenu}>
-                                    <button className={cx('action-btn')}>
+                                    <button className={cx('action-btn', 'ml-8')}>
                                         <FontAwesomeIcon icon={faUser} />
                                     </button>
                                 </Menu>
