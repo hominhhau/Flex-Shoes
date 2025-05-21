@@ -5,7 +5,7 @@
     flex-direction: column;
     justify-content: start;
     padding: 40px 20px;
-    min-height: 100vh;
+    min-height: 2000px;
 }
 
 .formContent {
@@ -28,7 +28,9 @@
 
 .breadcrumb {
     color: #70706e;
-    font: 14px 'Open Sans', sans-serif;
+    font:
+        14px 'Open Sans',
+        sans-serif;
     margin-bottom: 16px;
 
     span {
@@ -58,7 +60,9 @@
 
 .fieldLabel {
     color: #232321;
-    font: 600 20px 'Rubik', sans-serif;
+    font:
+        600 20px 'Rubik',
+        sans-serif;
 }
 
 .inputWrapper {
@@ -74,7 +78,9 @@
     min-height: 48px;
     width: 100%;
     padding: 15px 16px;
-    font: 16px 'Open Sans', sans-serif;
+    font:
+        16px 'Open Sans',
+        sans-serif;
 }
 
 .selectInput {
@@ -83,9 +89,12 @@
     min-height: 48px;
     width: 100%;
     padding: 15px 16px;
-    font: 16px 'Open Sans', sans-serif;
+    font:
+        16px 'Open Sans',
+        sans-serif;
     appearance: none;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="#232321" d="M6 9L2 5h8z"/></svg>') no-repeat right 16px center;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="#232321" d="M6 9L2 5h8z"/></svg>')
+        no-repeat right 16px center;
 }
 
 .textArea {
@@ -95,7 +104,9 @@
     height: 100px;
     padding: 10px 16px;
     resize: none;
-    font: 16px 'Open Sans', sans-serif;
+    font:
+        16px 'Open Sans',
+        sans-serif;
 }
 
 .twoColumnGroup {
@@ -155,13 +166,17 @@
 .uploadText {
     margin-top: 16px;
     color: #70706e;
-    font: 16px Open Sans, sans-serif;
+    font:
+        16px Open Sans,
+        sans-serif;
 }
 
 .uploadHint {
     color: #70706e;
     margin-top: 8px;
-    font: 14px Open Sans, sans-serif;
+    font:
+        14px Open Sans,
+        sans-serif;
 }
 
 .thumbnailList {
@@ -195,7 +210,9 @@
 
 .thumbnailName {
     color: #232321;
-    font: 600 16px Open Sans, sans-serif;
+    font:
+        600 16px Open Sans,
+        sans-serif;
 }
 
 .progressBar {
@@ -218,7 +235,9 @@
     padding: 10px 16px;
     border-radius: 8px;
     border: none;
-    font: 500 14px 'Rubik', sans-serif;
+    font:
+        500 14px 'Rubik',
+        sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.25px;
     cursor: pointer;
@@ -228,7 +247,9 @@
 .errorMessage {
     color: red;
     margin-bottom: 10px;
-    font: 14px 'Open Sans', sans-serif;
+    font:
+        14px 'Open Sans',
+        sans-serif;
 }
 
 .buttonContainer {
@@ -248,7 +269,9 @@
     border: none;
     background-color: #4caf50;
     color: #fff;
-    font: 500 14px 'Rubik', sans-serif;
+    font:
+        500 14px 'Rubik',
+        sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.25px;
     cursor: pointer;
@@ -261,7 +284,9 @@
     border: none;
     background-color: #f44336;
     color: #fff;
-    font: 500 14px 'Rubik', sans-serif;
+    font:
+        500 14px 'Rubik',
+        sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.25px;
     cursor: pointer;
@@ -274,7 +299,9 @@
     border: 1px solid #232321;
     background: transparent;
     color: #232321;
-    font: 500 14px 'Rubik', sans-serif;
+    font:
+        500 14px 'Rubik',
+        sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.25px;
     cursor: pointer;
@@ -292,7 +319,9 @@
 .headerCell {
     padding: 8px;
     text-align: center;
-    font: 600 16px 'Rubik', sans-serif;
+    font:
+        600 16px 'Rubik',
+        sans-serif;
     color: #232321;
 }
 
@@ -313,7 +342,9 @@
 .cell {
     padding: 8px;
     text-align: center;
-    font: 16px 'Open Sans', sans-serif;
+    font:
+        16px 'Open Sans',
+        sans-serif;
     color: #232321;
 }
 
@@ -322,7 +353,9 @@
     padding: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font: 14px 'Open Sans', sans-serif;
+    font:
+        14px 'Open Sans',
+        sans-serif;
     text-align: center;
 }
 
@@ -333,7 +366,9 @@
     border-radius: 4px;
     padding: 4px 8px;
     cursor: pointer;
-    font: 500 14px 'Rubik', sans-serif;
+    font:
+        500 14px 'Rubik',
+        sans-serif;
 }
 
 @media (max-width: 991px) {

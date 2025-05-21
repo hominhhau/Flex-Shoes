@@ -1,6 +1,8 @@
 import axios from 'axios';
+// import { ApiManagerV1 } from './ApiManagerV1';
 
 const BASE_URL = 'https://api.flexshoes.io.vn/api/v1';
+// const BASE_URL = 'http://localhost:8085';
 
 // Tạo một instance của axios
 export const ApiManager = axios.create({
@@ -84,7 +86,12 @@ export const Api_Inventory = {
     },
     updateProduct: async (product) => {
         try {
-            const response = await ApiManager.post('/inventory/update', product);
+            const response = await ApiManager.post('/inventory/update', product, {
+                headers: {
+                    // Không đặt 'Content-Type' ở đây, để axios tự xử lý với FormData
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             return response;
         } catch (error) {
             console.error('Error updating product:', error);

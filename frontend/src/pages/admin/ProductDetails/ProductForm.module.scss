@@ -7,8 +7,7 @@
     justify-content: start;
     padding-top: 120px;
     padding-left: 400px;
-    height: 10000px;
-
+    height: 1500px;
 }
 
 .formContent {
@@ -42,7 +41,9 @@
 
 .fieldLabel {
     color: #232321;
-    font: 600 20px Rubik, sans-serif;
+    font:
+        600 20px Rubik,
+        sans-serif;
 }
 
 .inputWrapper {
@@ -155,13 +156,17 @@
 .uploadText {
     margin-top: 16px;
     color: #70706e;
-    font: 16px Open Sans, sans-serif;
+    font:
+        16px Open Sans,
+        sans-serif;
 }
 
 .uploadHint {
     color: #70706e;
     margin-top: 8px;
-    font: 14px Open Sans, sans-serif;
+    font:
+        14px Open Sans,
+        sans-serif;
 }
 
 .thumbnailList {
@@ -195,7 +200,9 @@
 
 .thumbnailName {
     color: #232321;
-    font: 600 16px Open Sans, sans-serif;
+    font:
+        600 16px Open Sans,
+        sans-serif;
 }
 
 .progressBar {
@@ -228,7 +235,9 @@
     border-radius: 8px;
     min-height: 48px;
     border: none;
-    font: 500 14px Rubik, sans-serif;
+    font:
+        500 14px Rubik,
+        sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.25px;
     cursor: pointer;
@@ -248,7 +257,6 @@
     // center
     margin-left: auto;
     margin-right: auto;
-
 }
 
 .addButton {
@@ -257,7 +265,6 @@
     padding: 10px 16px;
     border-radius: 8px;
     margin-bottom: 20px;
-
 }
 
 .deleteButton {
@@ -325,7 +332,6 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
-
 }
 
 .title {

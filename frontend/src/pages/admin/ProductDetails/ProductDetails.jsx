@@ -14,8 +14,8 @@ export function ProductDetails({ product, brand, category, setProduct, setQuanti
             try {
                 const colorRes = await Api_Inventory.getColor();
                 const sizeRes = await Api_Inventory.getSize();
-                setColors(colorRes);
-                setSizes(sizeRes);
+                setColors(colorRes.data);
+                setSizes(sizeRes.data);
             } catch (error) {
                 console.error('Lỗi khi load Color/Size:', error);
             }

@@ -34,10 +34,10 @@ const ProductForm = () => {
                 const brandResp = await Api_Inventory.getBrand();
                 const categoryResp = await Api_Inventory.getCategory();
 
-                setProduct({ ...productResp });
-                setBrand(brandResp || []);
-                setCategory(categoryResp || []);
-                setQuantities(productResp.inventory);
+                setProduct({ ...productResp.data });
+                setBrand(brandResp.data || []);
+                setCategory(categoryResp.data || []);
+                setQuantities(productResp.data.inventory);
             } catch (error) {
                 console.error('Error fetching product details:', error);
                 setProduct({ inventory: [] }); // Fallback to empty inventory
@@ -103,7 +103,7 @@ const ProductForm = () => {
             setIsSuccess(true);
         } catch (error) {
             console.error('Error updating product:', error);
-            setIsError(true);
+            // setIsError(true);
         }
     };
 

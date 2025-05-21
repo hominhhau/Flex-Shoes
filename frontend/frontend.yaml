@@ -17,7 +17,7 @@ spec:
         spec:
             containers:
                 - name: frontend
-                  image: docker.io/ctmyname/frontend:v9.9
+                  image: docker.io/ctmyname/frontend:v10
                   imagePullPolicy: Always
                   ports:
                       - containerPort: 80
