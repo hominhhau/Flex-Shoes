@@ -7,6 +7,7 @@ import { Api_Inventory } from '../../../../apis/Api_Inventory';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
 import { Api_ChatGPT } from '../../../../apis/Api_ChatGPT';
+import { SlArrowRight, SlCalender } from 'react-icons/sl';
 
 const cx = classNames.bind(styles);
 
@@ -37,6 +38,9 @@ const AddNewProduct = () => {
     const [sizes, setSizes] = useState([]);
     const [categorys, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
+
+    const today = new Date();
+    const formattedDate = `Day ${today.getDate()} Month ${today.getMonth() + 1} Year ${today.getFullYear()}`;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -225,12 +229,21 @@ const AddNewProduct = () => {
 
     return (
         <form className={cx('formContainer')} onSubmit={handleSubmit}>
+            <div className="flex justify-between mb-5 p-[20px]">
+                <div>
+                    <p className="font-bold text-[24px]">All Products</p>
+                    <div className={cx('tab', 'flex', 'items-center')}>
+                        Home <SlArrowRight size={10} className="mx-3" /> All Products
+                        <SlArrowRight size={10} className="mx-3" /> Products Detail
+                    </div>
+                </div>
+                <div className="flex items-end ">
+                    <SlCalender className="mr-5 mb-2" />
+                    {formattedDate}
+                </div>
+            </div>
             <div className={cx('formContent')}>
                 <section className={cx('inputSection')}>
-                    <nav className={cx('breadcrumb')}>
-                        <span>Home</span> <span>All Products</span> <span>Add Product </span>
-                    </nav>
-
                     {/* Product Name */}
                     <div className={cx('fieldGroup')}>
                         <label htmlFor="productName" className={cx('fieldLabel')}>

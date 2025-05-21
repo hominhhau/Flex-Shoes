@@ -115,7 +115,7 @@ function Register() {
             // setMessageError(err.response.data.message);
 
             console.error('Register failed:', err.message);
-            // setIsError(true);
+            setIsError(true);
         }
     };
 

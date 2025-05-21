@@ -79,7 +79,7 @@ export function ImageUploader({ images = [], onImagesChange }) {
     );
 
     return (
-        <section className={cx('imageSection')}>
+        <section className={cx('imageSection', 'mt-3')}>
             <div className={cx('mainImage')}>
                 <img
                     src={
