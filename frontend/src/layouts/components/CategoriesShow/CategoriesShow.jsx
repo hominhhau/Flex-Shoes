@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
+import config from '../../../config';
 
 import Image from '../../../components/Image';
 import Button from '../../../components/Button';
@@ -53,22 +55,24 @@ function CategoriesShow() {
                 {[currentIndex, (currentIndex + 1) % categories.length].map((index) => {
                     const category = categories[index];
                     return (
-                        <div key={category.name} className="relative bg-gray-800 rounded-lg overflow-hidden group">
-                            <Image
-                                src={category.image}
-                                alt={category.name}
-                                width={600}
-                                height={400}
-                                className="w-full max-h-[400px] object-cover"
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900 to-transparent">
-                                <h3 className="text-[32px] font-bold">{category.name}</h3>
+                        <Link to={config.routes.listing}>
+                            <div key={category.name} className="relative bg-gray-800 rounded-lg overflow-hidden group">
+                                <Image
+                                    src={category.image}
+                                    alt={category.name}
+                                    width={600}
+                                    height={400}
+                                    className="w-full max-h-[400px] object-cover"
+                                />
+                                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900 to-transparent">
+                                    <h3 className="text-[32px] font-bold">{category.name}</h3>
+                                </div>
+                                <button className="absolute bottom-4 right-4 bg-white text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity w-[50px] h-[50px] rounded-2xl">
+                                    <FontAwesomeIcon icon={faChevronRight} />
+                                    <span className="sr-only">View {category.name}</span>
+                                </button>
                             </div>
-                            <button className="absolute bottom-4 right-4 bg-white text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity w-[50px] h-[50px] rounded-2xl">
-                                <FontAwesomeIcon icon={faChevronRight} />
-                                <span className="sr-only">View {category.name}</span>
-                            </button>
-                        </div>
+                        </Link>
                     );
                 })}
             </div>

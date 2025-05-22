@@ -11,7 +11,7 @@ import {
     faCoins,
 } from '@fortawesome/free-solid-svg-icons';
 import { Api_Auth } from '../../../../apis/Api_Auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 import config from '../../../config';
@@ -26,6 +26,7 @@ import 'tippy.js/dist/tippy.css'; // optional
 import Menu from '../Popper/Menu';
 import Search from '../Search';
 import { useAuth } from '../../../hooks/useAuth';
+import { useEffect } from 'react';
 
 const cx = classNames.bind(styles);
 
@@ -81,6 +82,18 @@ function Header({ user }) {
             setError('Logout failed');
         }
     };
+
+    const location = useLocation();
+    const handleGenderClick = (gender) => {
+        const search = `?gender=${gender}`;
+        if (location.search === search) {
+            // Nếu search giống nhau, force reload
+            navigate(`${config.routes.listing}${search}`, { replace: true });
+            navigate(0); // Force reload page
+        } else {
+            navigate(`${config.routes.listing}${search}`);
+        }
+    };
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -92,18 +105,13 @@ function Header({ user }) {
                         </button>
                     </Link>
 
-                    <Link to={{ pathname: config.routes.listing, search: '?gender=Men' }}>
-                        <button className={cx('nav-item')}>
-                            Men
-                            <span className="ml-1">▼</span>
-                        </button>
-                    </Link>
-                    <Link to={{ pathname: config.routes.listing, search: '?gender=Women' }}>
-                        <button className={cx('nav-item')}>
-                            Women
-                            <span className="ml-1">▼</span>
-                        </button>
-                    </Link>
+                    <button onClick={() => handleGenderClick('Men')} className={cx('nav-item')}>
+                        Men <span className="ml-1">▼</span>
+                    </button>
+
+                    <button onClick={() => handleGenderClick('Women')} className={cx('nav-item')}>
+                        Women <span className="ml-1">▼</span>
+                    </button>
                 </nav>
 
                 <div className={cx('logo')}>
