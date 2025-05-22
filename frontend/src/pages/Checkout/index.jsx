@@ -247,6 +247,7 @@ const CheckoutForm = () => {
             });
 
             if (selectedPaymentMethod === 'Bank Transfer') {
+                updateQuantity = await Api_InvoiceAdmin.updateQuantityAfterCheckout({ items: handleCartData });
                 if (paymentResponse?.URL) {
                     window.location.href = paymentResponse.URL;
                     return; // Exit early to prevent further processing
